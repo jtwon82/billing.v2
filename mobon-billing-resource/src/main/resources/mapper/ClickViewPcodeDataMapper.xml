@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="clickViewPcodeDataMapper">
+
+	<update id="updateMOB_PCODE_RECOM_STATSXXX" parameterType="List">
+		INSERT INTO MOB_PCODE_RECOM_STATS(
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVRSB_TP_CODE, RECOM_TP_CODE
+			, SITE_CODE, PAR_NO, PCODE
+			, ADVER_ID, MEDIA_ID, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_USER_ID, REG_DTTM)
+			VALUES
+				<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platformCode}, #{I.productCode}, #{I.adGubunCode}, #{I.subAdGubunCode}, #{I.recomTpCode}
+				, #{I.siteCode}, #{I.scriptNo}, #{I.pCode}
+				, #{I.advertiserId}, #{I.scriptUserId}, #{I.clickCnt}, #{I.point}, #{I.mpoint}
+				, 'BATCH', NOW())
+				</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT)
+			, MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT);
+	</update>
+
+
+	<update id="updateMOB_PCODE_RECOM_STATS" parameterType="List">
+		INSERT INTO MOB_PCODE_RECOM_STATS(
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE
+			, ADVRSB_TP_CODE, RECOM_TP_CODE, RECOM_ALGO_CODE
+			, SITE_CODE, PAR_NO, CLICK_PCODE
+			, ADVER_ID, MEDIA_ID, CLICK_CNT, ADVRTS_AMT
+			, REG_DTTM)
+			VALUES
+				<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platformCode}, #{I.productCode}, #{I.adGubunCode}, #{I.interlock}
+				, #{I.subAdGubunCode}, #{I.recomTpCode}, #{I.recomAlgoCode}
+				, #{I.siteCode}, #{I.scriptNo}, #{I.pCode}
+				, #{I.advertiserId}, #{I.scriptUserId}, #{I.clickCnt}, #{I.point}
+				, NOW())
+				</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT)
+			;
+	</update>
+
+</mapper>

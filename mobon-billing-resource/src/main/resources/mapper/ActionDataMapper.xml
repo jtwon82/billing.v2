@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="actionDataMapper">
+
+	<update id="sp_action_data_NEW" parameterType="List">
+		INSERT INTO ACTION_LOG_TEST(PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2
+			,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT,MCGB,REGDATE)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.keyIp}, #{I.pCode}, #{I.shoplogNo}, #{I.siteCode}, #{I.advertiserId}, #{I.scriptNo}, #{I.scriptUserId}, #{I.kno}, #{I.vcnt}, #{I.vcnt2}
+				, #{I.ccnt}, #{I.point}, #{I.actGubun}, #{I.adGubun}, #{I.product}, #{I.mcgb}, #{I.sendDate})
+			</foreach>;
+	</update>
+	
+	<update id="sp_action_data_billing_NEW" parameterType="List">
+		/* ACTION_LOG */
+		INSERT INTO ACTION_LOG(PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2
+			,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT
+			,MCGB,REGDATE)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.keyIp}, #{I.pCode}, #{I.shoplogNo}, #{I.siteCode}, #{I.advertiserId}, #{I.scriptNo}, LEFT(#{I.scriptUserId},13)
+				, #{I.kno}, #{I.vcnt}, #{I.vcnt2}
+				, #{I.ccnt}, #{I.point}, #{I.actGubun}, #{I.adGubun}, LEFT(#{I.product},5)
+				, #{I.mcgb}, #{I.sendDate})
+			</foreach>;
+	</update>
+
+	<update id="sp_unexposure_action_data_billing_NEW" parameterType="List">
+		/* UNEXPOSURE_ACTION_LOG */
+		INSERT INTO UNEXPOSURE_ACTION_LOG(PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2
+		,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT
+		,MCGB,REGDATE)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.keyIp}, #{I.pCode}, #{I.shoplogNo}, #{I.siteCode}, #{I.advertiserId}, #{I.scriptNo}, LEFT(#{I.scriptUserId},13)
+			, #{I.kno}, #{I.vcnt}, #{I.vcnt2}
+			, #{I.ccnt}, #{I.point}, #{I.actGubun}, #{I.adGubun}, LEFT(#{I.product},5)
+			, #{I.mcgb}, #{I.sendDate})
+		</foreach>;
+	</update>
+
+	<update id="sp_action_pcode_data_billing_NEWXXX" parameterType="List">
+		/* ACTION_PCODE_RECOM_LOG */
+		INSERT INTO ACTION_PCODE_RECOM_LOG
+			(IP, STATS_DTTM, PRODUCT, ADVRTS_TP_CODE, SITE_CODE, PAR_NO, RECOM_TP_CODE, ADVRSB_TP_CODE, PCODE
+			, ADVER_ID, MEDIA_ID, POINT, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.keyIp}, #{I.yyyymmdd}, #{I.product}, #{I.adGubunCode}, #{I.siteCode}, #{I.scriptNo}, #{I.recomTpCode}, #{I.subAdGubunCode}, #{I.pCode}
+			, #{I.advertiserId}, #{I.scriptUserId}, #{I.point}, 'BATCH', #{I.sendDate})
+			</foreach>;
+	</update>
+	<update id="sp_action_pcode_data_billing_NEW" parameterType="List">
+		/* ACTION_PCODE_RECOM_LOG */
+		INSERT INTO ACTION_PCODE_RECOM_LOG
+			(STATS_DTTM, IP, AU_ID, PRODUCT, ADVRTS_TP_CODE, ADVRSB_TP_CODE
+			, RECOM_TP_CODE, RECOM_ALGO_CODE
+			, SITE_CODE, PAR_NO, MAIN_PCODE, CLICK_PCODE, ADVER_ID, MEDIA_ID
+			, FROM_APP, FREQ_CNT, POINT, REG_DTTM
+			)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.keyIp}, #{I.au_id}, #{I.product}, #{I.adGubunCode}, #{I.subAdGubunCode}
+			, #{I.recomTpCode}, <choose><when test="I.recomAlgoCode==null or I.recomAlgoCode==''">'99'</when><otherwise>#{I.recomAlgoCode}</otherwise></choose>
+			, #{I.siteCode}, #{I.scriptNo}, #{I.mainPcode}, #{I.clickPcode}, #{I.advertiserId}, #{I.scriptUserId}
+			, left(#{I.fromApp},1)
+			, #{I.freqCnt}, #{I.point}, #{I.sendDate})
+			</foreach>;
+	</update>
+	
+	
+	
+	
+	<update id="insertActLog_billing_billing" parameterType="actionLogData">
+		/* MOB_ACT_LOG */
+		INSERT INTO MOB_ACT_LOG
+			( YYYYMMDD, USER_IDFY_VAL, SVC_TP_CODE, CHRG_TP_CODE, ADVRTS_TP_CODE
+			, ADVER_ID, SITE_CODE, MEDIA_ID, MEDIA_SCRIPT_NO
+			, INTG_LOG_CNT, PRDT_CODE, POINT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			( #{yyyymmdd}, #{keyIp}, #{svcTpCode}, #{chrgTpCode}, #{advrtsTpCode}
+			, #{advertiserId}, #{siteCode}, #{scriptUserId}, #{scriptNo}
+			, #{intgLogCnt}, #{pCode}, #{point}
+			, 'BATCH', #{sendDate})
+		<selectKey resultType="long" keyProperty="actSeq" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</update>
+	<update id="insertActIntgLog_billing_billing" parameterType="actionLogData">
+		/* MOB_ACT_INTG_LOG */
+		INSERT INTO MOB_ACT_INTG_LOG
+			(ACT_SEQ, YYYYMMDD, INTG_TP_CODE, POINT, REG_USER_ID, REG_DTTM, INTG_SEQ)
+		SELECT A.ACT_SEQ, A.YYYYMMDD, A.CODE_ID, A.POINT, A.REG_USER_ID, A.REG_DTTM, B.INTG_SEQ
+			FROM (
+				SELECT CODE_ID, CODE_VAL, #{actSeq} ACT_SEQ, #{yyyymmdd} YYYYMMDD, #{point} POINT, 'BATCH' REG_USER_ID, #{sendDate} REG_DTTM
+					FROM dreamsearch.MOBON_COM_CODE
+					WHERE CODE_TP_ID='INTG_TP_CODE' 
+					AND CODE_VAL IN
+					<foreach collection="intgSeq.entrySet()" index="k" item="v" open="(" close=")" separator=",">
+						#{k}
+					</foreach>
+			)A, (
+				<foreach collection="intgSeq.entrySet()" index="k" item="v" open="" close="" separator="UNION ALL">
+					SELECT #{k} CODE_VAL, #{v} INTG_SEQ
+				</foreach>
+			)B
+			WHERE A.CODE_VAL = B.CODE_VAL
+	</update>
+	<update id="sp_action_ab_pcode_data_billing_NEW" parameterType="actionLogData">
+		/* ACTION_AB_PCODE_RECOM_LOG */
+		INSERT INTO ACTION_AB_PCODE_RECOM_LOG
+		(STATS_DTTM, IP, AU_ID, PRODUCT, ADVRTS_TP_CODE, ADVRSB_TP_CODE
+		, RECOM_TP_CODE, RECOM_ALGO_CODE
+		, SITE_CODE, PAR_NO, ADVER_ID, MEDIA_ID, AB_TEST_TY
+		, FROM_APP, FREQ_CNT, POINT, REG_DTTM
+		)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.keyIp}, #{I.au_id}, #{I.product}, #{I.adGubunCode}, #{I.subAdGubunCode}
+			, #{I.recomTpCode}, <choose><when test="I.recomAlgoCode==null or I.recomAlgoCode==''">'99'</when><otherwise>#{I.recomAlgoCode}</otherwise></choose>
+			, #{I.siteCode}, #{I.scriptNo}, #{I.advertiserId}, #{I.scriptUserId}, #{I.abTestTy}
+			, left(#{I.fromApp},1)
+			, #{I.freqCnt}, #{I.point}, #{I.sendDate})
+		</foreach>;
+
+	</update>
+</mapper>

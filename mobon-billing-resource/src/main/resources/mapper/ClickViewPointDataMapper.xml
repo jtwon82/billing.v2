@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="clickViewPointDataMapper">
+
+	<update id="sp_sky_view_point_billing_NEW" parameterType="java.util.List">
+		/* sp_sky_view_point_billing_NEW */
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				<if test="I.handlingPointData=='branchAction'">
+					UPDATE admember
+					SET POINT=POINT - #{I.point}, lastupdate=NOW()
+						WHERE userid = #{I.advertiserId};
+				</if>
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney + #{I.point}
+					WHERE site_code=#{I.siteCode} AND svc_type='sky';
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney + #{I.point}
+					WHERE site_code_s=#{I.siteCode} AND svc_type='sky' AND gubun=#{I.adGubun};
+
+			</if>
+			<if test="I.mpoint>0">
+				<if test="I.handlingPointData=='branchAction'">
+					UPDATE admember
+					SET mpoint=mpoint + #{I.mpoint}, lastupdate=NOW()
+						WHERE userid = #{I.scriptUserId};
+				</if>
+			</if>
+		</foreach>
+	</update>
+
+
+	<update id="sp_banner_view_point_mobon_NEW" parameterType="java.util.List">
+		/* sp_banner_view_point_mobon_NEW */
+		<foreach item="I" collection="list">
+			<if test="I.handlingPointData=='branchAction'">
+				<if test="I.mpoint>0">
+					UPDATE admember SET mpoint=mpoint+#{I.mpoint}, lastupdate=NOW() WHERE userid = #{I.scriptUserId};
+				</if>
+				<if test="I.point>0">
+					UPDATE admember SET point=point-#{I.point}, lastupdate=NOW() WHERE userid = #{I.advertiserId};
+				</if>
+			</if>
+		</foreach>
+	</update>
+	
+	<update id="sp_banner_click_point_billing_NEW" parameterType="java.util.List">
+		/* sp_banner_click_point_billing_NEW */
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				<if test="I.handlingPointData=='branchAction'">
+					UPDATE admember SET POINT = POINT - ${I.point}, lastupdate=NOW() WHERE userid = #{I.advertiserId};
+				</if>
+				<choose>
+					<when test="I.scriptUserId=='kakao' or I.scriptUserId=='mkakao'">
+						<if test='I.rtbUseMoneyYn=="Y"'>
+							<if test="I.platform=='01'">
+								UPDATE adsite_rtb_info SET w_usedmoney = w_usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+							</if>
+							<if test="I.platform=='02'">
+								UPDATE adsite_rtb_info SET m_usedmoney = m_usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+							</if>
+						</if>
+						<if test='I.rtbUseMoneyYn=="N"'>
+							UPDATE adsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+						</if>
+					</when>
+					<otherwise>
+						<choose>
+							<when test="I.product=='02' or I.product=='03'">
+								UPDATE iadsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+							</when>
+							<when test="I.product=='06'">
+								UPDATE iadsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode} AND svc_type = 'pl';
+							</when>
+							<otherwise>
+								<choose>
+									<when test="I.adGubun=='02' or I.adGubun=='03' or I.adGubun=='13' or I.adGubun=='14'">
+										UPDATE iadsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+									</when>
+									<otherwise>
+										UPDATE adsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+									</otherwise>
+								</choose>
+							</otherwise>
+						</choose>
+
+					</otherwise>
+				</choose>
+				
+			</if>
+			<if test="I.mpoint>0">
+				<if test="I.handlingPointData=='branchAction'">
+					UPDATE admember SET mpoint=mpoint + ${I.mpoint}, lastupdate=NOW() WHERE userid = #{I.scriptUserId};
+				</if>
+			</if>
+		</foreach>
+	</update>
+
+	<update id="sp_ico_view_point_billing_NEW" parameterType="java.util.List">
+		/* sp_ico_view_point_billing_NEW */
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				<if test="I.handlingPointData=='branchAction'">
+					UPDATE admember
+					SET POINT=POINT-#{I.point}, lastupdate=NOW()
+						WHERE userid = #{I.advertiserId};
+				</if>
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney+#{I.point}
+					WHERE site_code=#{I.siteCode} AND svc_type='';
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney+#{I.point}
+					WHERE site_code_s=#{I.siteCode} AND svc_type='' AND gubun = #{I.adGubun};
+
+
+			</if>
+			<if test="I.mpoint>0">
+				<if test="I.handlingPointData=='branchAction'">
+					UPDATE admember
+					SET mpoint=mpoint+#{I.mpoint}, lastupdate=NOW()
+						WHERE userid = #{I.scriptUserId};
+				</if>
+			</if>
+		</foreach>
+	</update>
+
+
+	<update id="update_admember_chrg_point" parameterType="java.util.List">
+		<foreach item="I" collection="list">
+			INSERT INTO admember_chrg(
+				YYYYMMDD, ADVER_ID, POINT, CHRG_POINT, ADVRTS_AMT, MEDIA_PYMNT_AMT)
+				VALUES(
+				#{I.yyyymmdd}, #{I.advertiserId}, 0, 0, #{I.point}, #{I.mpoint})
+				ON DUPLICATE KEY UPDATE admember_chrg.ADVRTS_AMT = admember_chrg.ADVRTS_AMT + VALUES(ADVRTS_AMT)
+					, admember_chrg.MEDIA_PYMNT_AMT = admember_chrg.MEDIA_PYMNT_AMT + VALUES(MEDIA_PYMNT_AMT);
+		</foreach>
+	</update>
+
+	
+</mapper>
+

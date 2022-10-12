@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pluscallLogDataMapper">
+
+	<update id="insertPluscallLogData_billing" parameterType="pluscallLogData">			
+		INSERT INTO BILLING.PLUSCALL_LOG
+			(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO
+			, ITL_TP_CODE, ADVER_ID, MEDIA_ID, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, AVAL_CALL_TIME, DB_CNVRS_CNT, STATS_ALT_DT, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}
+				, #{I.interlock}, #{I.advertiserId}, #{I.scriptUserId}, ${I.viewCnt}, ${I.viewCnt3}, ${I.clickCnt}
+				, ${I.point}, ${I.avalCallTime}, ${I.dbCnvrsCnt}, CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), 'BATCH', NOW())
+			</foreach>
+		;
+		
+		
+		
+		INSERT INTO BILLING.PLUSCALL_CAMP_MEDIA_HH_STATS
+			(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, ADVER_ID, MEDIA_ID, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, AVAL_CALL_TIME, AVAL_CALL_CNT, DB_CNVRS_CNT, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.advertiserId}, #{I.scriptUserId}, ${I.viewCnt}, ${I.viewCnt3}, ${I.clickCnt}, ${I.point}, ${I.avalCallTime}, ${I.avalCallCnt}, ${I.dbCnvrsCnt}, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)
+			, PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, AVAL_CALL_TIME = AVAL_CALL_TIME + VALUES(AVAL_CALL_TIME)
+			, AVAL_CALL_CNT = AVAL_CALL_CNT + VALUES(AVAL_CALL_CNT)
+			, DB_CNVRS_CNT = DB_CNVRS_CNT + VALUES(DB_CNVRS_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+			
+			
+			
+		INSERT INTO BILLING.PLUSCALL_CAMP_MEDIA_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, ADVER_ID, MEDIA_ID, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, AVAL_CALL_TIME, AVAL_CALL_CNT, DB_CNVRS_CNT, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.advertiserId}, #{I.scriptUserId}, ${I.viewCnt}, ${I.viewCnt3}, ${I.clickCnt}, ${I.point}, ${I.avalCallTime}, ${I.avalCallCnt}, ${I.dbCnvrsCnt}, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)
+			, PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, AVAL_CALL_TIME = AVAL_CALL_TIME + VALUES(AVAL_CALL_TIME)
+			, AVAL_CALL_CNT = AVAL_CALL_CNT + VALUES(AVAL_CALL_CNT)
+			, DB_CNVRS_CNT = DB_CNVRS_CNT + VALUES(DB_CNVRS_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+</mapper>

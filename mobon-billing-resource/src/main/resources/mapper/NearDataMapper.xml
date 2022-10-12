@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nearDataMapper">
+
+	<insert id="insertRgnTrgtStats" parameterType="java.util.List">
+		INSERT INTO RGN_TRGT_STATS 
+		( STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, SITE_CODE, MEDIA_SCRIPT_NO, ADSTRD_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, NEW_IP_CNT, RGN_IP_CNT, REG_USER_ID, REG_DTTM )
+		VALUE
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, #{I.siteCode}, ${I.scriptNo}, #{I.ADSTRD_CODE}
+				, ${I.viewCnt}, ${I.viewCnt3}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>${I.clickCnt}</otherwise></choose>
+				, ${I.point}, ${I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, ${I.NEW_IP_CNT}, ${I.RGN_IP_CNT}, 'BATCH', NOW() )
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)  
+			, PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, MEDIA_PYMNT_AMT = MEDIA_PYMNT_AMT + VALUES(MEDIA_PYMNT_AMT) 
+			, TRGT_EPRS_CNT = TRGT_EPRS_CNT + VALUES(TRGT_EPRS_CNT)
+			, TRGT_PAR_EPRS_CNT = TRGT_PAR_EPRS_CNT + VALUES(TRGT_PAR_EPRS_CNT)
+			, TRGT_CLICK_CNT = TRGT_CLICK_CNT + VALUES(TRGT_CLICK_CNT)
+			, TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT)
+			, NEW_IP_CNT = NEW_IP_CNT + VALUES(NEW_IP_CNT)
+			, RGN_IP_CNT = RGN_IP_CNT + VALUES(RGN_IP_CNT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM=NOW();
+	</insert>
+	 
+</mapper>
+

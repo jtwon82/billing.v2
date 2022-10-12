@@ -1,0 +1,1994 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="convDataMapper">
+	
+	
+	<select id="convLogActData_C" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 액션로그 조회 C */
+		SELECT
+			a.NO no,
+			a.PARTDT partdt,
+			a.ADPRODUCT product,
+			a.ADGUBUN adGubun,
+			a.SITECODE siteCode,
+			a.MEDIA_ID scriptUserId,
+			a.MEDIA_CODE scriptNo,
+			a.ACTGUBUN type,
+			a.MCGB mcgb,
+			CASE WHEN TIMESTAMPDIFF(HOUR, a.regdate, NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, a.regdate, #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, a.REGDATE, #{sendDate}) diffClickTime,
+			a.REGDATE clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			dreamsearch.ACTION_LOG a
+		WHERE
+			a.IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			AND a.MCODE = #{advertiserId}
+			AND a.MEDIA_CODE = #{scriptNo}
+			AND a.SITECODE = #{siteCode}
+			AND a.ADGUBUN = #{adGubun}
+			AND a.ADPRODUCT = #{product}
+			AND a.ACTGUBUN = 'C'
+			AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+			AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			AND a.NO = (
+				SELECT 
+				MAX(a1.NO)
+				FROM dreamsearch.ACTION_LOG a1
+				WHERE 
+				a1.IP IN 				
+					<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+						#{item}
+					</foreach>
+				AND a1.MCODE =  #{advertiserId}
+				AND a1.MEDIA_CODE = #{scriptNo}
+				AND a1.ADGUBUN = #{adGubun}
+				AND a1.ADPRODUCT = #{product}
+				AND a1.ACTGUBUN = 'C'
+				AND a1.SITECODE = #{siteCode}
+				AND a1.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+				AND a1.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd} 
+			)
+	</select>
+	<select id="convLogActData_REBUILD" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 액션로그 조회 C */
+		SELECT
+			a.NO no,
+			a.PARTDT partdt,
+			a.ADPRODUCT product,
+			a.ADGUBUN adGubun,
+			a.SITECODE siteCode,
+			a.MEDIA_ID scriptUserId,
+			a.MEDIA_CODE scriptNo,
+			a.ACTGUBUN type,
+			a.MCGB mcgb,
+			CASE WHEN TIMESTAMPDIFF(HOUR, a.regdate, NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, a.regdate, #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, a.REGDATE, #{sendDate}) diffClickTime,
+			a.REGDATE clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			dreamsearch.ACTION_LOG a
+		WHERE
+		a.NO = (
+				SELECT 
+				MAX(a1.NO)
+				FROM dreamsearch.ACTION_LOG a1
+				WHERE 
+				a1.IP IN 				
+					<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+						#{item}
+					</foreach>
+				AND a1.MCODE =  #{advertiserId}
+				AND a1.ACTGUBUN = 'C'
+				AND a1.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+				AND a1.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd} 
+			)
+	</select>
+	<select id="convLogActData_Test2_C" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 액션로그 조회 C */
+		SELECT
+			a.NO no,
+			a.ADPRODUCT product,
+			a.ADGUBUN adGubun,
+			a.SITECODE siteCode,
+			a.MEDIA_ID scriptUserId,
+			a.MEDIA_CODE scriptNo,
+			a.ACTGUBUN type,
+			a.MCGB mcgb,
+			CASE WHEN TIMESTAMPDIFF(HOUR, a.regdate, NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, a.regdate, #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, a.REGDATE, #{sendDate}) diffClickTime,
+			a.REGDATE clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			dreamsearch.ACTION_LOG a
+		WHERE
+		a.NO = (
+				SELECT 
+				MAX(a1.NO)
+				FROM dreamsearch.ACTION_LOG a1
+				WHERE 
+				a1.IP like '${keyIpLikeValue}%'
+				AND a1.MCODE =  #{advertiserId}
+				AND a1.ACTGUBUN = 'C'
+				AND a1.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+				AND a1.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd} 
+			)
+	</select>
+	
+	<select id="selectTrkConvActionLog" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 트래커 액션로그 조회 */
+		SELECT
+			a.NO no,
+			a.PARTDT partdt,
+			a.ADPRODUCT product,
+			a.ADGUBUN adGubun,
+			a.SITECODE siteCode,
+			a.MEDIA_ID scriptUserId,
+			a.MEDIA_CODE scriptNo,
+			a.ACTGUBUN type,
+			a.MCGB mcgb,
+			CASE WHEN TIMESTAMPDIFF(HOUR, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate}) diffClickTime,
+			DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s') clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			dreamsearch.ACTION_LOG a
+		WHERE
+			a.IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			AND a.MCODE = #{advertiserId}
+			AND a.MEDIA_CODE = #{scriptNo}
+			AND a.SITECODE = #{siteCode}
+			AND a.ADGUBUN = #{adGubun}
+			AND a.ADPRODUCT = #{product}
+			AND a.ACTGUBUN = 'C'
+			AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+			AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			AND a.NO = (
+				SELECT 
+				MAX(a1.NO)
+				FROM dreamsearch.ACTION_LOG a1
+				WHERE 
+				a1.IP IN 				
+					<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+						#{item}
+					</foreach>
+				AND a1.MCODE =  #{advertiserId}
+				AND a1.MEDIA_CODE = #{scriptNo}
+				AND a1.ADGUBUN = #{adGubun}
+				AND a1.ADPRODUCT = #{product}
+				AND a1.ACTGUBUN = 'C'
+				AND a1.SITECODE = #{siteCode}
+				AND a1.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+				AND a1.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd} 
+			)
+	</select>
+
+	<select id="convLogUnexposureActData_C" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 미노출액션로그 조회 C */
+		SELECT
+		a.NO no,
+		a.PARTDT partdt,
+		a.ADPRODUCT product,
+		a.ADGUBUN adGubun,
+		a.SITECODE siteCode,
+		a.MEDIA_ID scriptUserId,
+		a.MEDIA_CODE scriptNo,
+		a.ACTGUBUN type,
+		a.MCGB mcgb,
+		CASE WHEN TIMESTAMPDIFF(HOUR, a.regdate, NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+		TIMESTAMPDIFF(MINUTE, a.regdate, #{sendDate}) pastClickMinute,
+		TIMESTAMPDIFF(SECOND, a.REGDATE, #{sendDate}) diffClickTime,
+		a.REGDATE clickRegDate,
+		INSTR(#{ipInfoList}, IP) posIpInfo,
+		IP keyIp
+		FROM
+		dreamsearch.UNEXPOSURE_ACTION_LOG a
+		WHERE
+		a.IP IN
+		<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		AND a.MCODE = #{advertiserId}
+		AND a.MEDIA_CODE = #{scriptNo}
+		AND a.SITECODE = #{siteCode}
+		AND a.ADGUBUN = #{adGubun}
+		AND a.ADPRODUCT = #{product}
+		AND a.ACTGUBUN = 'C'
+		AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+		AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+		AND a.NO = (
+		SELECT
+		MAX(a1.NO)
+		FROM dreamsearch.UNEXPOSURE_ACTION_LOG a1
+		WHERE
+		a1.IP IN
+		<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		AND a1.MCODE =  #{advertiserId}
+		AND a1.MEDIA_CODE = #{scriptNo}
+		AND a1.ADGUBUN = #{adGubun}
+		AND a1.ADPRODUCT = #{product}
+		AND a1.ACTGUBUN = 'C'
+		AND a1.SITECODE = #{siteCode}
+		AND a1.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+		AND a1.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+		)
+	</select>
+
+	<select id="convLogActData_CPcodeXXX" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 액션로그 조회 CPcode */
+		SELECT
+			NO no,
+			PRODUCT product,
+			ADVRTS_TP_CODE adGubun,
+			ADVRSB_TP_CODE subadgubun,
+			RECOM_TP_CODE recomTpCode,
+			SITE_CODE siteCode,
+			MEDIA_ID scriptUserId,
+			PAR_NO scriptNo,
+			PCODE pCode,
+			CASE WHEN TIMESTAMPDIFF(HOUR, REG_DTTM, NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, REG_DTTM, #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, REG_DTTM, #{sendDate}) diffClickTime,
+			REG_DTTM clickRegDate
+		FROM
+			dreamsearch.ACTION_PCODE_RECOM_LOG a
+		WHERE IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			AND ADVER_ID = #{advertiserId}
+			AND PAR_NO = #{scriptNo}
+			AND SITE_CODE = #{siteCode}
+			AND ADVRTS_TP_CODE = #{adGubunCode}
+			AND PRODUCT = #{product}
+			AND STATS_DTTM <![CDATA[ >= ]]> #{yyyymmdd}
+			AND STATS_DTTM <![CDATA[ <= ]]> #{origin_yyyymmdd}
+		ORDER BY NO DESC
+		LIMIT 1
+	</select>
+	<select id="convLogActData_CPcode" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 액션로그 조회 CPcode */
+		SELECT
+			NO no,
+			AU_ID au_id,
+			PRODUCT product,
+			ADVRTS_TP_CODE adGubun,
+			ADVRSB_TP_CODE subadgubun,
+			RECOM_TP_CODE recomTpCode,
+			RECOM_ALGO_CODE recomAlgoCode,
+			SITE_CODE siteCode,
+			MEDIA_ID scriptUserId,
+			PAR_NO scriptNo,
+			CLICK_PCODE pCode,
+			CASE WHEN TIMESTAMPDIFF(HOUR, REG_DTTM, NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, REG_DTTM, #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, REG_DTTM, #{sendDate}) diffClickTime,
+			REG_DTTM clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			dreamsearch.ACTION_PCODE_RECOM_LOG a
+		WHERE IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			AND ADVER_ID = #{advertiserId}
+			AND PAR_NO = #{scriptNo}
+			AND SITE_CODE = #{siteCode}
+			AND ADVRTS_TP_CODE = #{adGubunCode}
+			AND PRODUCT = #{product}
+			AND STATS_DTTM <![CDATA[ >= ]]> #{yyyymmdd}
+			AND STATS_DTTM <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			AND NO  = (
+				SELECT MAX(a1.NO)
+				FROM dreamsearch.ACTION_PCODE_RECOM_LOG a1
+				WHERE IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+				AND ADVER_ID = #{advertiserId}
+				AND PAR_NO = #{scriptNo}
+				AND SITE_CODE = #{siteCode}
+				AND ADVRTS_TP_CODE = #{adGubunCode}
+				AND PRODUCT = #{product}
+				AND STATS_DTTM <![CDATA[ >= ]]> #{yyyymmdd}
+				AND STATS_DTTM <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			)
+	</select>
+	<select id="selectTrkConvActionLog_Pcode" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 트래커 액션로그 조회 CPcode */
+		SELECT
+			NO no,
+			AU_ID au_id,
+			PRODUCT product,
+			ADVRTS_TP_CODE adGubun,
+			ADVRSB_TP_CODE subadgubun,
+			RECOM_TP_CODE recomTpCode,
+			RECOM_ALGO_CODE recomAlgoCode,
+			SITE_CODE siteCode,
+			MEDIA_ID scriptUserId,
+			PAR_NO scriptNo,
+			CLICK_PCODE pCode,
+			CASE WHEN TIMESTAMPDIFF(HOUR, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), NOW())<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate}) diffClickTime,
+			DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s') clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			dreamsearch.ACTION_PCODE_RECOM_LOG a
+		WHERE IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			AND ADVER_ID = #{advertiserId}
+			AND PAR_NO = #{scriptNo}
+			AND SITE_CODE = #{siteCode}
+			AND ADVRTS_TP_CODE = #{adGubunCode}
+			AND PRODUCT = #{product}
+			AND STATS_DTTM <![CDATA[ >= ]]> #{yyyymmdd}
+			AND STATS_DTTM <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			AND NO  = (
+				SELECT MAX(a1.NO)
+				FROM dreamsearch.ACTION_PCODE_RECOM_LOG a1
+				WHERE IP IN
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+				AND ADVER_ID = #{advertiserId}
+				AND PAR_NO = #{scriptNo}
+				AND SITE_CODE = #{siteCode}
+				AND ADVRTS_TP_CODE = #{adGubunCode}
+				AND PRODUCT = #{product}
+				AND STATS_DTTM <![CDATA[ >= ]]> #{yyyymmdd}
+				AND STATS_DTTM <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			)
+	</select>
+	<select id="convLogActData_CRetry" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 액션로그 조회 C */
+		SELECT
+			a.NO no,
+			a.partdt partdt,
+			a.ADPRODUCT product,
+			a.ADGUBUN adGubun,
+			a.SITECODE siteCode,
+			a.MEDIA_ID scriptUserId,
+			a.MEDIA_CODE scriptNo,
+			a.ACTGUBUN type,
+			a.MCGB mcgb,
+			CASE WHEN TIMESTAMPDIFF(HOUR, a.regdate, #{sendDate})<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, a.regdate, #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND, a.REGDATE, #{sendDate}) diffClickTime,
+			a.REGDATE clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			ACTION_LOG a
+		WHERE
+			a.IP = #{keyIp}
+			AND a.MCODE = #{advertiserId}
+			AND a.MEDIA_CODE = #{scriptNo}
+			AND a.SITECODE = #{siteCode}
+			AND a.ADGUBUN = #{adGubun}
+			AND a.ADPRODUCT = #{product}
+			AND a.ACTGUBUN = 'C'
+			AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+			AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			AND a.NO = (
+				SELECT MAX(a1.NO)
+				FROM ACTION_LOG a1
+				WHERE a.IP = #{keyIp}
+				AND a.MCODE = #{advertiserId}
+				AND a.MEDIA_CODE = #{scriptNo}
+				AND a.SITECODE = #{siteCode}
+				AND a.ADGUBUN = #{adGubun}
+				AND a.ADPRODUCT = #{product}
+				AND a.ACTGUBUN = 'C'
+				AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+				AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			)
+	</select>
+		<select id="selectTrkConvActionLog_Retry" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 : 트래커 액션로그 조회 C */
+		SELECT
+			a.NO no,
+			a.partdt partdt,
+			a.ADPRODUCT product,
+			a.ADGUBUN adGubun,
+			a.SITECODE siteCode,
+			a.MEDIA_ID scriptUserId,
+			a.MEDIA_CODE scriptNo,
+			a.ACTGUBUN type,
+			a.MCGB mcgb,
+			CASE WHEN TIMESTAMPDIFF(HOUR,  DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate})<![CDATA[ <= ]]>#{direct} THEN 24 ELSE 0 END inHour,
+			TIMESTAMPDIFF(MINUTE, DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate}) pastClickMinute,
+			TIMESTAMPDIFF(SECOND,  DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s'), #{sendDate}) diffClickTime,
+			DATE_FORMAT(#{lastClickDate},'%Y-%m-%d %H:%i:%s') clickRegDate,
+			INSTR(#{ipInfoList}, IP) posIpInfo,
+			IP keyIp
+		FROM
+			ACTION_LOG a
+		WHERE
+			a.IP = #{keyIp}
+			AND a.MCODE = #{advertiserId}
+			AND a.MEDIA_CODE = #{scriptNo}
+			AND a.SITECODE = #{siteCode}
+			AND a.ADGUBUN = #{adGubun}
+			AND a.ADPRODUCT = #{product}
+			AND a.ACTGUBUN = 'C'
+			AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+			AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			AND a.NO = (
+				SELECT MAX(a1.NO)
+				FROM ACTION_LOG a1
+				WHERE a.IP = #{keyIp}
+				AND a.MCODE = #{advertiserId}
+				AND a.MEDIA_CODE = #{scriptNo}
+				AND a.SITECODE = #{siteCode}
+				AND a.ADGUBUN = #{adGubun}
+				AND a.ADPRODUCT = #{product}
+				AND a.ACTGUBUN = 'C'
+				AND a.partdt <![CDATA[ >= ]]> #{yyyymmdd}
+				AND a.partdt <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			)
+	</select>
+	
+	<select id="selectCNVRS_NCL" parameterType="convData" resultType="convData">
+		/* 컨버전 : 확인 */
+		SELECT 
+			ORDER_NO ordCode
+			, TIMESTAMPDIFF(SECOND, REG_DTTM, #{sendDate}) diffConvTime
+		FROM
+			MOB_CNVRS_RENEW_NCL
+		WHERE 
+			ORDER_NO = #{ordCode}
+			AND ADVER_ID = #{advertiserId}
+		LIMIT 1
+	</select>
+	
+	<select id="selectCONVERSION_LOG_IPCNT" parameterType="convData" resultType="convData">
+		SELECT COUNT(1) orderCnt
+			, IFNULL(SUM(CASE WHEN REGDATE BETWEEN DATE_ADD(#{sendDate}, INTERVAL -1 MINUTE) AND #{sendDate} THEN 1 ELSE 0 END),0) under1Min
+		FROM dreamsearch.CONVERSION_LOG A 
+		WHERE IP=#{keyIp} 
+	</select>
+	
+	<select id="selectCNVRS_PCODE_RECOM_NCL" parameterType="convData" resultType="convData">
+		/* 컨버전 : 확인 */
+		SELECT 
+			ORDER_NO ordCode
+		FROM
+			MOB_CNVRS_PCODE_RECOM_NCL
+		WHERE 
+			ORDER_NO = #{ordCode}
+			AND ADVER_ID = #{advertiserId}
+			AND CLICK_PCODE = #{pCode}
+		LIMIT 1
+	</select>
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+<!-- 	<insert id="insertCONVERSION_LOG" parameterType="convData"> -->
+<!-- 		/* 컨버전 : 저장1 */ -->
+<!-- 		INSERT INTO CONVERSION_LOG_TEST(PARTDT, IP, USERID -->
+<!-- 			, ORDCODE, ORDRFURL, ORDPCODE, ORDQTY, ORDPRICE -->
+<!-- 			, ACTION_LOG_NO, PNM, UNAME, USEX, UPNO -->
+<!-- 			, IN_HOUR, DIRECT, REGDATE, LAST_CLICK_TIME, MOBON_YN, INFLOW_ROUTE, RGN_IP) -->
+<!-- 		VALUES(#{yyyymmdd}, #{keyIp}, #{advertiserId} -->
+<!-- 			, #{ordCode}, #{ordRFUrl}, #{pCode}, #{ordQty}, #{price} -->
+<!-- 			, #{no}, #{pnm}, #{userName}, #{gender}, #{userPno} -->
+<!-- 			, #{inHour}, #{direct}, #{ymdhms}, #{lastClickTime}, #{mobonYn}, #{inflowRoute}, #{realIp}); -->
+<!-- 	</insert> -->
+	<insert id="insertCONVERSION_LOG_billing" parameterType="convData">
+		/* 컨버전 : 저장1 */
+		INSERT INTO CONVERSION_LOG(PARTDT, IP, USERID
+			, ORDCODE, ORDRFURL, ORDPCODE, ORDQTY, ORDPRICE
+			, ACTION_LOG_NO, PNM, UNAME, USEX, UPNO
+			, IN_HOUR, DIRECT, LAST_CLICK_TIME, MOBON_YN, INFLOW_ROUTE, RGN_IP
+			, REGDATE)
+		VALUES(#{yyyymmdd}, #{keyIp}, #{advertiserId}
+			, #{ordCode}, #{ordRFUrl}, #{pCode}, #{ordQty}, #{price}
+			, #{no}, #{pnm}, #{userName}, #{gender}, #{userPno}
+			, #{inHour}, #{direct}, #{lastClickTime}, #{mobonYn}, #{inflowRoute}, #{realIp}
+			, #{sendDate});
+	</insert>
+	<insert id="insertConvData" parameterType="convData">
+		/* 컨버전 : 저장 */
+		INSERT INTO MOB_CNVRS_NCL(STATS_DTTM, ADVER_ID, ORDER_NO, MEDIA_SCRIPT_NO, SITE_CODE
+			, ADVRTS_TP_CODE, ADVRTS_PRDT_CODE, PLTFOM_TP_CODE
+			, CLICK_DTTM
+			, CLICK_TP, SESION_SELNG_YN, DIRECT_YN
+			, MOB_ORDER_YN, CNVRS_TP_CODE
+			, ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_QY
+			, REG_USER_ID, REG_DTTM)
+		SELECT ${yyyymmdd} STATS_DTTM, #{advertiserId} ADVER_ID, #{ordCode} ORDER_NO, #{scriptNo} MEDIA_SCRIPT_NO, #{siteCode} SITE_CODE
+			, #{adGubunCode} ADVRTS_TP_CODE, #{productCode} ADVRTS_PRDT_CODE, #{platformCode} PLTFOM_TP_CODE
+			, #{clickRegDate} CLICK_DTTM
+			, 'C' CLICK_TP
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose> SESION_SELNG_YN
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose> DIRECT_YN
+			, #{mobonYn} MOB_ORDER_YN, #{cnvrsTpCode} CNVRS_TP_CODE
+			, #{price} ORDER_AMT, 1 ORDER_CNT, #{ordQty} ORDER_QY
+				<choose>
+					<when test="targetYn">
+						,#{price}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				AS TRGT_ORDER_AMT
+				<choose>
+					<when test="targetYn">
+						,#{ordQty}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				AS TRGT_ORDER_QY
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end REG_USER_ID, #{sendDate} REG_DTTM
+			;
+			
+		INSERT INTO MOB_CNVRS_HH_STATS(
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, MEDIA_SCRIPT_NO
+				, CLICK_TP
+				, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+				, ORDER_AMT, ORDER_CNT, ORDER_QY
+				, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+				, REG_USER_ID, REG_DTTM, ITL_TP_CODE
+				)
+			SELECT * FROM (
+				SELECT a.*
+					, CASE 
+						WHEN userid IN('kakao', 'mkakao') THEN '03' 
+						WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04' 
+						WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08' 
+						WHEN userid IN('rtbmobon') THEN '10'
+					ELSE '01' END ITL_TP_CODE
+				FROM (
+					SELECT #{yyyymmdd} STATS_DTTM, #{hh} STATS_HH, #{platformCode} PLTFOM_TP_CODE, #{productCode} ADVRTS_PRDT_CODE, #{adGubunCode} ADVRTS_TP_CODE
+						, #{siteCode} SITE_CODE, #{advertiserId} ADVER_ID, #{scriptNo} MEDIA_SCRIPT_NO
+						, #{type} CLICK_TP
+						, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose> SESION_SELNG_YN 
+						, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose> DIRECT_YN
+						, #{mobonYn} MOB_ORDER_YN, #{cnvrsTpCode} CNVRS_TP_CODE
+						, #{price} ORDER_AMT, 1 ORDER_CNT, #{ordQty} ORDER_QY
+						<choose><when test="targetYn">,#{price}</when><otherwise>,0</otherwise></choose> AS TRGT_ORDER_AMT
+						<choose><when test="targetYn">, 1</when><otherwise>,0</otherwise></choose>AS TRGT_ORDER_CNT
+						<choose><when test="targetYn">,#{ordQty}</when><otherwise>,0</otherwise></choose>AS TRGT_ORDER_QY
+						, (case when #{regUserId}='' then 'BATCH' else #{regUserId} end) AS REG_USER_ID, #{sendDate} REG_DTTM
+				) a, dreamsearch.media_script b where a.MEDIA_SCRIPT_NO=b.no
+			)A
+		ON DUPLICATE KEY UPDATE
+			MOB_CNVRS_HH_STATS.ALT_USER_ID = 'BATCH', MOB_CNVRS_HH_STATS.ALT_DTTM = NOW()
+			, MOB_CNVRS_HH_STATS.ORDER_AMT = MOB_CNVRS_HH_STATS.ORDER_AMT + A.ORDER_AMT
+			, MOB_CNVRS_HH_STATS.ORDER_CNT = MOB_CNVRS_HH_STATS.ORDER_CNT + A.ORDER_CNT
+			, MOB_CNVRS_HH_STATS.ORDER_QY = MOB_CNVRS_HH_STATS.ORDER_QY + A.ORDER_QY
+			, MOB_CNVRS_HH_STATS.TRGT_ORDER_AMT = MOB_CNVRS_HH_STATS.TRGT_ORDER_AMT + A.TRGT_ORDER_AMT
+			, MOB_CNVRS_HH_STATS.TRGT_ORDER_CNT = MOB_CNVRS_HH_STATS.TRGT_ORDER_CNT + A.TRGT_ORDER_CNT
+			, MOB_CNVRS_HH_STATS.TRGT_ORDER_QY = MOB_CNVRS_HH_STATS.TRGT_ORDER_QY + A.TRGT_ORDER_QY
+			;
+	</insert>
+	<insert id="insertConvAbusingData" parameterType="convData">
+		/* 어뷰징 컨버전 : 저장 */
+		INSERT INTO MOB_CNVRS_ABUSING_NCL(
+			STATS_DTTM, ADVER_ID, ORDER_NO, IP, PAR_NO, SITE_CODE
+			, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CNVRS_TP_CODE, CNVRS_ABUSING_TP_CODE, SESION_SELNG_YN, DIRECT_YN
+			, INFLOW_ROUTE, MOB_ORDER_YN, CLICK_DTTM, ORDER_AMT, ORDER_CNT, ORDER_QY, PNM, REG_DTTM
+			, ADVER_NAME)
+				SELECT A.*, LEFT(IFNULL(B.corpname,''),30) ADVER_NAME FROM (
+					SELECT ${yyyymmdd} STATS_DTTM, #{advertiserId} ADVER_ID, #{ordCode} ORDER_NO, #{keyIp} IP, #{scriptNo} PAR_NO, #{siteCode} SITE_CODE
+					, #{platformCode} PLTFOM_TP_CODE, #{productCode} ADVRTS_PRDT_CODE, #{adGubunCode} ADVRTS_TP_CODE, '' CNVRS_TP_CODE, #{cnvrsAbusingTpCode} CNVRS_ABUSING_TP_CODE
+					, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose> SESION_SELNG_YN
+					, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose> DIRECT_YN
+					, #{inflowRoute} INFLOW_ROUTE, #{mobonYn} MOB_ORDER_YN, #{clickRegDate} CLICK_DTTM
+					, #{price} ORDER_AMT, 1 ORDER_CNT, #{ordQty} ORDER_QY, #{pnm} PNM
+					, #{sendDate} REG_DTTM
+				) A LEFT JOIN dreamsearch.admember B
+				ON A.ADVER_ID=B.userid
+		ON DUPLICATE KEY UPDATE 
+			ABUSING_CNT = ABUSING_CNT + 1;
+	</insert>
+	<insert id="insertConvPcodeDataXXX" parameterType="convData">
+		/* 컨버전 : 저장 */
+		INSERT INTO MOB_CNVRS_PCODE_RECOM_NCL(
+			STATS_DTTM, ADVER_ID, ORDER_NO, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE
+			, ADVRTS_TP_CODE, ADVRSB_TP_CODE, RECOM_TP_CODE, SITE_CODE, PAR_NO
+			, CNVRS_TP_CODE, PCODE, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN
+			, CLICK_DTTM, ORDER_AMT, ORDER_CNT, ORDER_QY
+			, REG_USER_ID, REG_DTTM
+			)
+		VALUES(${yyyymmdd}, #{advertiserId}, #{ordCode}, #{platformCode}, #{productCode}
+			, #{adGubunCode}, #{subAdGubunCode}, #{recomTpCode}, #{siteCode}, #{scriptNo}
+			, #{cnvrsTpCode}, #{pCode}
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{mobonYn}
+			, #{clickRegDate}, #{price}, 1, #{ordQty}
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, #{sendDate});
+	</insert>
+	<insert id="insertConvPcodeData" parameterType="convData">
+		/* 컨버전 : 저장 */
+		INSERT INTO MOB_CNVRS_PCODE_RECOM_NCL(
+			STATS_DTTM, IP, AU_ID, ADVER_ID, ORDER_NO
+			, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVRSB_TP_CODE
+			, RECOM_TP_CODE, RECOM_ALGO_CODE, SITE_CODE, PAR_NO, CNVRS_TP_CODE
+			, CLICK_PCODE, SESION_SELNG_YN, DIRECT_YN, INFLOW_ROUTE, MOB_ORDER_YN
+			, PNM, CLICK_DTTM, ORDER_AMT, ORDER_CNT, ORDER_QY
+			, REG_USER_ID, REG_DTTM
+			)
+		VALUES(${yyyymmdd}, #{keyIp}, #{au_id}, #{advertiserId}, #{ordCode}
+			, #{platformCode}, #{productCode}, #{adGubunCode}, #{subAdGubunCode}
+			, #{recomTpCode}, #{recomAlgoCode}, #{siteCode}, #{scriptNo}, #{cnvrsTpCode}
+			, #{pCode}
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{inflowRoute}, #{mobonYn}
+			, #{pnm}, #{clickRegDate}, #{price}, 1, #{ordQty}
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, #{sendDate});
+	</insert>
+	<insert id="insertConvDataABTEST" parameterType="convData">
+		/* 컨버전 : 저장 */
+		INSERT INTO MOB_CNVRS_NCL_ABTEST(STATS_DTTM, ADVER_ID, ORDER_NO, MEDIA_SCRIPT_NO, SITE_CODE
+			, ADVRTS_TP_CODE, ADVRTS_PRDT_CODE, PLTFOM_TP_CODE
+			, CLICK_DTTM
+			, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, SESION_SELNG_YN2, DIRECT_YN2
+			, MOB_ORDER_YN, CNVRS_TP_CODE
+			, ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_QY
+			, MOB_DEVICE, BR_NAME
+			, OS_TP_CODE, BROWSER_TP_CODE, DEVICE_TP_CODE, BR_VER
+			, REG_USER_ID, REG_DTTM)
+		VALUES(${yyyymmdd}, #{advertiserId}, #{ordCode}, #{scriptNo}, #{siteCode}
+			, #{adGubunCode}, #{productCode}, #{platformCode}
+			, #{clickRegDate}
+			, 'C'
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="direct2!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour2!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{mobonYn}, ''
+			, #{price}, 1, #{ordQty}
+				,<choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+				, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+			, #{deviceDiv}, #{browser}
+			, #{osCode}, #{browserCode}, #{deviceCode}, #{browserCodeVersion}
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, #{sendDate});
+	</insert>
+	<insert id="insertKwrdConvData" parameterType="convData">
+		/* 컨버전 : 키워드수집(CNVRS_KWRD) */
+		INSERT INTO CNVRS_KWRD(STAT_DTTM, ADVER_ID, ORDER_CODE, PRODUCT_CODE
+			, INFW_URL, KWRD_VAL, KWRD_TP, KWRD_CNVRS_TP, ACTION_LOG_NO, AU_ID, REG_DTTM)
+			VALUES(${yyyymmdd}, #{advertiserId}, #{ordCode}, #{pCode}
+			, #{keywordUrl}, #{keywordValue}, #{keywordType}, #{keywordSessionType}, #{no}, #{au_id}, NOW())
+		ON DUPLICATE KEY UPDATE
+			KWRD_VAL = VALUES(KWRD_VAL)
+		;
+	</insert>
+	<insert id="insertContinueCnvrs" parameterType="convData">
+		/* 컨버전 : 연속구매수집(CONTI_BUY_HIS) */
+		INSERT INTO CONTI_BUY_HIS(
+			START_DTTM, END_DTTM, ADVER_ID, AU_ID, PRODUCT_CODES, REG_DTTM, REG_USER_ID)
+		VALUES(
+			DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -10 DAY),'%Y%m%d'), DATE_FORMAT(#{sendDate},'%Y%m%d'), #{advertiserId}, #{au_id}, #{continueConv}, now(), 'BATCH')
+		ON DUPLICATE KEY UPDATE
+			START_DTTM=VALUES(START_DTTM), END_DTTM=VALUES(END_DTTM), PRODUCT_CODES=VALUES(PRODUCT_CODES)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW()
+		;
+	</insert>
+	<insert id="insertLongContinueCnvrs" parameterType="convData">
+		INSERT INTO CONTI_BUY_HIS_LONG(
+			START_DTTM, END_DTTM, ADVER_ID, AU_ID, PRODUCT_CODES, REG_DTTM, REG_USER_ID)
+		VALUES(
+			DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -21 DAY),'%Y%m%d'), DATE_FORMAT(#{sendDate},'%Y%m%d'), #{advertiserId}, #{au_id}, #{longContinueConv}, now(), 'BATCH')
+		ON DUPLICATE KEY UPDATE
+			START_DTTM=VALUES(START_DTTM), END_DTTM=VALUES(END_DTTM), PRODUCT_CODES=VALUES(PRODUCT_CODES)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW()
+		;
+	</insert>
+<!-- 	<insert id="insertConvDataConvAct" parameterType="convData"> -->
+<!-- 		INSERT INTO CONVACT_LOG_TEST(ADACTLOG_NO,PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2 -->
+<!-- 			,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT,REGDATE,MCGB)  -->
+<!-- 		SELECT NO ADACTLOG_NO,PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2 -->
+<!-- 			,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT,REGDATE,MCGB  -->
+<!-- 		FROM dreamsearch.ACTION_LOG -->
+<!-- 		WHERE NO = ${no} -->
+<!-- 		ON DUPLICATE KEY UPDATE -->
+<!-- 			CONVACTCNT=CONVACTCNT+1; -->
+<!-- 	</insert> -->
+	<insert id="insertConvDataConvAct_billing" parameterType="convData">
+		INSERT INTO CONVACT_LOG(ADACTLOG_NO,PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2
+			,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT,REGDATE,MCGB) 
+		SELECT NO ADACTLOG_NO,PARTDT,IP,PCODE,SHOPLOG_NO,SITECODE,MCODE,MEDIA_CODE,MEDIA_ID,K_NO,VCNT,VCNT2
+			,CCNT,POINT,ACTGUBUN,ADGUBUN,ADPRODUCT,REGDATE,MCGB 
+		FROM ACTION_LOG
+		WHERE NO = ${no}
+		ON DUPLICATE KEY UPDATE
+			CONVACTCNT=CONVACTCNT+1;
+	</insert>
+	<insert id="insertConvDataStatsXXX" parameterType="convData">
+		INSERT INTO MOB_CNVRS_HH_STATS(
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, MEDIA_SCRIPT_NO, ITL_TP_CODE
+				, CLICK_TP
+				, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+				, ORDER_AMT, ORDER_CNT, ORDER_QY
+				, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+				, REG_USER_ID, REG_DTTM)
+		VALUES(#{yyyymmdd}, #{hh}, #{platformCode}, #{productCode}, #{adGubunCode}, #{siteCode}, #{advertiserId}, #{scriptNo}, #{interlock}
+			, #{type}
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{mobonYn}, ''
+			, #{price}, 1, #{ordQty}
+			, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+			, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+			, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, NOW())
+		ON DUPLICATE KEY UPDATE
+			ALT_USER_ID = 'BATCH', ALT_DTTM = NOW()
+			, ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+			, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY)
+			;
+	</insert>
+	<insert id="insertConvAllDataStats" parameterType="convData">
+		INSERT INTO MOB_CNVRS_HH_NCL_NEW(
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO
+				, ORDER_NO, ORDER_PCODE
+				, ADVER_ID, SESION_SELNG_YN, DIRECT_YN
+				, MOB_ORDER_YN, MOB_DEVICE, CLICK_DTTM, INFLOW_ROUTE, RGN_IP, IP
+				, ORDER_AMT, ORDER_CNT, ORDER_QY
+				, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY, AU_ID
+				, REG_USER_ID, REG_DTTM, ALT_USER_ID, ALT_DTTM, CTGR_SEQ
+				)
+		SELECT ${yyyymmdd} STATS_DTTM, #{hh} STATS_HH, #{platform} PLTFOM_TP_CODE, #{product} ADVRTS_PRDT_CODE, #{adGubun} ADVRTS_TP_CODE, #{siteCode} SITE_CODE, #{scriptNo} MEDIA_SCRIPT_NO
+			, #{ordCode} ORDER_NO, #{pCode} ORDER_PCODE
+			, #{advertiserId} ADVER_ID
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose> SESION_SELNG_YN
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose> DIRECT_YN
+			, #{mobonYn} MOB_ORDER_YN, #{deviceDiv} MOB_DEVICE, #{lastClickTime} CLICK_DTTM, #{inflowRoute} INFLOW_ROUTE, #{realIp} RGN_IP, #{keyIp} IP
+			, #{price} ORDER_AMT, 1 ORDER_CNT, #{ordQty} ORDER_QY
+			<choose>
+					<when test="targetYn">
+						,#{price}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				AS TRGT_ORDER_AMT
+			<choose>
+					<when test="targetYn">
+						, 1
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				AS TRGT_ORDER_CNT
+
+			<choose>
+					<when test="targetYn">
+						,#{ordQty}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				AS TRGT_ORDER_QY
+			, #{au_id} AU_ID
+			, (case when #{regUserId}='' then 'BATCH' else #{regUserId} end ) AS REG_USER_ID, #{sendDate} REG_DTTM
+			, (case when #{regUserId}='' then 'BATCH' else #{regUserId} end ) AS ALT_USER_ID, NOW() ALT_DTTM
+			, CTGR_SEQ
+		FROM dreamsearch.MOB_CTGR_USER_INFO
+		WHERE USER_ID=#{advertiserId};
+	</insert>
+	<update id="updateMOB_CNVRS_HH_NCL_NEW" parameterType="convData">
+		UPDATE MOB_CNVRS_HH_NCL_NEW 
+			SET MOB_CNVRS_YN='Y'
+		WHERE STATS_DTTM=${yyyymmdd} AND ADVER_ID=#{advertiserId} AND ORDER_NO=#{ordCode} AND IP=#{keyIp} AND REG_DTTM=#{sendDate}
+	</update>
+	<insert id="insertConvRTN_HH" parameterType="convData">
+		/* 회귀 컨버전 : 저장 */
+		INSERT INTO MOB_RTN_HH_STATS(
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+				, CLICK_TP
+				, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+				
+				, RTN_AMT, RTN_CNT, RTN_QY
+				, REG_USER_ID, REG_DTTM)
+		VALUES(DATE_FORMAT(#{lastClickTime}, '%Y%m%d'), DATE_FORMAT(#{lastClickTime}, '%H'), #{platform}, #{product}, #{adGubun}, #{siteCode}, #{scriptNo}, #{interlock}
+			, #{type}
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{mobonYn}, ''
+			, #{price}, 1, #{ordQty}
+			, 'BATCH', NOW())
+		ON DUPLICATE KEY UPDATE
+			ALT_USER_ID = 'BATCH', ALT_DTTM = NOW()
+			, RTN_AMT = RTN_AMT + VALUES(RTN_AMT), RTN_CNT = RTN_CNT + VALUES(RTN_CNT), RTN_QY = RTN_QY + VALUES(RTN_QY);
+	</insert>
+
+
+
+
+
+
+<!-- 	<insert id="insConvLog" parameterType="conversionInfo"> -->
+<!-- 		/* convDataMapper : insConvLog */ -->
+<!-- 		INSERT INTO MOB_ADVER_CHRG_LOG_TEST	( -->
+<!-- 		YYYYMMDD, SVC_TP_CODE, CHRG_TP_CODE, MEDIA_SCRIPT_NO, ADVER_ID, ORDER_NO, ORDER_PRC -->
+<!-- 		, pcode, USER_IDFY_VAL, ACL_NO, ETC, REG_USER_ID, REG_DTTM -->
+<!-- 		) -->
+<!-- 		VALUES	( -->
+<!-- 		DATE_FORMAT(now(),'%Y%m%d'), #{serviceCode}, #{chargeCode}, #{scriptNo}, #{userId}, #{orderCode}, #{orderPrice} -->
+<!-- 		, #{pcode}, #{clientId}, #{actionLogNo}, #{etc}, 'BATCH', now() -->
+<!-- 		) -->
+<!-- 	</insert> -->
+	<insert id="insConvLog_billing" parameterType="conversionInfo">
+		/* convDataMapper : insConvLog */
+		INSERT INTO MOB_ADVER_CHRG_LOG	(
+		YYYYMMDD, SVC_TP_CODE, CHRG_TP_CODE, MEDIA_SCRIPT_NO, ADVER_ID, ORDER_NO, ORDER_PRC
+		, pcode, USER_IDFY_VAL, ACL_NO, ETC, REG_USER_ID, REG_DTTM
+		)
+		VALUES	(
+		DATE_FORMAT(now(),'%Y%m%d'), #{serviceCode}, #{chargeCode}, #{scriptNo}, #{userId}, #{orderCode}, #{orderPrice}
+		, #{pcode}, #{clientId}, #{actionLogNo}, #{etc}, 'BATCH', now()
+		)
+	</insert>
+<!-- 	<select id="selConvLog" parameterType="conversionInfoFilter" resultType="conversionInfo"> -->
+<!-- 	    /* convDataMapper : selConvLog */ -->
+<!-- 	    SELECT -->
+<!-- 	         YYYYMMDD as yyyymmdd -->
+<!-- 	       , SVC_TP_CODE as serviceCode -->
+<!-- 	       , MEDIA_SCRIPT_NO as scriptNo -->
+<!-- 	       , ADVER_ID as userId -->
+<!-- 	       , pcode -->
+<!-- 	       , USER_IDFY_VAL as clientId -->
+<!-- 	    FROM MOB_ADVER_CHRG_LOG_TEST -->
+<!-- 	    WHERE  -->
+<!-- 	    <choose> -->
+<!-- 	    	<when test="convStatus == 0"> -->
+<!-- 		      YYYYMMDD BETWEEN DATE_FORMAT(DATE_ADD(now(), INTERVAL -${directHour} HOUR),'%Y%m%d') AND DATE_FORMAT(now(),'%Y%m%d')  -->
+<!-- 		      AND DATE_ADD(now(), INTERVAL -${directHour} HOUR) <![CDATA[<]]> REG_DTTM  -->
+<!-- 	    	</when> -->
+<!-- 	    	<when test="convStatus == 1"> -->
+<!-- 		      YYYYMMDD BETWEEN DATE_FORMAT(DATE_ADD(now(), INTERVAL -${directHour} HOUR),'%Y%m%d') AND DATE_FORMAT(now(),'%Y%m%d') -->
+<!-- 		      AND DATE_ADD(now(), INTERVAL -${directHour} HOUR) <![CDATA[<]]> REG_DTTM -->
+<!-- 	    	</when> -->
+<!-- 	    	<when test="convStatus == 2"> -->
+<!-- 		      YYYYMMDD BETWEEN DATE_FORMAT(DATE_ADD(now(), INTERVAL -${indirectHour} HOUR),'%Y%m%d') AND DATE_FORMAT(now(),'%Y%m%d') -->
+<!-- 		      AND DATE_ADD(now(), INTERVAL -${indirectHour} HOUR) <![CDATA[<]]> REG_DTTM -->
+<!-- 	    	</when> -->
+<!-- 	    </choose> -->
+<!-- 		    AND SVC_TP_CODE = #{serviceCode} -->
+<!-- 		    AND CHRG_TP_CODE = #{chargeCode} -->
+<!-- 		    AND MEDIA_SCRIPT_NO = #{scriptNo} -->
+<!-- 		    AND ADVER_ID = #{userId} -->
+<!-- 		    AND USER_IDFY_VAL = #{clientId} -->
+<!-- 		ORDER BY REG_DTTM DESC -->
+<!-- 	</select> -->
+	<select id="selConvLog_billing" parameterType="conversionInfoFilter" resultType="conversionInfo">
+	    /* convDataMapper : selConvLog */
+	    SELECT
+	         YYYYMMDD as yyyymmdd
+	       , SVC_TP_CODE as serviceCode
+	       , MEDIA_SCRIPT_NO as scriptNo
+	       , ADVER_ID as userId
+	       , pcode
+	       , USER_IDFY_VAL as clientId
+	    FROM MOB_ADVER_CHRG_LOG
+	    WHERE 
+	    <choose>
+	    	<when test="convStatus == 0">
+		      YYYYMMDD BETWEEN DATE_FORMAT(DATE_ADD(now(), INTERVAL -${directHour} HOUR),'%Y%m%d') AND DATE_FORMAT(now(),'%Y%m%d') 
+		      AND DATE_ADD(now(), INTERVAL -${directHour} HOUR) <![CDATA[<]]> REG_DTTM 
+	    	</when>
+	    	<when test="convStatus == 1">
+		      YYYYMMDD BETWEEN DATE_FORMAT(DATE_ADD(now(), INTERVAL -${directHour} HOUR),'%Y%m%d') AND DATE_FORMAT(now(),'%Y%m%d')
+		      AND DATE_ADD(now(), INTERVAL -${directHour} HOUR) <![CDATA[<]]> REG_DTTM
+	    	</when>
+	    	<when test="convStatus == 2">
+		      YYYYMMDD BETWEEN DATE_FORMAT(DATE_ADD(now(), INTERVAL -${indirectHour} HOUR),'%Y%m%d') AND DATE_FORMAT(now(),'%Y%m%d')
+		      AND DATE_ADD(now(), INTERVAL -${indirectHour} HOUR) <![CDATA[<]]> REG_DTTM
+	    	</when>
+	    </choose>
+		    AND SVC_TP_CODE = #{serviceCode}
+		    AND CHRG_TP_CODE = #{chargeCode}
+		    AND MEDIA_SCRIPT_NO = #{scriptNo}
+		    AND ADVER_ID = #{userId}
+		    AND USER_IDFY_VAL = #{clientId}
+		ORDER BY REG_DTTM DESC
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+	<select id="selectActLog" parameterType="java.util.HashMap" resultType="convData">
+		/* 컨버전 V2 : 액션로그 조회 C */
+		SELECT
+			A.ACT_SEQ no
+			, A.SVC_TP_CODE
+			, CASE WHEN TIMESTAMPDIFF(HOUR, A.REG_DTTM, NOW()) <![CDATA[<=]]> #{cookieDirect} THEN 24 ELSE 0 END inHour
+			, TIMESTAMPDIFF(MINUTE, A.REG_DTTM, NOW()) pastClickMinute
+			, I.INTG_TP_CODE
+			, I.INTG_SEQ
+			, TIMESTAMPDIFF(SECOND, A.REG_DTTM, #{sendDate}) diffClickTime
+		FROM (SELECT A.ACT_SEQ
+		           , A.SVC_TP_CODE
+		           , A.REG_DTTM
+				  FROM MOB_ACT_LOG A
+				 WHERE A.USER_IDFY_VAL = #{keyIp}
+   			   AND A.ADVER_ID = #{advertiserId}
+ 			      AND A.SITE_CODE = #{siteCode}
+			      AND A.MEDIA_ID = #{scriptUserId}
+			      AND A.MEDIA_SCRIPT_NO = #{scriptNo}
+			      AND A.YYYYMMDD <![CDATA[ >= ]]> #{yyyymmdd}
+			      AND A.YYYYMMDD <![CDATA[ <= ]]> #{origin_yyyymmdd}
+			      AND A.SVC_TP_CODE = #{svcTpCode}
+			      AND A.ADVRTS_TP_CODE = #{advrtsTpCode}
+			    ORDER BY A.ACT_SEQ DESC
+			    LIMIT 1
+			  ) A
+			, MOB_ACT_INTG_LOG I
+		WHERE A.ACT_SEQ = I.ACT_SEQ  
+	</select>
+	
+	<select id="selectCnvrsLog" parameterType="convData" resultType="convData">
+		/* 컨버전 V2 : 확인 */
+		SELECT 
+			ORDER_NO ordCode
+		FROM
+			MOB_CNVRS_LOG
+		WHERE 
+			ADVER_ID = #{advertiserId}
+			AND ORDER_NO = #{ordCode}
+		LIMIT 1
+	</select>
+	
+	<insert id="insertCnvrsLog" parameterType="convData">
+		/* STEP1 : MOB_CNVRS_LOG */
+		INSERT INTO MOB_CNVRS_LOG(
+			STATS_DTTM, ADVER_ID, ORDER_NO, ACT_SEQ, CLICK_TP, PRDT_NM
+			, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN
+			, CNVRS_TP_CODE
+			, ORDER_AMT, ORDER_CNT, ORDER_QY
+			, PLTFOM_TP_CODE, MEDIA_SCRIPT_NO, SITE_CODE, MEDIA_ID
+			, INTG_LOG_CNT, ADVRTS_TP_CODE, ADVRTS_PRDT_CODE, LAST_CLICK_DTTM, INFW_PATH
+			, REG_USER_ID, REG_DTTM
+			)
+		VALUES(
+			${yyyymmdd}, #{advertiserId}, #{ordCode}, #{no}, 'C', #{pnm}
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{mobonYn}
+			, #{cnvrsTpCode}
+			, #{price}, 1, #{ordQty}
+			, #{pltfomTpCode}, #{scriptNo}, #{siteCode}, #{scriptUserId}
+			, #{intgLogCnt}, #{adGubunCode}, #{productCode}, CAST(DATE_FORMAT(#{clickRegDate},'%Y%m%d%H%i%s') AS INT), #{inflowRoute}
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, #{sendDate});
+	</insert>
+	<insert id="insertCnvrsIntgStats" parameterType="convData">
+		/* STEP2 : MOB_CNVRS_INTG_LOG */
+		INSERT INTO MOB_CNVRS_INTG_LOG(
+			STATS_DTTM, ADVER_ID, ORDER_NO, INTG_TP_CODE, INTG_SEQ
+			, REG_USER_ID, REG_DTTM
+			)
+		VALUES(#{yyyymmdd}, #{advertiserId}, #{ordCode}, #{intgTpCode}, #{intgSeq}
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, NOW())
+		ON DUPLICATE KEY UPDATE ALT_USER_ID='BATCH', ALT_DTTM = NOW();
+	</insert>
+	<insert id="insertCnvrsIntgDtlStats" parameterType="convData">
+		INSERT INTO MOB_CNVRS_DTL_STATS(
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP
+			, SESION_SELNG_YN, DIRECT_YN
+			, MOB_ORDER_YN
+			, CNVRS_TP_CODE
+			, SITE_CODE, MEDIA_SCRIPT_NO, INTG_TP_CODE, INTG_SEQ
+			, ORDER_AMT, ORDER_CNT, ORDER_QY
+			, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+			, REG_USER_ID, REG_DTTM
+			)
+		VALUES(#{yyyymmdd}, #{platformCode}, #{productCode}, #{adGubunCode}, 'C'
+			, <choose><when test="direct!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, <choose><when test="inHour!=0">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{mobonYn}
+			, #{cnvrsTpCode}
+			, #{siteCode}, #{scriptNo}, #{intgTpCode}, #{intgSeq}
+			, #{price}, 1, #{ordQty}
+			, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+			, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+			, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+			, case when #{regUserId}='' then 'BATCH' else #{regUserId} end, NOW())
+		ON DUPLICATE KEY UPDATE ALT_DTTM = NOW()
+			, ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+			, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+	</insert>
+	
+	
+	
+	
+	
+	
+	<insert id="insertCnvrsIntgTTime" parameterType="convData">
+		<bind name="MTH" value="yyyymmdd.substring(0,6)"/>
+		INSERT INTO TRGT_ADVER_DAY_STATS(
+				STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID
+				, HH_SETUP_TP_CODE, HH_SETUP_TP_VAL
+				, SESS_CNVRS_CNT, DIRECT_CNVRS_CNT, TOT_CNVRS_CNT
+				, SESS_SALES_AMT, DIRECT_SALES_AMT, TOT_SALES_AMT
+				, REG_USER_ID, REG_DTTM
+			)
+			VALUES
+				(${yyyymmdd}, #{platformCode}, #{productCode}, #{adGubunCode}, #{advertiserId}
+				, CASE WHEN #{intgSeq} &lt; 49 THEN '02' ELSE '03' END, #{intgSeq}
+				, <choose><when test="inHour!=0 and direct!=0">1</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">1</when><otherwise>0</otherwise></choose>
+				, 1
+				, <choose><when test="inHour!=0 and direct!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, #{price}
+				, 'BATCH', NOW())
+			ON DUPLICATE KEY UPDATE
+				SESS_CNVRS_CNT=SESS_CNVRS_CNT+VALUES(SESS_CNVRS_CNT), DIRECT_CNVRS_CNT=DIRECT_CNVRS_CNT+VALUES(DIRECT_CNVRS_CNT), TOT_CNVRS_CNT=TOT_CNVRS_CNT+VALUES(TOT_CNVRS_CNT)
+				, SESS_SALES_AMT=SESS_SALES_AMT+VALUES(SESS_SALES_AMT), DIRECT_SALES_AMT=DIRECT_SALES_AMT+VALUES(DIRECT_SALES_AMT), TOT_SALES_AMT=TOT_SALES_AMT+VALUES(TOT_SALES_AMT)
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+			
+		INSERT INTO TRGT_ADVER_MTH_STATS(
+				STATS_MTH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID
+				, HH_SETUP_TP_CODE, HH_SETUP_TP_VAL
+				, SESS_CNVRS_CNT, DIRECT_CNVRS_CNT, TOT_CNVRS_CNT
+				, SESS_SALES_AMT, DIRECT_SALES_AMT, TOT_SALES_AMT
+				, REG_USER_ID, REG_DTTM
+			)
+			VALUES
+				(${MTH}, #{platformCode}, #{productCode}, #{adGubunCode}, #{advertiserId}
+				, CASE WHEN #{intgSeq} &lt; 49 THEN '02' ELSE '03' END, #{intgSeq}
+				, <choose><when test="inHour!=0 and direct!=0">1</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">1</when><otherwise>0</otherwise></choose>
+				, 1
+				, <choose><when test="inHour!=0 and direct!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, #{price}
+				, 'BATCH', NOW())
+			ON DUPLICATE KEY UPDATE
+				SESS_CNVRS_CNT=SESS_CNVRS_CNT+VALUES(SESS_CNVRS_CNT), DIRECT_CNVRS_CNT=DIRECT_CNVRS_CNT+VALUES(DIRECT_CNVRS_CNT), TOT_CNVRS_CNT=TOT_CNVRS_CNT+VALUES(TOT_CNVRS_CNT)
+				, SESS_SALES_AMT=SESS_SALES_AMT+VALUES(SESS_SALES_AMT), DIRECT_SALES_AMT=DIRECT_SALES_AMT+VALUES(DIRECT_SALES_AMT), TOT_SALES_AMT=TOT_SALES_AMT+VALUES(TOT_SALES_AMT)
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+			
+			
+		INSERT INTO TRGT_PAR_DAY_STATS(
+				STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO
+				, HH_SETUP_TP_CODE, HH_SETUP_TP_VAL
+				, SESS_CNVRS_CNT, DIRECT_CNVRS_CNT, TOT_CNVRS_CNT
+				, SESS_SALES_AMT, DIRECT_SALES_AMT, TOT_SALES_AMT
+				, REG_USER_ID, REG_DTTM
+			)
+			VALUES
+				(${yyyymmdd}, #{platformCode}, #{productCode}, #{adGubunCode}, #{scriptNo}
+				, CASE WHEN #{intgSeq} &lt; 49 THEN '02' ELSE '03' END, #{intgSeq}
+				, <choose><when test="inHour!=0 and direct!=0">1</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">1</when><otherwise>0</otherwise></choose>
+				, 1
+				, <choose><when test="inHour!=0 and direct!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, #{price}
+				, 'BATCH', NOW())
+			ON DUPLICATE KEY UPDATE
+				SESS_CNVRS_CNT=SESS_CNVRS_CNT+VALUES(SESS_CNVRS_CNT), DIRECT_CNVRS_CNT=DIRECT_CNVRS_CNT+VALUES(DIRECT_CNVRS_CNT), TOT_CNVRS_CNT=TOT_CNVRS_CNT+VALUES(TOT_CNVRS_CNT)
+				, SESS_SALES_AMT=SESS_SALES_AMT+VALUES(SESS_SALES_AMT), DIRECT_SALES_AMT=DIRECT_SALES_AMT+VALUES(DIRECT_SALES_AMT), TOT_SALES_AMT=TOT_SALES_AMT+VALUES(TOT_SALES_AMT)
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+			
+		INSERT INTO TRGT_PAR_MTH_STATS(
+				STATS_MTH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO
+				, HH_SETUP_TP_CODE, HH_SETUP_TP_VAL
+				, SESS_CNVRS_CNT, DIRECT_CNVRS_CNT, TOT_CNVRS_CNT
+				, SESS_SALES_AMT, DIRECT_SALES_AMT, TOT_SALES_AMT
+				, REG_USER_ID, REG_DTTM
+			)
+			VALUES
+				(${MTH}, #{platformCode}, #{productCode}, #{adGubunCode}, #{scriptNo}
+				, CASE WHEN #{intgSeq} &lt; 49 THEN '02' ELSE '03' END, #{intgSeq}
+				, <choose><when test="inHour!=0 and direct!=0">1</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">1</when><otherwise>0</otherwise></choose>
+				, 1
+				, <choose><when test="inHour!=0 and direct!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, <choose><when test="inHour!=0">#{price}</when><otherwise>0</otherwise></choose>
+				, #{price}
+				, 'BATCH', NOW())
+			ON DUPLICATE KEY UPDATE
+				SESS_CNVRS_CNT=SESS_CNVRS_CNT+VALUES(SESS_CNVRS_CNT), DIRECT_CNVRS_CNT=DIRECT_CNVRS_CNT+VALUES(DIRECT_CNVRS_CNT), TOT_CNVRS_CNT=TOT_CNVRS_CNT+VALUES(TOT_CNVRS_CNT)
+				, SESS_SALES_AMT=SESS_SALES_AMT+VALUES(SESS_SALES_AMT), DIRECT_SALES_AMT=DIRECT_SALES_AMT+VALUES(DIRECT_SALES_AMT), TOT_SALES_AMT=TOT_SALES_AMT+VALUES(TOT_SALES_AMT)
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</insert>
+	
+	
+	
+	
+	<insert id="insertCnvrsIntgStatsSub" parameterType="convData">
+		/* insertCnvrsIntgStatsSub */
+		INSERT INTO BILLING.MOB_CNVRS_ADVER_MEDIA_STATS
+		            (STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		            , MEDIA_SCRIPT_NO, SITE_CODE, MEDIA_ID, ADVER_ID
+		            
+		            , ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+		            , REG_USER_ID, REG_DTTM
+		            , ALT_USER_ID, ALT_DTTM
+		            )
+		SELECT * FROM (
+			SELECT
+				STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+				, MEDIA_SCRIPT_NO, s.SITE_CODE, m.userid MEDIA_ID, IFNULL(u.userid,'') ADVER_ID
+			
+				, SUM(ORDER_AMT )  AS ORDER_AMT, SUM(ORDER_CNT )  AS ORDER_CNT
+				, CASE WHEN SUM(ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(ORDER_QY ) END   AS ORDER_QY
+				, SUM(TRGT_ORDER_AMT) AS TRGT_ORDER_AMT, SUM(TRGT_ORDER_CNT) AS TRGT_ORDER_CNT
+				, CASE WHEN SUM(TRGT_ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(TRGT_ORDER_QY ) END AS TRGT_ORDER_QY
+				, REG_USER_ID, REG_DTTM, 'BATCH' AS ALT_USER_ID, NOW() AS ALT_DTTM
+			FROM BILLING.MOB_CNVRS_DTL_STATS s LEFT JOIN dreamsearch.media_script m 
+				ON s.MEDIA_SCRIPT_NO=m.NO LEFT JOIN ( SELECT TRIM(userid)userid, site_code FROM dreamsearch.adsite UNION SELECT TRIM(userid)userid, site_code FROM dreamsearch.iadsite WHERE userid NOT IN ('werping') ) u
+				ON CONVERT(s.SITE_CODE USING euckr) =u.SITE_CODE
+			WHERE STATS_DTTM = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL - 1 HOUR),'%Y%m%d')
+				GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+				, MEDIA_SCRIPT_NO, s.SITE_CODE
+		      ) S
+		ON DUPLICATE KEY UPDATE
+			MOB_CNVRS_ADVER_MEDIA_STATS.ORDER_AMT = S.ORDER_AMT
+			, MOB_CNVRS_ADVER_MEDIA_STATS.ORDER_CNT = S.ORDER_CNT
+			, MOB_CNVRS_ADVER_MEDIA_STATS.ORDER_QY = S.ORDER_QY
+			, MOB_CNVRS_ADVER_MEDIA_STATS.TRGT_ORDER_AMT = S.TRGT_ORDER_AMT
+			, MOB_CNVRS_ADVER_MEDIA_STATS.TRGT_ORDER_CNT = S.TRGT_ORDER_CNT
+			, MOB_CNVRS_ADVER_MEDIA_STATS.TRGT_ORDER_QY = S.TRGT_ORDER_QY
+			, MOB_CNVRS_ADVER_MEDIA_STATS.ALT_USER_ID = 'BATCH'
+			, MOB_CNVRS_ADVER_MEDIA_STATS.ALT_DTTM = NOW();
+			
+			
+
+		INSERT INTO BILLING.MOB_CNVRS_MEDIA_STATS
+		            (STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		            , MEDIA_SCRIPT_NO, MEDIA_ID
+		            
+		            , ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+		            , REG_USER_ID, REG_DTTM
+		            , ALT_USER_ID, ALT_DTTM
+		            )
+		SELECT * FROM (
+			SELECT
+		        STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE, MEDIA_SCRIPT_NO
+		        , m.userid MEDIA_ID
+		
+			, SUM(ORDER_AMT )  AS ORDER_AMT, SUM(ORDER_CNT )  AS ORDER_CNT
+			, CASE WHEN SUM(ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(ORDER_QY ) END   AS ORDER_QY
+			, SUM(TRGT_ORDER_AMT) AS TRGT_ORDER_AMT, SUM(TRGT_ORDER_CNT) AS TRGT_ORDER_CNT
+			, CASE WHEN SUM(TRGT_ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(TRGT_ORDER_QY ) END AS TRGT_ORDER_QY
+			, REG_USER_ID, REG_DTTM, 'BATCH' AS ALT_USER_ID, NOW() AS ALT_DTTM
+		      FROM BILLING.MOB_CNVRS_DTL_STATS s LEFT JOIN dreamsearch.media_script m ON s.MEDIA_SCRIPT_NO=m.NO
+		      WHERE STATS_DTTM = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL - 1 HOUR),'%Y%m%d')
+		      GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE, MEDIA_SCRIPT_NO
+		      ) S
+		ON DUPLICATE KEY UPDATE MOB_CNVRS_MEDIA_STATS.ORDER_AMT = S.ORDER_AMT
+			, MOB_CNVRS_MEDIA_STATS.ORDER_CNT = S.ORDER_CNT
+			, MOB_CNVRS_MEDIA_STATS.ORDER_QY = S.ORDER_QY
+			, MOB_CNVRS_MEDIA_STATS.TRGT_ORDER_AMT = S.TRGT_ORDER_AMT
+			, MOB_CNVRS_MEDIA_STATS.TRGT_ORDER_CNT = S.TRGT_ORDER_CNT
+			, MOB_CNVRS_MEDIA_STATS.TRGT_ORDER_QY = S.TRGT_ORDER_QY
+			, MOB_CNVRS_MEDIA_STATS.ALT_USER_ID = 'BATCH'
+			, MOB_CNVRS_MEDIA_STATS.ALT_DTTM = NOW();
+			
+			
+			
+		INSERT INTO BILLING.MOB_CNVRS_ADVER_STATS
+		            (STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		            , SITE_CODE, ADVER_ID
+		            
+		            , ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+		            , REG_USER_ID, REG_DTTM
+		            , ALT_USER_ID, ALT_DTTM
+		            )
+		SELECT * FROM (
+			SELECT
+		        STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+			, s.SITE_CODE, IFNULL(u.userid,'') ADVER_ID
+		
+			, SUM(ORDER_AMT )  AS ORDER_AMT, SUM(ORDER_CNT )  AS ORDER_CNT
+			, CASE WHEN SUM(ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(ORDER_QY ) END   AS ORDER_QY
+			, SUM(TRGT_ORDER_AMT) AS TRGT_ORDER_AMT, SUM(TRGT_ORDER_CNT) AS TRGT_ORDER_CNT
+			, CASE WHEN SUM(TRGT_ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(TRGT_ORDER_QY ) END AS TRGT_ORDER_QY
+			, REG_USER_ID, REG_DTTM, 'BATCH' AS ALT_USER_ID, NOW() AS ALT_DTTM
+		      FROM BILLING.MOB_CNVRS_DTL_STATS s LEFT JOIN ( SELECT TRIM(userid)userid, site_code FROM dreamsearch.adsite UNION SELECT TRIM(userid)userid, site_code FROM dreamsearch.iadsite WHERE userid NOT IN ('werping') ) u
+				ON CONVERT(s.SITE_CODE USING euckr) =u.SITE_CODE
+		      WHERE STATS_DTTM = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL - 1 HOUR),'%Y%m%d')
+		      GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+			, s.SITE_CODE
+		      ) S
+		ON DUPLICATE KEY UPDATE MOB_CNVRS_ADVER_STATS.ORDER_AMT = S.ORDER_AMT
+			, MOB_CNVRS_ADVER_STATS.ORDER_CNT = S.ORDER_CNT
+			, MOB_CNVRS_ADVER_STATS.ORDER_QY = S.ORDER_QY
+			, MOB_CNVRS_ADVER_STATS.TRGT_ORDER_AMT = S.TRGT_ORDER_AMT
+			, MOB_CNVRS_ADVER_STATS.TRGT_ORDER_CNT = S.TRGT_ORDER_CNT
+			, MOB_CNVRS_ADVER_STATS.TRGT_ORDER_QY = S.TRGT_ORDER_QY
+			, MOB_CNVRS_ADVER_STATS.ALT_USER_ID = 'BATCH'
+			, MOB_CNVRS_ADVER_STATS.ALT_DTTM = NOW();
+
+
+		INSERT INTO BILLING.MOB_CNVRS_COM_STATS
+		            (STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		            
+		            , ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+		            , REG_USER_ID, REG_DTTM
+		            , ALT_USER_ID, ALT_DTTM
+		            )
+		SELECT * FROM (
+			SELECT
+		        STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		
+			, SUM(ORDER_AMT )  AS ORDER_AMT, SUM(ORDER_CNT )  AS ORDER_CNT
+			, CASE WHEN SUM(ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(ORDER_QY ) END   AS ORDER_QY
+			, SUM(TRGT_ORDER_AMT) AS TRGT_ORDER_AMT, SUM(TRGT_ORDER_CNT) AS TRGT_ORDER_CNT
+			, CASE WHEN SUM(TRGT_ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(TRGT_ORDER_QY ) END AS TRGT_ORDER_QY
+			, REG_USER_ID, REG_DTTM, 'BATCH' AS ALT_USER_ID, NOW() AS ALT_DTTM
+		      FROM BILLING.MOB_CNVRS_DTL_STATS s
+		      WHERE STATS_DTTM = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL - 1 HOUR),'%Y%m%d')
+		      GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		
+		      ) S
+		ON DUPLICATE KEY UPDATE MOB_CNVRS_COM_STATS.ORDER_AMT = S.ORDER_AMT
+			, MOB_CNVRS_COM_STATS.ORDER_CNT = S.ORDER_CNT
+			, MOB_CNVRS_COM_STATS.ORDER_QY = S.ORDER_QY
+			, MOB_CNVRS_COM_STATS.TRGT_ORDER_AMT = S.TRGT_ORDER_AMT
+			, MOB_CNVRS_COM_STATS.TRGT_ORDER_CNT = S.TRGT_ORDER_CNT
+			, MOB_CNVRS_COM_STATS.TRGT_ORDER_QY = S.TRGT_ORDER_QY
+			, MOB_CNVRS_COM_STATS.ALT_USER_ID = 'BATCH'
+			, MOB_CNVRS_COM_STATS.ALT_DTTM = NOW();
+			
+			
+
+		INSERT INTO BILLING.MOB_CNVRS_INTG_STATS
+		            (STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+		            , INTG_TP_CODE, INTG_SEQ
+		            
+		            , ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY
+		            , REG_USER_ID, REG_DTTM
+		            , ALT_USER_ID, ALT_DTTM
+		            )
+		SELECT * FROM (
+			SELECT
+		        STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+			, INTG_TP_CODE, INTG_SEQ
+		
+			, SUM(ORDER_AMT )  AS ORDER_AMT, SUM(ORDER_CNT )  AS ORDER_CNT
+			, CASE WHEN SUM(ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(ORDER_QY ) END   AS ORDER_QY
+			, SUM(TRGT_ORDER_AMT) AS TRGT_ORDER_AMT, SUM(TRGT_ORDER_CNT) AS TRGT_ORDER_CNT
+			, CASE WHEN SUM(TRGT_ORDER_QY )>2000000000 THEN 2000000000 ELSE SUM(TRGT_ORDER_QY ) END AS TRGT_ORDER_QY
+			, REG_USER_ID, REG_DTTM, 'BATCH' AS ALT_USER_ID, NOW() AS ALT_DTTM
+		      FROM BILLING.MOB_CNVRS_DTL_STATS s LEFT JOIN dreamsearch.media_script m 
+		      ON s.MEDIA_SCRIPT_NO=m.NO
+		      WHERE STATS_DTTM = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL - 1 HOUR),'%Y%m%d')
+		      GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CLICK_TP, SESION_SELNG_YN, DIRECT_YN, MOB_ORDER_YN, CNVRS_TP_CODE
+			, INTG_TP_CODE, INTG_SEQ
+		      ) S
+		ON DUPLICATE KEY UPDATE MOB_CNVRS_INTG_STATS.ORDER_AMT = S.ORDER_AMT
+			, MOB_CNVRS_INTG_STATS.ORDER_CNT = S.ORDER_CNT
+			, MOB_CNVRS_INTG_STATS.ORDER_QY = S.ORDER_QY
+			, MOB_CNVRS_INTG_STATS.TRGT_ORDER_AMT = S.TRGT_ORDER_AMT
+			, MOB_CNVRS_INTG_STATS.TRGT_ORDER_CNT = S.TRGT_ORDER_CNT
+			, MOB_CNVRS_INTG_STATS.TRGT_ORDER_QY = S.TRGT_ORDER_QY
+			, MOB_CNVRS_INTG_STATS.ALT_USER_ID = 'BATCH'
+			, MOB_CNVRS_INTG_STATS.ALT_DTTM = NOW();
+	</insert>
+	
+	
+	
+	<insert id="insertMobCnvrsRenewNcl" parameterType="convData">
+		INSERT INTO MOB_CNVRS_RENEW_NCL (
+			STATS_DTTM,
+			STATS_HH,
+			IP,
+			AU_ID,
+			ADVER_ID, 
+			ORDER_NO, 
+			PLTFOM_TP_CODE, 
+			ADVRTS_PRDT_CODE, 
+			ADVRTS_TP_CODE, 
+			TRK_TP_CODE, 
+			ITL_TP_CODE, 
+			SITE_CODE, 
+			PAR_NO,
+			MEDIA_ID, 
+			CLICK_PCODE, 
+			SESION_SELNG_YN, 
+			SESION_SELNG2_YN, 
+			DIRECT_YN, 
+			CNVRS_TP_CODE, 
+			MOB_ORDER_YN, 
+			INFLOW_ROUTE, 
+			PNM, 
+			CLICK_DTTM, 
+			ORDER_AMT, 
+			ORDER_CNT, 
+			ORDER_QY,
+			TRGT_ORDER_AMT,
+			TRGT_ORDER_CNT,
+			TRGT_ORDER_QY, 
+			REG_USER_ID, 
+			REG_DTTM, 
+			STATS_ALT_DT, 
+			MEDIA_TP_CODE,
+			RGN_IP
+		) VALUES (
+		${yyyymmdd},
+		DATE_FORMAT(#{sendDate},'%H'),
+		#{keyIp}, 
+		#{au_id}, 
+		#{advertiserId},
+		#{ordCode}, 
+		#{platformCode}, 
+		#{productCode}, 
+		#{adGubunCode}, 
+		#{trkTpCode},
+		(SELECT CASE 
+				WHEN userid IN('kakao', 'mkakao') THEN '03' 
+				WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04' 
+				WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08' 
+				WHEN userid IN('rtbmobon') THEN '10'
+			ELSE '01' END ITL_TP_CODE
+			FROM dreamsearch.media_script WHERE NO=#{scriptNo} ) , 		 
+		#{siteCode}, 
+		#{scriptNo},
+		#{scriptUserId}, 
+		#{pCode},
+		<choose>
+			<when test="direct!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		, 
+		#{browserDirect}
+		,<choose>
+			<when test="inHour!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		, #{cnvrsTpCode}
+		, #{mobonYn}
+		, #{inflowRoute}
+		, #{pnm}
+		, CAST(DATE_FORMAT(#{clickRegDate},'%Y%m%d%H%i%s') AS INT)
+		, #{price}
+		, 1
+		, #{ordQty}
+		, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		, case when #{regUserId}='' then 'BATCH' else #{regUserId} end
+		, #{sendDate}
+		, (SELECT DATE_FORMAT(NOW(),'%Y%m%d%H%i')) 
+		, (SELECT IFNULL(MAX(C.MEDIA_CODE),'01') AS MEDIA_TP_CODE FROM 
+			(SELECT CASE WHEN LENGTH(IFNULL(b.scate,''))=0 THEN ''
+				     WHEN LENGTH(IFNULL(b.scate,''))=1 THEN CONCAT('0',b.scate)
+				       ELSE b.scate END AS MEDIA_CODE
+						FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b 
+						ON a.mediasite_no=b.no WHERE a.no=#{scriptNo}) C
+		 )
+		, #{realIp}
+	)
+	ON DUPLICATE KEY UPDATE 
+		ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+		, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+		
+		
+		
+		INSERT INTO MOB_CNVRS_RENEW_HH_STATS (
+			STATS_DTTM,
+			STATS_HH,			
+			PLTFOM_TP_CODE, 
+			ADVRTS_PRDT_CODE, 
+			ADVRTS_TP_CODE, 
+			SITE_CODE, 
+			ADVER_ID, 
+			PAR_NO,
+			MEDIA_ID,
+			MEDIA_TP_CODE, 
+			TRK_TP_CODE, 
+			ITL_TP_CODE, 
+			SESION_SELNG_YN, 
+			SESION_SELNG2_YN, 
+			DIRECT_YN, 
+			CNVRS_TP_CODE, 
+			MOB_ORDER_YN, 
+			ORDER_AMT, 
+			ORDER_CNT, 
+			ORDER_QY,
+			TRGT_ORDER_AMT,
+			TRGT_ORDER_CNT,
+			TRGT_ORDER_QY,
+			REG_USER_ID, 
+			REG_DTTM
+		) VALUES (
+		${yyyymmdd}
+		, DATE_FORMAT(#{sendDate},'%H')
+		, #{platformCode}
+		, #{productCode}
+		, #{adGubunCode}
+		, #{siteCode}
+		, #{advertiserId}
+		, #{scriptNo}
+		, #{scriptUserId}
+		, (SELECT IFNULL(MAX(C.MEDIA_CODE),'01') AS MEDIA_TP_CODE FROM 
+			(SELECT CASE WHEN LENGTH(IFNULL(b.scate,''))=0 THEN ''
+				     WHEN LENGTH(IFNULL(b.scate,''))=1 THEN CONCAT('0',b.scate)
+				       ELSE b.scate END AS MEDIA_CODE
+						FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b 
+						ON a.mediasite_no=b.no WHERE a.no=#{scriptNo}) C
+		 )
+		, #{trkTpCode}
+		, (SELECT CASE 
+				WHEN userid IN('kakao', 'mkakao') THEN '03' 
+				WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04' 
+				WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08' 
+				WHEN userid IN('rtbmobon') THEN '10'
+			ELSE '01' END ITL_TP_CODE
+			FROM dreamsearch.media_script WHERE NO=#{scriptNo} )
+		, <choose>
+			<when test="direct!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		,
+		#{browserDirect}
+		, <choose>
+			<when test="inHour!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		, #{cnvrsTpCode}
+		, #{mobonYn}
+		, #{price}
+		, 1
+		, #{ordQty}
+		, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		, case when #{regUserId}='' then 'BATCH' else #{regUserId} end
+		, #{sendDate}
+	)
+	ON DUPLICATE KEY UPDATE 
+		ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+		, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+	</insert>
+
+	<update id="INSERT_MOB_CNVRS_RENEW_MTH_STATS" parameterType="Map">
+		INSERT INTO BILLING.MOB_CNVRS_RENEW_MTH_STATS (
+		STATS_MTH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, PAR_NO
+		, MEDIA_TP_CODE, TRK_TP_CODE, ITL_TP_CODE, SESION_SELNG_YN, SESION_SELNG2_YN, DIRECT_YN, CNVRS_TP_CODE, MOB_ORDER_YN
+		, ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY, REG_USER_ID
+		)
+		SELECT STATS_MTH , PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, PAR_NO
+		, MEDIA_TP_CODE, TRK_TP_CODE, ITL_TP_CODE, SESION_SELNG_YN, SESION_SELNG2_YN, DIRECT_YN, CNVRS_TP_CODE, MOB_ORDER_YN
+		, ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY, REG_USER_ID
+		FROM (
+		SELECT
+		LEFT(STATS_DTTM,6) AS STATS_MTH , PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, S.SITE_CODE, PAR_NO
+		, MEDIA_TP_CODE, TRK_TP_CODE, ITL_TP_CODE, SESION_SELNG_YN, SESION_SELNG2_YN, DIRECT_YN, CNVRS_TP_CODE, MOB_ORDER_YN
+		, SUM(ORDER_AMT     ) AS ORDER_AMT
+		, SUM(ORDER_CNT     ) AS ORDER_CNT
+		, IF(SUM(ORDER_QY) > 2000000000 , 2000000000 , SUM(ORDER_QY))  AS ORDER_QY
+		, SUM(TRGT_ORDER_AMT) AS TRGT_ORDER_AMT
+		, SUM(TRGT_ORDER_CNT) AS TRGT_ORDER_CNT
+		, IF(SUM(TRGT_ORDER_QY) > 2000000000 , 2000000000 , SUM(TRGT_ORDER_QY)) AS TRGT_ORDER_QY
+		, REG_USER_ID
+		FROM BILLING.MOB_CNVRS_RENEW_STATS S
+		WHERE STATS_DTTM = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1 DAY),'%Y%m%d')
+		GROUP BY
+		LEFT(STATS_DTTM,6), PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, PAR_NO
+		, TRK_TP_CODE, ITL_TP_CODE, SESION_SELNG_YN, SESION_SELNG2_YN, DIRECT_YN, CNVRS_TP_CODE, MOB_ORDER_YN
+		) RESULT
+		ON  DUPLICATE KEY UPDATE
+		MOB_CNVRS_RENEW_MTH_STATS.ORDER_AMT = MOB_CNVRS_RENEW_MTH_STATS.ORDER_AMT + RESULT.ORDER_AMT
+		, MOB_CNVRS_RENEW_MTH_STATS.ORDER_CNT = MOB_CNVRS_RENEW_MTH_STATS.ORDER_CNT + RESULT.ORDER_CNT
+		, MOB_CNVRS_RENEW_MTH_STATS.ORDER_QY  = MOB_CNVRS_RENEW_MTH_STATS.ORDER_QY + RESULT.ORDER_QY
+		, MOB_CNVRS_RENEW_MTH_STATS.TRGT_ORDER_AMT = MOB_CNVRS_RENEW_MTH_STATS.TRGT_ORDER_AMT + RESULT.TRGT_ORDER_AMT
+		, MOB_CNVRS_RENEW_MTH_STATS.TRGT_ORDER_CNT = MOB_CNVRS_RENEW_MTH_STATS.TRGT_ORDER_CNT + RESULT.TRGT_ORDER_CNT
+		, MOB_CNVRS_RENEW_MTH_STATS.TRGT_ORDER_QY = MOB_CNVRS_RENEW_MTH_STATS.TRGT_ORDER_QY + RESULT.TRGT_ORDER_QY
+		;
+	</update>
+
+	<insert id="insertConvUnexposureData" parameterType="convData">
+		/* 미노출 컨버전 : 저장 */
+		INSERT INTO MOB_UNEXPOSURE_CNVRS_RENEW_NCL (
+		STATS_DTTM,
+		IP,
+		AU_ID,
+		ADVER_ID,
+		ORDER_NO,
+		PLTFOM_TP_CODE,
+		ADVRTS_PRDT_CODE,
+		ADVRTS_TP_CODE,
+		TRK_TP_CODE,
+		ITL_TP_CODE,
+		SITE_CODE,
+		PAR_NO,
+		MEDIA_ID,
+		CLICK_PCODE,
+		SESION_SELNG_YN,
+		SESION_SELNG2_YN,
+		DIRECT_YN,
+		CNVRS_TP_CODE,
+		MOB_ORDER_YN,
+		INFLOW_ROUTE,
+		PNM,
+		CLICK_DTTM,
+		ORDER_AMT,
+		ORDER_CNT,
+		ORDER_QY,
+		TRGT_ORDER_AMT,
+		TRGT_ORDER_CNT,
+		TRGT_ORDER_QY,
+		REG_USER_ID,
+		REG_DTTM,
+		STATS_ALT_DT,
+		MEDIA_TP_CODE,
+		RGN_IP
+		) VALUES (
+		${yyyymmdd},
+		#{keyIp},
+		#{au_id},
+		#{advertiserId},
+		#{ordCode},
+		#{platformCode},
+		#{productCode},
+		#{adGubunCode},
+		#{trkTpCode},
+		(SELECT CASE
+		WHEN userid IN('kakao', 'mkakao') THEN '03'
+		WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04'
+		WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08'
+		WHEN userid IN('rtbmobon') THEN '10'
+		ELSE '01' END ITL_TP_CODE
+		FROM dreamsearch.media_script WHERE NO=#{scriptNo} ) ,
+		#{siteCode},
+		#{scriptNo},
+		#{scriptUserId},
+		#{pCode},
+		<choose>
+			<when test="direct!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		, 
+		#{browserDirect}
+		,<choose>
+		<when test="inHour!=0">'Y'</when>
+		<otherwise>'N'</otherwise>
+	</choose>
+		, #{cnvrsTpCode}
+		, #{mobonYn}
+		, #{inflowRoute}
+		, #{pnm}
+		, CAST(DATE_FORMAT(#{clickRegDate},'%Y%m%d%H%i%s') AS INT)
+		, #{price}
+		, 1
+		, #{ordQty}
+		, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		, case when #{regUserId}='' then 'BATCH' else #{regUserId} end
+		, #{sendDate}
+		, (SELECT DATE_FORMAT(NOW(),'%Y%m%d%H%i'))
+		, (SELECT IFNULL(MAX(C.MEDIA_CODE),'01') AS MEDIA_TP_CODE FROM
+		(SELECT CASE WHEN LENGTH(IFNULL(b.scate,''))=0 THEN ''
+		WHEN LENGTH(IFNULL(b.scate,''))=1 THEN CONCAT('0',b.scate)
+		ELSE b.scate END AS MEDIA_CODE
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b
+		ON a.mediasite_no=b.no WHERE a.no=#{scriptNo}) C
+		)
+		, #{realIp}
+		)
+		ON DUPLICATE KEY UPDATE
+		ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+		, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+
+		;
+
+	</insert>
+
+	<insert id="insertConvADBlockData" parameterType="convData">
+		/* ADBLOCK 컨버전 : 저장 */
+		INSERT INTO MOB_ADBLOCK_CNVRS_RENEW_NCL (
+		STATS_DTTM,
+		IP,
+		AU_ID,
+		ADVER_ID,
+		ORDER_NO,
+		PLTFOM_TP_CODE,
+		ADVRTS_PRDT_CODE,
+		ADVRTS_TP_CODE,
+		TRK_TP_CODE,
+		ITL_TP_CODE,
+		SITE_CODE,
+		PAR_NO,
+		MEDIA_ID,
+		CLICK_PCODE,
+		SESION_SELNG_YN,
+		SESION_SELNG2_YN,
+		DIRECT_YN,
+		CNVRS_TP_CODE,
+		MOB_ORDER_YN,
+		INFLOW_ROUTE,
+		PNM,
+		CLICK_DTTM,
+		ORDER_AMT,
+		ORDER_CNT,
+		ORDER_QY,
+		TRGT_ORDER_AMT,
+		TRGT_ORDER_CNT,
+		TRGT_ORDER_QY,
+		REG_USER_ID,
+		REG_DTTM,
+		STATS_ALT_DT,
+		MEDIA_TP_CODE,
+		RGN_IP
+		) VALUES (
+		${yyyymmdd},
+		#{keyIp},
+		#{au_id},
+		#{advertiserId},
+		#{ordCode},
+		#{platformCode},
+		#{productCode},
+		#{adGubunCode},
+		#{trkTpCode},
+		(SELECT CASE
+		WHEN userid IN('kakao', 'mkakao') THEN '03'
+		WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04'
+		WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08'
+		WHEN userid IN('rtbmobon') THEN '10'
+		ELSE '01' END ITL_TP_CODE
+		FROM dreamsearch.media_script WHERE NO=#{scriptNo} ) ,
+		#{siteCode},
+		#{scriptNo},
+		#{scriptUserId},
+		#{pCode},
+		<choose>
+			<when test="direct!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		,
+		#{browserDirect}
+		,<choose>
+		<when test="inHour!=0">'Y'</when>
+		<otherwise>'N'</otherwise>
+	</choose>
+		, #{cnvrsTpCode}
+		, #{mobonYn}
+		, #{inflowRoute}
+		, #{pnm}
+		, CAST(DATE_FORMAT(#{clickRegDate},'%Y%m%d%H%i%s') AS INT)
+		, #{price}
+		, 1
+		, #{ordQty}
+		, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		, case when #{regUserId}='' then 'BATCH' else #{regUserId} end
+		, #{sendDate}
+		, (SELECT DATE_FORMAT(NOW(),'%Y%m%d%H%i'))
+		, (SELECT IFNULL(MAX(C.MEDIA_CODE),'01') AS MEDIA_TP_CODE FROM
+		(SELECT CASE WHEN LENGTH(IFNULL(b.scate,''))=0 THEN ''
+		WHEN LENGTH(IFNULL(b.scate,''))=1 THEN CONCAT('0',b.scate)
+		ELSE b.scate END AS MEDIA_CODE
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b
+		ON a.mediasite_no=b.no WHERE a.no=#{scriptNo}) C
+		)
+		, #{realIp}
+		)
+		ON DUPLICATE KEY UPDATE
+		ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+		, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+
+		;
+
+	</insert>
+
+	<insert id="insertConvCrossAuIdData" parameterType="convData">
+		/* CrossAuId 컨버전 : 저장 */
+		INSERT INTO MOB_CROSS_DEVICE_CNVRS_RENEW_NCL (
+		STATS_DTTM,
+		IP,
+		AU_ID,
+		ADVER_ID,
+		ORDER_NO,
+		PLTFOM_TP_CODE,
+		ADVRTS_PRDT_CODE,
+		ADVRTS_TP_CODE,
+		TRK_TP_CODE,
+		ITL_TP_CODE,
+		SITE_CODE,
+		PAR_NO,
+		MEDIA_ID,
+		CLICK_PCODE,
+		SESION_SELNG_YN,
+		SESION_SELNG2_YN,
+		DIRECT_YN,
+		CNVRS_TP_CODE,
+		MOB_ORDER_YN,
+		INFLOW_ROUTE,
+		PNM,
+		CLICK_DTTM,
+		ORDER_AMT,
+		ORDER_CNT,
+		ORDER_QY,
+		TRGT_ORDER_AMT,
+		TRGT_ORDER_CNT,
+		TRGT_ORDER_QY,
+		REG_USER_ID,
+		REG_DTTM,
+		STATS_ALT_DT,
+		MEDIA_TP_CODE,
+		RGN_IP
+		) VALUES (
+		${yyyymmdd},
+		#{keyIp},
+		#{au_id},
+		#{advertiserId},
+		#{ordCode},
+		#{platformCode},
+		#{productCode},
+		#{adGubunCode},
+		#{trkTpCode},
+		(SELECT CASE
+		WHEN userid IN('kakao', 'mkakao') THEN '03'
+		WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04'
+		WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08'
+		WHEN userid IN('rtbmobon') THEN '10'
+		ELSE '01' END ITL_TP_CODE
+		FROM dreamsearch.media_script WHERE NO=#{scriptNo} ) ,
+		#{siteCode},
+		#{scriptNo},
+		#{scriptUserId},
+		#{pCode},
+		<choose>
+			<when test="direct!=0">'Y'</when>
+			<otherwise>'N'</otherwise>
+		</choose>
+		,
+		#{browserDirect}
+		,<choose>
+		<when test="inHour!=0">'Y'</when>
+		<otherwise>'N'</otherwise>
+	</choose>
+		, #{cnvrsTpCode}
+		, #{mobonYn}
+		, #{inflowRoute}
+		, #{pnm}
+		, CAST(DATE_FORMAT(#{clickRegDate},'%Y%m%d%H%i%s') AS INT)
+		, #{price}
+		, 1
+		, #{ordQty}
+		, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+		, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		, case when #{regUserId}='' then 'BATCH' else #{regUserId} end
+		, #{sendDate}
+		, (SELECT DATE_FORMAT(NOW(),'%Y%m%d%H%i'))
+		, (SELECT IFNULL(MAX(C.MEDIA_CODE),'01') AS MEDIA_TP_CODE FROM
+		(SELECT CASE WHEN LENGTH(IFNULL(b.scate,''))=0 THEN ''
+		WHEN LENGTH(IFNULL(b.scate,''))=1 THEN CONCAT('0',b.scate)
+		ELSE b.scate END AS MEDIA_CODE
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b
+		ON a.mediasite_no=b.no WHERE a.no=#{scriptNo}) C
+		)
+		, #{realIp}
+		)
+		ON DUPLICATE KEY UPDATE
+		ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+		, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+
+		;
+
+	</insert>
+
+	<update id="updateTRKDupOrdData" parameterType="convData">
+		UPDATE MOB_CNVRS_RENEW_NCL MCRN
+			 , (SELECT
+		    		NO, STATS_DTTM, STATS_HH
+				  FROM MOB_CNVRS_RENEW_NCL
+				 WHERE ORDER_NO = #{ordCode}
+				   AND ADVER_ID = #{advertiserId}
+				   AND IP = #{keyIp}
+				 ORDER BY NO DESC
+				 LIMIT 1
+			   ) IMCRN
+		   SET MCRN.ORDER_AMT = MCRN.ORDER_AMT + #{price}
+		     , MCRN.ORDER_QY = MCRN.ORDER_QY + #{ordQty}
+		     , MCRN.TRGT_ORDER_AMT = MCRN.TRGT_ORDER_AMT + <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		     , MCRN.TRGT_ORDER_QY = MCRN.TRGT_ORDER_QY + <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		     , MCRN.STATS_ALT_DT = (SELECT DATE_FORMAT(NOW(),'%Y%m%d%H%i'))
+		 WHERE MCRN.NO = IMCRN.NO AND MCRN.STATS_DTTM = IMCRN.STATS_DTTM;
+
+
+		UPDATE MOB_CNVRS_RENEW_HH_STATS MCRHS
+		     , (
+				SELECT STATS_DTTM
+					 , DATE_FORMAT(REG_DTTM,'%H') AS STATS_HH
+					 , PLTFOM_TP_CODE
+					 , ADVRTS_PRDT_CODE
+					 , ADVRTS_TP_CODE
+					 , SITE_CODE
+					 , ADVER_ID
+					 , PAR_NO
+					 , TRK_TP_CODE
+					 , ITL_TP_CODE
+					 , CNVRS_TP_CODE
+					 , SESION_SELNG_YN
+					 , SESION_SELNG2_YN
+					 , DIRECT_YN
+					 , MOB_ORDER_YN
+				  FROM MOB_CNVRS_RENEW_NCL
+				 WHERE ORDER_NO = #{ordCode}
+		           AND ADVER_ID = #{advertiserId}
+				   AND IP = #{keyIp}
+				 ORDER BY NO DESC
+				 LIMIT 1
+				) IMCRN
+			SET MCRHS.ORDER_AMT = MCRHS.ORDER_AMT + #{price}
+			  , MCRHS.ORDER_QY = MCRHS.ORDER_QY + #{ordQty}
+		      , MCRHS.TRGT_ORDER_AMT = MCRHS.TRGT_ORDER_AMT + <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+		      , MCRHS.TRGT_ORDER_QY = MCRHS.TRGT_ORDER_QY + <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+		  WHERE MCRHS.STATS_DTTM = IMCRN.STATS_DTTM
+		    AND MCRHS.STATS_HH = IMCRN.STATS_HH
+			AND MCRHS.PLTFOM_TP_CODE = IMCRN.PLTFOM_TP_CODE
+			AND MCRHS.ADVRTS_PRDT_CODE = IMCRN.ADVRTS_PRDT_CODE
+			AND MCRHS.ADVRTS_TP_CODE = IMCRN.ADVRTS_TP_CODE
+			AND MCRHS.SITE_CODE = IMCRN.SITE_CODE
+			AND MCRHS.ADVER_ID = IMCRN.ADVER_ID
+			AND MCRHS.PAR_NO = IMCRN.PAR_NO
+			AND MCRHS.TRK_TP_CODE = IMCRN.TRK_TP_CODE
+			AND MCRHS.ITL_TP_CODE = IMCRN.ITL_TP_CODE
+			AND MCRHS.CNVRS_TP_CODE = IMCRN.CNVRS_TP_CODE
+			AND MCRHS.SESION_SELNG_YN = IMCRN.SESION_SELNG_YN
+			AND MCRHS.SESION_SELNG2_YN = IMCRN.SESION_SELNG2_YN
+			AND MCRHS.DIRECT_YN = IMCRN.DIRECT_YN
+			AND MCRHS.MOB_ORDER_YN = IMCRN.MOB_ORDER_YN;
+	</update>
+	
+	<select id="selectActionLogList" resultType="hashMap" parameterType="convData" >
+	<![CDATA[
+			SELECT PARTDT , IP ,  SITECODE , MCODE, MEDIA_CODE, MEDIA_ID, ADGUBUN, ADPRODUCT FROM dreamsearch.ACTION_LOG 
+			WHERE IP = #{keyIp}
+			AND MCODE = #{advertiserId}
+			AND PARTDT BETWEEN date_format(DATE_SUB(#{partdt}, interval 30 DAY) , '%Y%m%d') AND  date_format(#{partdt}, '%Y%m%d')
+			AND NO <= #{no}
+			GROUP BY PARTDT , IP,  SITECODE , MCODE, MEDIA_CODE, MEDIA_ID, ADGUBUN, ADPRODUCT
+			;
+	]]>		
+	</select>
+	<select id="selectUnExposureActionLogList" resultType="hashMap" parameterType="convData">
+	<![CDATA[
+			SELECT PARTDT , IP ,  SITECODE , MCODE, MEDIA_CODE, MEDIA_ID, ADGUBUN, ADPRODUCT FROM dreamsearch.UNEXPOSURE_ACTION_LOG 
+			WHERE IP = #{keyIp}
+			AND MCODE = #{advertiserId}
+			AND PARTDT BETWEEN date_format(DATE_SUB(#{partdt}, interval 30 DAY) , '%Y%m%d') AND  date_format(#{partdt}, '%Y%m%d')
+			AND NO <= #{no}
+			GROUP BY PARTDT , IP,  SITECODE , MCODE, MEDIA_CODE, MEDIA_ID, ADGUBUN, ADPRODUCT
+			;
+	]]>	
+	</select>
+
+	<select id="selectCrossIpActionLogList" resultType="hashMap" parameterType="hashMap">
+			SELECT PARTDT , IP ,  SITECODE , MCODE, MEDIA_CODE, MEDIA_ID, ADGUBUN, ADPRODUCT 
+			FROM dreamsearch.ACTION_LOG 
+			WHERE IP IN  
+				<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			AND MCODE = #{advertiserId}
+			AND PARTDT BETWEEN date_format(DATE_SUB(#{partdt}, interval 30 DAY) , '%Y%m%d') AND  date_format(#{partdt}, '%Y%m%d')
+			AND NO <![CDATA[<= 	]]>	#{no}
+			GROUP BY PARTDT , IP ,  SITECODE , MCODE, MEDIA_CODE, MEDIA_ID, ADGUBUN, ADPRODUCT 
+			;
+	</select>
+	
+	<update id="insertContribuetConvData" parameterType="convData">
+	INSERT INTO BILLING.MOB_CNVRS_RENEW_CONTRI_STATS
+	(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, IP, SITE_CODE, PAR_NO, TRK_TP_CODE, ITL_TP_CODE, MEDIA_TP_CODE, ORDER_NO, ADVER_ID, MEDIA_ID, ORDER_AMT, ORDER_CNT, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TOT_CLICK_CNT)
+	VALUES(	
+	${yyyymmdd}
+	, #{platformCode}
+	, #{prdtTpCode}
+	, #{adGubunCode}
+	, #{keyIp}
+	, #{siteCode}
+	, #{scriptNo}
+	, #{trkTpCode} 
+	, (SELECT CASE
+		WHEN userid IN('kakao', 'mkakao') THEN '03'
+		WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04'
+		WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08'
+		WHEN userid IN('rtbmobon') THEN '10'
+		ELSE '01' END ITL_TP_CODE
+		FROM dreamsearch.media_script WHERE NO=#{scriptNo} )
+	, (SELECT IFNULL(MAX(C.MEDIA_CODE),'01') AS MEDIA_TP_CODE FROM
+		(SELECT CASE WHEN LENGTH(IFNULL(b.scate,''))=0 THEN ''
+		WHEN LENGTH(IFNULL(b.scate,''))=1 THEN CONCAT('0',b.scate)
+		ELSE b.scate END AS MEDIA_CODE
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b
+		ON a.mediasite_no=b.no WHERE a.no=#{scriptNo}) C
+		)
+	, #{ordCode}
+	, #{advertiserId}
+	, #{scriptUserId}
+	, #{contributePrice}
+	, #{contributeOrdCnt}
+	, <choose><when test="targetYn">#{contributePrice}</when><otherwise>0</otherwise></choose>
+	, <choose><when test="targetYn">#{contributeOrdCnt}</when><otherwise>0</otherwise></choose>
+	, 1
+	)	
+	ON DUPLICATE KEY UPDATE
+	ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT)
+	, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TOT_CLICK_CNT = TOT_CLICK_CNT + VALUES(TOT_CLICK_CNT);
+	
+	</update>
+	
+	<update id="insertConvAiData" parameterType="convData">
+		INSERT INTO BILLING.MOB_CNVRS_RENEW_AI_HH_STATS 
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, AI_TP_CODE, TRK_TP_CODE, ITL_TP_CODE, CNVRS_TP_CODE, SESION_SELNG_YN, SESION_SELNG2_YN, DIRECT_YN, MOB_ORDER_YN, ORDER_AMT, ORDER_CNT, ORDER_QY, TRGT_ORDER_AMT, TRGT_ORDER_CNT, TRGT_ORDER_QY, REG_DTTM)
+		VALUES (
+			${yyyymmdd}, DATE_FORMAT(#{sendDate},'%H'), #{platformCode}, #{productCode}, #{adGubunCode}, #{siteCode}, #{advertiserId}
+			, #{aiType}, #{trkTpCode}		 
+			, (SELECT CASE
+				WHEN userid IN('kakao', 'mkakao') THEN '03'
+				WHEN userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04'
+				WHEN userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08'
+				WHEN userid IN('rtbmobon') THEN '10'
+				ELSE '01' END ITL_TP_CODE
+				FROM dreamsearch.media_script WHERE NO=#{scriptNo})
+			, #{cnvrsTpCode}
+			, <choose>
+				<when test="direct!=0">'Y'</when>
+				<otherwise>'N'</otherwise>
+			</choose>
+			, #{browserDirect}
+			, <choose>
+				<when test="inHour!=0">'Y'</when>
+				<otherwise>'N'</otherwise>
+			</choose>
+			, #{mobonYn}, #{price}, 1, #{ordQty}
+			, <choose><when test="targetYn">#{price}</when><otherwise>0</otherwise></choose>
+			, <choose><when test="targetYn">1</when><otherwise>0</otherwise></choose>
+			, <choose><when test="targetYn">#{ordQty}</when><otherwise>0</otherwise></choose>
+			, #{sendDate})
+		ON DUPLICATE KEY UPDATE
+			ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT), ORDER_QY = ORDER_QY + VALUES(ORDER_QY)
+			, TRGT_ORDER_AMT = TRGT_ORDER_AMT + VALUES(TRGT_ORDER_AMT), TRGT_ORDER_CNT = TRGT_ORDER_CNT + VALUES(TRGT_ORDER_CNT), TRGT_ORDER_QY = TRGT_ORDER_QY + VALUES(TRGT_ORDER_QY);
+	</update>
+	
+</mapper>

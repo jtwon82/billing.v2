@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="selectMapper">
+	<cache eviction="LRU" flushInterval="60000" size="50000" readOnly="true"/>
+
+	<select id="selectNow" resultType="Map" >
+		SELECT NOW() NOW
+	</select>
+	
+	<select id="selectExternalUserInfo" resultType="Map" useCache="true">
+		SELECT DISTINCT external_id userId FROM dreamsearch.external_match
+	</select>
+	
+	<select id="selectItlInfo" resultType="baseCVData" useCache="true">
+		/* select kakao n daisy */
+		SELECT CASE WHEN a.userid LIKE ('%kakao%') THEN 'kakao'
+			WHEN a.userid LIKE ('%daisy%') THEN 'daisy' END scriptUserId
+			, a.no scriptNo
+		FROM dreamsearch.media_script a WHERE a.userid IN('kakao','mkakao', 'daisy','mdaisy')
+	</select>
+	
+	<select id="selectMediaInfo" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		/* select media info */
+		SELECT a.no scriptNo
+			, a.userid scriptUserId, a.w_type platform, a.s_type product, a.ad_type type
+			, ifnull(EPRS_REST_RATE, 100)EPRS_REST_RATE, LPAD(b.scate,2,'0') mediaTpCode
+			, CASE 
+				WHEN a.userid IN('kakao', 'mkakao') THEN '03' 
+				WHEN a.userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04' 
+				WHEN a.userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08' 
+				WHEN a.userid IN('rtbmobon') THEN '10' 
+				ELSE '01' END itlTpCode
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b 
+			ON a.mediasite_no=b.no
+		WHERE a.NO=#{scriptNo}
+	</select>
+	
+	<select id="selectMediaScriptChrgInfo" resultType="baseCVData" useCache="true">
+		/* select media_script_chrg info */
+		SELECT NO AS scriptNo
+		     , ifnull(EPRS_REST_RATE, 100) AS eprsRestRate
+		  FROM dreamsearch.media_script 
+		 WHERE (EPRS_REST_RATE != 100 OR CHRG_FOM_TP_CODE != '01')
+		   AND NO=#{scriptNo}
+	</select>
+
+	<select id="selectRtbInfo" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		/* 카카오 RTB 의 포인트 소진위치 조회 */
+		SELECT userid advertiserId, site_code siteCode, rtb_usemoney_yn rtbUseMoneyYn
+		FROM dreamsearch.adsite_rtb_info a
+		WHERE a.site_code=#{siteCode}
+	</select>
+	
+	<select id="selectOpenRtbHIRNK_NO" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		select MEDIA_SCRT_HIRNK_NO scriptHirnkNo
+			from dreamsearch.MEDIA_PAR_MGMT
+			where MEDIA_SCRT_NO=${scriptNo}
+	</select>
+	
+	<select id="selectDaylySucc" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		/* 일자별 말아올리는쿼리 플래그 조회 */
+		SELECT DATE_FORMAT(a.REG_DTTM,'%Y%m%d') yyyymmdd
+		FROM BILLING.MOB_COM_FLAG_INFO a 
+		WHERE a.STATS_DTTM=#{yyyymmdd} AND a.STATS_HH=#{hh} AND a.PLTFOM_TP_CODE=#{platform} AND a.ADVRTS_TP_CODE=#{adGubun}
+	</select>
+	
+	<select id="selectAdgubunKey" resultType="baseCVData" useCache="true">
+		/* 키그룹 조회하기 */
+		SELECT b.code_val adGubun, a.w platform
+		FROM (
+			SELECT 'W'w UNION SELECT 'M'w
+		)a, (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b
+	</select>
+	<select id="selectAdgubunKey2" resultType="baseCVData" useCache="true">
+		/* 키그룹 조회하기 : ClickView */
+		SELECT b.CODE_VAL adGubun, c.CODE_VAL scriptNo
+		FROM (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b, (
+			SELECT CODE_VAL-1 CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='HH_TP_CODE' AND CODE_VAL BETWEEN 1 AND 10
+		)c
+	</select>
+	<select id="selectAdgubunKey2_EX" resultType="baseCVData" useCache="true">
+		/* 키그룹 조회하기 : ClickView */
+		SELECT CODE_VAL-1 scriptNo FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='HH_TP_CODE' AND CODE_VAL BETWEEN 1 AND 10
+	</select>
+
+	<select id="selectConvertTpCode" resultType="Map" useCache="false">
+		/* 코드변환 */
+		SELECT CODE_VAL K, CODE_ID 
+		FROM dreamsearch.MOBON_COM_CODE 
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		UNION ALL
+		SELECT CODE_ID K, CODE_ID 
+		FROM dreamsearch.MOBON_COM_CODE 
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+	</select>
+	
+	<select id="mangoStyle" parameterType="baseCVData" resultType="Map" useCache="false">
+		/* select mangoStyle : 지정날짜의 이미 수집된 노출클릭 가져오기 (전송된값에서 기존값의 차이를 디비에 반영해야한다.) */
+		SELECT SUM(a.TOT_EPRS_CNT) ago_viewcnt1, SUM(a.PAR_EPRS_CNT) ago_viewcnt3
+		FROM MOB_CAMP_MEDIA_HH_STATS a, dreamsearch.adsite b
+		WHERE a.SITE_CODE=b.site_code 
+			AND a.STATS_DTTM=#{yyyymmdd}
+			AND a.MEDIA_SCRIPT_NO=#{scriptNo}
+			AND a.SITE_CODE=#{siteCode}
+			AND b.userid=#{advertiserId}
+	</select>
+	
+	<select id="selectMobonComCode" parameterType="string" resultType="Map" useCache="true">
+		SELECT a.CODE_ID
+			, REPLACE(
+				SUBSTRING(
+					SUBSTRING_INDEX(CODE_VAL, ',' , ROW) ,
+					CHAR_LENGTH(
+						SUBSTRING_INDEX(CODE_VAL, ',', ROW - 1)
+					) + 1
+				) ,
+				',', ''
+			) CODE_VAL
+		FROM (
+			SELECT CODE_ID, CODE_VAL
+			, ROUND( ( LENGTH(CODE_VAL) - LENGTH( REPLACE ( CODE_VAL, ',', '') ) ) / LENGTH(',') )+1 AS cnt
+			FROM dreamsearch.MOBON_COM_CODE WHERE CODE_TP_ID = #{CODE_TP_ID} AND USE_YN='Y'
+		)a, (
+			SELECT CODE_VAL ROW FROM dreamsearch.MOBON_COM_CODE WHERE CODE_TP_ID LIKE '%HH_TP_CODE%'
+		)b
+		WHERE b.ROW BETWEEN 1 AND a.cnt
+		ORDER BY 1, ROW
+	</select>
+	
+	<select id="selectMobonComCodeAdvrtsPrdtCode" resultType="Map" useCache="true">
+		SELECT A.CODE_ID, C.CODE_VAL
+		FROM dreamsearch.MOBON_COM_CODE A, dreamsearch.MOBON_ADVRTS_PRDT_MPG_INFO B, dreamsearch.MOBON_COM_CODE C
+		WHERE A.CODE_ID = B.ADVRTS_PRDT_CODE 
+		AND C.CODE_ID = B.ADVRTS_MPG_TP_CODE
+		AND A.CODE_TP_ID = 'ADVRTS_PRDT_CODE' 
+		AND C.CODE_TP_ID='ADVRTS_MPG_TP_CODE'
+	</select>
+	
+	<select id= "selectNewKpiStats" resultType="baseCVData" parameterType="baseCVData" useCache="true">
+		SELECT DISTINCT SITE_CODE siteCode, KPI_NO kpiNo
+		FROM (
+			SELECT IAD.SITE_CODE, IAD.KPI_NO 
+			FROM dreamsearch.iadsite AS IAD WHERE IAD.SITE_CODE= CONVERT(#{siteCode} USING EUCKR)
+			UNION ALL 
+			SELECT AD.SITE_CODE, AD.KPI_NO 
+			FROM dreamsearch.adsite AS AD WHERE AD.SITE_CODE= CONVERT(#{siteCode} USING EUCKR)
+		)A
+	</select>
+
+	<select id = "selectMediaTpCode" resultType="String" parameterType="Map" useCache="true">
+		SELECT  IFNULL(LPAD(b.scate,2,'0'),'99') mediaTpCode
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b
+		ON a.mediasite_no=b.no
+		WHERE a.NO=#{scriptNo}
+		;
+	</select>
+</mapper>

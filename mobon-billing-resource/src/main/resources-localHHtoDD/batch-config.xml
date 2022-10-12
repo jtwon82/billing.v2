@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<!-- AddtionData -->
+<!-- 	<task:scheduled-tasks scheduler="myScheduler-AddtionData"> -->
+<!-- 		<task:scheduled ref="taskAddtionData" method="runMEDIA_SCRIPT_STD_HIST" cron="*/5 * * * * *" /> -->
+<!-- 	</task:scheduled-tasks> -->
+<!-- 	<task:scheduler id="myScheduler-AddtionData" /> -->
+	
+<!-- 	<task:scheduled-tasks scheduler="mySchedulerDD"> -->
+<!-- 		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaDD" -->
+<!-- 			cron="*/5 * * * * *" /> -->
+<!-- 	</task:scheduled-tasks> -->
+<!-- 	<task:scheduler id="mySchedulerDD" /> -->
+	
+	<!-- new 일 -->
+	<task:scheduled-tasks scheduler="myScheduler-runBatch">
+		<task:scheduled ref="taskHHtoDD" method="runBatch"
+			cron="*/5 * * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler-runBatch" />
+	<!-- new conv -->
+	<task:scheduled-tasks scheduler="myScheduler-Conv">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaConv"
+			cron="0 */5 * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler-Conv" />
+
+	<!-- * * 23 * * * -->
+	<!-- Seconds YES 0-59 , - * / -->
+	<!-- Minutes YES 0-59 , - * / -->
+	<!-- Hours YES 0-23 , - * / -->
+	<!-- Day of month YES 1-31 , - * ? / L W -->
+	<!-- Month YES 1-12 or JAN-DEC , - * / -->
+	<!-- Day of week YES 1-7 or SUN-SAT , - * ? / L # -->
+	<!-- Year NO empty, 1970-2099 , - * / -->
+
+</beans>

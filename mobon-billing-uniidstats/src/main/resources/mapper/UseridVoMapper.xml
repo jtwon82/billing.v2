@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="useridVoMapper">
+
+	<update id="insertUseridStats">
+		/* insertUseridStats */
+		INSERT INTO UNI_ADVER_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID,
+				TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platformCode}, #{I.productCode}, #{I.adGubunCode}, #{I.advertiserId},
+				#{I.viewcnt1}, #{I.viewcnt3}, #{I.clickcnt}, #{I.point}, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT),
+			PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT),
+			CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT),
+			ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+		;
+	</update>
+
+</mapper>
+

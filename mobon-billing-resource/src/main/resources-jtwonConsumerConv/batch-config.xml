@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+ 
+	<task:scheduled-tasks scheduler="myScheduler">
+<!-- 		<task:scheduled ref="taskClickViewData" method="mongoToMariaClickViewV3" fixed-delay="3000" /> -->
+<!--         <task:scheduled ref="taskExternalData" method="mongoToMariaExternalV3" fixed-delay="1000" /> -->
+<!--         <task:scheduled ref="taskShopInfoData" method="mongoToMariaShopInfoDataV3" fixed-delay="5000" /> -->
+<!--         <task:scheduled ref="taskShopMdPcodeData" method="mongoToMariaShopMdPcodeDataV3" fixed-delay="5000" /> -->
+<!--         <task:scheduled ref="taskShopStatsInfoData" method="mongoToMariaShopStatsInfoDataV3" fixed-delay="5000" /> -->
+        <task:scheduled ref="taskConvData" method="mongoToMariaConvDataV3" fixed-delay="1000" />
+<!--         <task:scheduled ref="taskConvPcodeData" method="mongoToMariaConvDataV3" fixed-delay="1000" /> -->
+<!--         <task:scheduled ref="taskConvAllData" method="mongoToMariaConvAllDataV3" fixed-delay="1000" /> -->
+<!--         <task:scheduled ref="taskIntgCntrConvData" method="mongoToMariaIntgCntrConvDataV3" fixed-delay="1000" /> -->
+<!--         <task:scheduled ref="taskAdverProductHHData" method="mongoToMariaAdverProductHHV3" fixed-delay="1000" /> -->
+<!-- 		<task:scheduled ref="taskActionData" method="mongoToMariaActionDataV3" fixed-delay="3000" /> -->
+        
+<!-- 		<task:scheduled ref="taskNearData" method="mongoToMariaNearData" fixed-delay="10000" /> -->
+<!-- 		<task:scheduled ref="convsuccLogZip" method="logFileZip" cron="0 30 * * * *" /> -->
+		
+		<!-- required Task -->
+        <task:scheduled ref="taskCronwork" method="chkingQueueSize" fixed-delay="10000" />
+        <task:scheduled ref="taskRetryData" method="consumerRetry" fixed-delay="3000" />
+        
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler"/>
+	
+	<!-- 토픽별 로그파일 처리   -->
+	<task:scheduled-tasks scheduler="myScheduler2">        
+        <task:scheduled ref="consumerTopicReTry" method="processTopicFile" fixed-delay="10000" />
+	</task:scheduled-tasks>		
+	<task:scheduler id="myScheduler2"/>
+
+
+<!-- * * 23 * * * -->
+<!-- Seconds	YES	0-59	, - * / -->
+<!-- Minutes	YES	0-59	, - * / -->
+<!-- Hours	YES	0-23	, - * / -->
+<!-- Day of month	YES	1-31	, - * ? / L W -->
+<!-- Month	YES	1-12 or JAN-DEC	, - * / -->
+<!-- Day of week	YES	1-7 or SUN-SAT	, - * ? / L # -->
+<!-- Year	NO	empty, 1970-2099	, - * / -->
+    
+</beans>

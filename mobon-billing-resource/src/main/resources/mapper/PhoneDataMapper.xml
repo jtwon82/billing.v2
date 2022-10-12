@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phoneDataMapper">
+
+	<insert id="insertPhoneStats" parameterType="java.util.List">
+		INSERT INTO MOB_CAMP_PHONE_STATS
+				(STATS_DTTM, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, AD_PHONE_CNT, REG_USER_ID, REG_DTTM)
+			VALUES
+				<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, 1, 'BATCH', NOW())
+				</foreach>
+		ON DUPLICATE KEY UPDATE
+			AD_PHONE_CNT = AD_PHONE_CNT + VALUES(AD_PHONE_CNT)
+			, ALT_USER_ID='', ALT_DTTM=NOW()
+		;
+	</insert>
+	 
+</mapper>
+

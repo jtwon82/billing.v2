@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+	<appender name="dailyRollingDebug" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/log4j/native_report.debuglog.log</File>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C [%L] %m %n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/log4j/native_report.debuglog.log.%d{yyyy-MM-dd}</fileNamePattern>
+			<maxHistory>1</maxHistory>
+		</rollingPolicy>
+	</appender>
+
+	<appender name="dailyRollingInfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/log4j/native_report.infolog.log</File>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C{1} [%L] %m %n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/log4j/native_report.infolog.log.%d{yyyy-MM-dd}</fileNamePattern>
+			<maxHistory>1</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="dailyRollingError" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/log4j/native_report.errorlog.log</File>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C{1} [%L] %m %n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/log4j/native_report.errorlog.log.%d{yyyy-MM-dd}</fileNamePattern>
+			<maxHistory>1</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C [%L] %m %n</pattern>
+		</encoder>
+    </appender>
+ 
+<!--     <logger name="com.mobon.billing.core.billing" level="DEBUG" /> -->
+<!--     <logger name="com.mobon.billing.consumer" level="off" /> -->
+<!--     <logger name="jdbc.sqlonly" level="DEBUG" additivity="false" /> -->
+    <!-- <logger name="com.mobon.billing.consumer" level="DEBUG" /> -->
+<!--     <logger name="com.mobon.billing.core" level="off" /> -->
+    <logger name="net.sf.json" level="OFF" />
+    <logger name="org.springframework.kafka" level="OFF" />
+    <logger name="org.apache.kafka.clients" level="OFF" />
+ 
+    <root level="info">
+        <appender-ref ref="dailyRollingDebug" />
+        <appender-ref ref="dailyRollingInfo" />
+        <appender-ref ref="dailyRollingError" />
+        <!-- <appender-ref ref="STDOUT" /> -->
+    </root>
+
+</configuration>

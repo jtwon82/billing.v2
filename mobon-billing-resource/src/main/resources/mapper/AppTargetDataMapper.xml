@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="appTargetDataMapper">
+
+	<insert id="insertAppTargetData_Day" parameterType="java.util.List">
+		/* AppTarget : day */
+		INSERT INTO APP_TRGT_DAY_STATS
+		( STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT
+			, DPLK_AMT
+			, REG_USER_ID, REG_DTTM )
+		VALUE
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}
+				, ${I.viewCnt}, ${I.viewCnt3}, ${I.clickCnt}, ${I.point}
+				, 0
+				, 'BATCH', NOW() )
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT) 
+			, PAR_EPRS_CNT =  PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM=NOW();
+	</insert>
+
+	<insert id="insertAppTargetData_Adver" parameterType="java.util.List">
+		/* AppTarget : adver */
+		INSERT INTO APP_TRGT_ADVER_STATS
+		( STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT
+			, DPLK_AMT
+			, REG_USER_ID, REG_DTTM )
+		VALUE
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}
+				, ${I.viewCnt}, ${I.viewCnt3}, ${I.clickCnt}, ${I.point}
+				, 0
+				, 'BATCH', NOW() )
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)
+			, PAR_EPRS_CNT =  PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM=NOW();
+	</insert>
+
+	<insert id="insertAppTargetData_Media" parameterType="java.util.List">
+		/* AppTarget : media */
+		INSERT INTO APP_TRGT_MEDIA_STATS
+		( STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT
+			, DPLK_AMT
+			, REG_USER_ID, REG_DTTM )
+		VALUE
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.scriptUserId}
+				, ${I.viewCnt}, ${I.viewCnt3}, ${I.clickCnt}, ${I.point}
+				, 0
+				, 'BATCH', NOW() )
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)
+			, PAR_EPRS_CNT =  PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM=NOW();
+	</insert>
+
+	 
+</mapper>
+

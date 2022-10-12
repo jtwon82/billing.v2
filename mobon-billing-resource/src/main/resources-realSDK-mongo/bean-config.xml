@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="count" class="com.mobon.billing.report.schedule.CountTask"/>
+	<bean id="package" class="com.mobon.billing.report.schedule.PackageTask"/>
+	<bean id="package_key" class="com.mobon.billing.report.schedule.PackageKeyTask"/>
+	<!-- bean id="mongo_shop_log" class="com.mobon.billing.report.schedule.MongoShopLogTask"/-->
+
+
+	<bean id="mongo_shop_0_log" class="com.mobon.billing.report.schedule.MongoShopLog_0Task"/>
+	<bean id="mongo_shop_1_log" class="com.mobon.billing.report.schedule.MongoShopLog_1Task"/>
+	<bean id="mongo_shop_2_log" class="com.mobon.billing.report.schedule.MongoShopLog_2Task"/>
+	<bean id="mongo_shop_3_log" class="com.mobon.billing.report.schedule.MongoShopLog_3Task"/>
+	<bean id="mongo_shop_4_log" class="com.mobon.billing.report.schedule.MongoShopLog_4Task"/>
+	<bean id="mongo_shop_5_log" class="com.mobon.billing.report.schedule.MongoShopLog_5Task"/>
+	<bean id="mongo_shop_6_log" class="com.mobon.billing.report.schedule.MongoShopLog_6Task"/>
+	<bean id="mongo_shop_7_log" class="com.mobon.billing.report.schedule.MongoShopLog_7Task"/>
+	<bean id="mongo_shop_8_log" class="com.mobon.billing.report.schedule.MongoShopLog_8Task"/>
+	<bean id="mongo_shop_9_log" class="com.mobon.billing.report.schedule.MongoShopLog_9Task"/>
+	<bean id="mongo_shop_a_log" class="com.mobon.billing.report.schedule.MongoShopLog_aTask"/>
+	<bean id="mongo_shop_b_log" class="com.mobon.billing.report.schedule.MongoShopLog_bTask"/>
+	<bean id="mongo_shop_c_log" class="com.mobon.billing.report.schedule.MongoShopLog_cTask"/>
+	<bean id="mongo_shop_d_log" class="com.mobon.billing.report.schedule.MongoShopLog_dTask"/>
+	<bean id="mongo_shop_e_log" class="com.mobon.billing.report.schedule.MongoShopLog_eTask"/>
+	<bean id="mongo_shop_f_log" class="com.mobon.billing.report.schedule.MongoShopLog_fTask"/>
+	
+		
+	<!-- bean id="NearDataWorkQueue" class="com.mobon.billing.report.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="NearDataWorkQueue"/>
+		<constructor-arg index="1" value="1"/>
+	</bean-->
+
+</beans>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+ 
+<task:scheduled-tasks scheduler="taskScheduler">
+		<!-- task:scheduled ref="package_key" method="execute"      fixed-rate="5000"/>
+    <task:scheduled ref="mongo_shop_log" method="execute" fixed-rate="10000" /-->
+    
+    <task:scheduled ref="package_key" method="execute" fixed-rate="1800000"/>
+    <!-- task:scheduled ref="mongo_shop_log" method="execute" fixed-rate="43200000" /-->
+    
+    
+    <task:scheduled ref="mongo_shop_0_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_1_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_2_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_3_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_4_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_5_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_6_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_7_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_8_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_9_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_a_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_b_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_c_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_d_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_e_log" method="execute" fixed-rate="43200000" />
+    <task:scheduled ref="mongo_shop_f_log" method="execute" fixed-rate="43200000" />
+    
+    
+		<!-- task:scheduled ref="mongo_shop_log" method="execute" cron="0 0 4 * * ?"/-->
+</task:scheduled-tasks>
+		
+<task:scheduler id="taskScheduler" pool-size="16"/>
+		
+<!-- * * 23 * * * -->
+<!-- Seconds	YES	0-59	, - * / -->
+<!-- Minutes	YES	0-59	, - * / -->
+<!-- Hours	YES	0-23	, - * / -->
+<!-- Day of month	YES	1-31	, - * ? / L W -->
+<!-- Month	YES	1-12 or JAN-DEC	, - * / -->
+<!-- Day of week	YES	1-7 or SUN-SAT	, - * ? / L # -->
+<!-- Year	NO	empty, 1970-2099	, - * / -->
+    
+</beans>

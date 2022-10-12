@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="viewPcodeDataMapper">
+
+	<insert id="INSERT_MOB_PCODE_ADVER_STATS" parameterType="List">
+		INSERT INTO BILLING.MOB_PCODE_ADVER_STATS
+		(
+		STATS_DTTM, 
+		PLTFOM_TP_CODE,
+		ADVRTS_PRDT_CODE,
+		ADVRTS_TP_CODE,
+		ADVRSB_TP_CODE,
+		RECOM_TP_CODE,
+		RECOM_ALGO_CODE,
+		ITL_TP_CODE,
+		ADVER_ID,
+		TOT_EPRS_CNT,
+		REG_DTTM
+		) VALUES 
+			<foreach item = "I" collection="list" separator =" , ">
+			(${I.yyyymmdd}, #{I.platformCode}, #{I.productCode}, #{I.adGubunCode}
+				, #{I.subAdGubunCode}, #{I.recomTpCode}, #{I.recomAlgoCode}, #{I.interlock}
+				, #{I.advertiserId}, #{I.viewCnt}
+				, NOW()			
+			)	
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)
+	</insert>
+
+	<insert id="INSERT_AB_PCODE_ADVER_STATS_VIEW" parameterType="List">
+	INSERT INTO BILLING.AB_PCODE_RECOM
+		(
+		STATS_DTTM , ADVER_ID , ADVRTS_TP_CODE, RECOM_ALGO_CODE , AB_TEST_TY , ADVRTS_PRDT_CODE , PLTFOM_TP_CODE , TOT_EPRS_CNT
+		) VALUES
+			<foreach collection="list" item="I" separator=" , ">
+				(${I.yyyymmdd}, #{I.advertiserId}, #{I.adGubunCode}, #{I.recomAlgoCode}, #{I.abTestTy}, #{I.productCode}, #{I.platformCode}
+				, #{I.viewCnt}
+				)
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT),
+		 	ALT_DTTM = NOW()
+		;
+	</insert>
+
+
+	<insert id="INSERT_AB_PCODE_ADVER_STATS_CLICK" parameterType="List">
+		INSERT INTO BILLING.AB_PCODE_RECOM
+		(
+		STATS_DTTM , ADVER_ID , ADVRTS_TP_CODE, RECOM_ALGO_CODE , AB_TEST_TY , ADVRTS_PRDT_CODE , PLTFOM_TP_CODE , CLICK_CNT, ADVRTS_AMT
+		) VALUES
+		<foreach collection="list" item="I" separator=" , ">
+			(${I.yyyymmdd}, #{I.advertiserId}, #{I.adGubunCode}, #{I.recomAlgoCode}, #{I.abTestTy}, #{I.productCode}, #{I.platformCode}
+			, #{I.clickCnt}, #{I.point}
+			)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT),
+		ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT),
+		ALT_DTTM = NOW()
+		;
+	</insert>
+
+	<insert id="insertConvABPcodeRecom" parameterType="ConvData">
+		INSERT INTO BILLING.AB_PCODE_RECOM
+		(
+		STATS_DTTM , ADVER_ID , ADVRTS_TP_CODE, RECOM_ALGO_CODE , AB_TEST_TY , ADVRTS_PRDT_CODE , PLTFOM_TP_CODE ,
+		TOT_ORDER_CNT, TOT_ORDER_AMT , SESS_ORDER_CNT, SESS_ORDER_AMT , DIRECT_ORDER_CNT, DIRECT_ORDER_AMT
+		) VALUES
+			(${yyyymmdd}, #{advertiserId}, #{adGubunCode}, #{recomAlgoCode}, #{abTestTy}, #{productCode}, #{platformCode}
+			,1
+			,#{price}
+			,<choose><when test="direct!=0">1</when><otherwise>0</otherwise></choose>
+			,<choose><when test="direct!=0">#{price}</when><otherwise>0</otherwise></choose>
+			,<choose><when test="inHour!=0">1</when><otherwise>0</otherwise></choose>
+			,<choose><when test="inHour!=0">#{price}</when><otherwise>0</otherwise></choose>
+			)
+		ON DUPLICATE KEY UPDATE
+		TOT_ORDER_CNT = TOT_ORDER_CNT + VALUES(TOT_ORDER_CNT),
+		TOT_ORDER_AMT = TOT_ORDER_AMT + VALUES(TOT_ORDER_AMT),
+		SESS_ORDER_CNT = SESS_ORDER_CNT + VALUES(SESS_ORDER_CNT),
+		SESS_ORDER_AMT = SESS_ORDER_AMT + VALUES(SESS_ORDER_AMT),
+		DIRECT_ORDER_CNT = DIRECT_ORDER_CNT + VALUES(DIRECT_ORDER_CNT),
+		DIRECT_ORDER_AMT = DIRECT_ORDER_AMT + VALUES(DIRECT_ORDER_AMT),
+		ALT_DTTM = NOW()
+		;
+	</insert>
+</mapper>

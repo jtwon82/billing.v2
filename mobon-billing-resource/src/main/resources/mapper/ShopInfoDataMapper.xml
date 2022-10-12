@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shopInfoDataMapper">
+
+	<select id="selectShopData" parameterType="Map" resultType="shopInfoData">
+		/* selectShopData : */
+		SELECT liveChk, PRDT_PRMCT
+		FROM ${tableName}
+		WHERE userid = #{advertiserId} AND pcode = #{pCode}
+	</select>
+	
+
+	<update id="sp_shop_info_NEW_W_billing" parameterType="List">
+		/* sp_shop_info_NEW_W */
+		INSERT INTO SHOP_DATA(userid, url, pnm, pcode, price, imgpath, purl, gb, rdate, rtime
+			, cate1, cate2, cate3, cate4, caid1, caid2, caid3, caid4
+			, LOADINFO, REGDATE, LASTUPDATE, width, height, STATUS, kakao_status
+			, liveChk, PRDT_PRMCT
+			) 
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.advertiserId}, #{I.url}, #{I.pnm}, #{I.pCode}, #{I.price}, #{I.imgPath}, #{I.pUrl}, #{I.cwgb}, REPLACE(LEFT(NOW(),10),'-',''), '0101'
+			, <![CDATA[ #{I.cate} ]]>, <![CDATA[ #{I.cate2} ]]>, '', '', '', '', #{I.CAID3}, #{I.CAID4}
+			, 'U', NOW(), NOW(), #{I.width}, #{I.height}, #{I.status}, #{I.kakaoStatus}
+			, #{I.liveChk}, #{I.prdtPrmct}
+			)
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+				pnm=IF(liveChk='N', pnm, VALUES(pnm))
+				, price=IF(liveChk='N', price, VALUES(price))
+				, imgpath=IF(liveChk='N', imgpath, VALUES(imgpath))
+				, purl=IF(liveChk='N', purl, VALUES(purl))
+				, width=IF(liveChk='N', width, VALUES(width))
+				, height=IF(liveChk='N', height, VALUES(height))
+				, cate1=IF(liveChk='N', cate1, IF(VALUES(cate1) IN ('nocate','_unknown'),cate1,VALUES(cate1)))
+				, cate2=IF(liveChk='N', cate2, IF(VALUES(cate2) IN ('nocate','_unknown'),cate2,VALUES(cate2)))
+				, STATUS=IF(liveChk='N', STATUS, VALUES(STATUS))
+				, LOADINFO=IF(liveChk='N', LOADINFO, 'U')
+				, CAID3 = IF (liveChk='N',CAID3, VALUES(CAID3))
+				, liveChk=IF(liveChk='N', liveChk, VALUES(liveChk))
+				, PRDT_PRMCT=IF(liveChk='N', PRDT_PRMCT , VALUES(PRDT_PRMCT))
+				, LASTUPDATE=IF(liveChk='N', LASTUPDATE, NOW());
+	</update>
+	<update id="sp_shop_info_NEW_M_billing" parameterType="List">
+		/* sp_shop_info_NEW_M */
+		INSERT INTO MOB_SHOP_DATA(userid, url, pnm, pcode, price, imgpath, purl, gb, rdate, rtime
+			, cate1, cate2, cate3, cate4, caid1, caid2, caid3, caid4
+			, LOADINFO, REGDATE, LASTUPDATE, width, height, STATUS, kakao_status
+			, liveChk, PRDT_PRMCT
+			) 
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.advertiserId}, #{I.url}, #{I.pnm}, #{I.pCode}, #{I.price}, #{I.imgPath}, #{I.pUrl}, #{I.cwgb}, REPLACE(LEFT(NOW(),10),'-',''), '0101'
+			, <![CDATA[ #{I.cate} ]]>, <![CDATA[ #{I.cate2} ]]>, '', '', '', '', #{I.CAID3}, #{I.CAID4}
+			, 'U', NOW(), NOW(), #{I.width}, #{I.height}, #{I.status}, #{I.kakaoStatus}
+			, #{I.liveChk}, #{I.prdtPrmct}
+			)
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+				pnm=IF(liveChk='N', pnm, VALUES(pnm))
+				, price=IF(liveChk='N', price, VALUES(price))
+				, imgpath=IF(liveChk='N', imgpath, VALUES(imgpath))
+				, purl=IF(liveChk='N', purl, VALUES(purl))
+				, width=IF(liveChk='N', width, VALUES(width))
+				, height=IF(liveChk='N', height, VALUES(height))
+				, cate1=IF(liveChk='N', cate1, IF(VALUES(cate1) IN ('nocate','_unknown'),cate1,VALUES(cate1)))
+				, cate2=IF(liveChk='N', cate2, IF(VALUES(cate2) IN ('nocate','_unknown'),cate2,VALUES(cate2)))
+				, STATUS=IF(liveChk='N', STATUS, VALUES(STATUS))
+				, LOADINFO=IF(liveChk='N', LOADINFO, 'U')
+				, CAID3 = IF (liveChk='N',CAID3, VALUES(CAID3))
+				, liveChk=IF(liveChk='N', liveChk, VALUES(liveChk))
+				, PRDT_PRMCT=IF(liveChk='N', PRDT_PRMCT , VALUES(PRDT_PRMCT))
+				, LASTUPDATE=IF(liveChk='N', LASTUPDATE, NOW());
+	</update>
+	<update id="sp_shop_info_NEW_D_billing" parameterType="List">
+		/* sp_shop_info_NEW_D */
+		INSERT INTO MOB_SHOP_DATA(userid, url, pnm, pcode, price, imgpath, purl, gb, rdate, rtime
+			, cate1, cate2, cate3, cate4, caid1, caid2, caid3, caid4
+			, LOADINFO, REGDATE, LASTUPDATE, width, height, STATUS, kakao_status
+			, liveChk, PRDT_PRMCT
+			) 
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.advertiserId}, #{I.url}, #{I.pnm}, #{I.pCode}, #{I.price}, #{I.imgPath}, #{I.pUrl}, #{I.cwgb}, REPLACE(LEFT(NOW(),10),'-',''), '0101'
+			, <![CDATA[ #{I.cate} ]]>, <![CDATA[ #{I.cate2} ]]>, '', '', '', '', #{I.CAID3}, #{I.CAID4}
+			, 'U', NOW(), NOW(), #{I.width}, #{I.height}, #{I.status}, #{I.kakaoStatus}
+			, #{I.liveChk}, #{I.prdtPrmct}
+			)
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+				pnm=IF(liveChk='N', pnm, VALUES(pnm))
+				, price=IF(liveChk='N', price, VALUES(price))
+				, imgpath=IF(liveChk='N', imgpath, VALUES(imgpath))
+				, purl=IF(liveChk='N', purl, VALUES(purl))
+				, width=IF(liveChk='N', width, VALUES(width))
+				, height=IF(liveChk='N', height, VALUES(height))
+				, cate1=IF(liveChk='N', cate1, IF(VALUES(cate1) IN ('nocate','_unknown'),cate1,VALUES(cate1)))
+				, cate2=IF(liveChk='N', cate2, IF(VALUES(cate2) IN ('nocate','_unknown'),cate2,VALUES(cate2)))
+				, STATUS=IF(liveChk='N', STATUS, VALUES(STATUS))
+				, LOADINFO=IF(liveChk='N', LOADINFO, 'U')
+				, liveChk=IF(liveChk='N', liveChk, VALUES(liveChk))
+				, PRDT_PRMCT=IF(liveChk='N', PRDT_PRMCT , VALUES(PRDT_PRMCT))
+				, LASTUPDATE=IF(liveChk='N', LASTUPDATE, NOW());
+
+		/* sp_shop_info_NEW_W */
+		INSERT INTO SHOP_DATA(userid, url, pnm, pcode, price, imgpath, purl, gb, rdate, rtime
+			, cate1, cate2, cate3, cate4, caid1, caid2, caid3, caid4
+			, LOADINFO, REGDATE, LASTUPDATE, width, height, STATUS, kakao_status
+			, liveChk, PRDT_PRMCT
+			) 
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.advertiserId}, #{I.url}, #{I.pnm}, #{I.pCode}, #{I.price}, #{I.imgPath}, #{I.pUrl}, #{I.cwgb}, REPLACE(LEFT(NOW(),10),'-',''), '0101'
+			, <![CDATA[ #{I.cate} ]]>, <![CDATA[ #{I.cate2} ]]>, '', '', '', '', #{I.CAID3}, #{I.CAID4}
+			, 'U', NOW(), NOW(), #{I.width}, #{I.height}, #{I.status}, #{I.kakaoStatus}
+			, #{I.liveChk}, #{I.prdtPrmct}
+			)
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+				pnm=IF(liveChk='N', pnm, VALUES(pnm))
+				, price=IF(liveChk='N', price, VALUES(price))
+				, imgpath=IF(liveChk='N', imgpath, VALUES(imgpath))
+				, purl=IF(liveChk='N', purl, VALUES(purl))
+				, width=IF(liveChk='N', width, VALUES(width))
+				, height=IF(liveChk='N', height, VALUES(height))
+				, cate1=IF(liveChk='N', cate1, IF(VALUES(cate1) IN ('nocate','_unknown'),cate1,VALUES(cate1)))
+				, cate2=IF(liveChk='N', cate2, IF(VALUES(cate2) IN ('nocate','_unknown'),cate2,VALUES(cate2)))
+				, STATUS=IF(liveChk='N', STATUS, VALUES(STATUS))
+				, LOADINFO=IF(liveChk='N', LOADINFO, 'U')
+				, CAID3 = IF (liveChk='N',CAID3, VALUES(CAID3))
+				, liveChk=IF(liveChk='N', liveChk, VALUES(liveChk))
+				, PRDT_PRMCT=IF(liveChk='N', PRDT_PRMCT , VALUES(PRDT_PRMCT))
+				, LASTUPDATE=IF(liveChk='N', LASTUPDATE, NOW());
+	</update>
+	
+	
+	
+	
+	
+	
+	
+
+
+
+	<update id="sp_shop_stats_NEW_W" parameterType="List">
+		/* sp_shop_stats_NEW_W */
+		INSERT INTO stats_shopdata_new_TEST(sdate, userid, pcode, cate1, viewcnt, adviewcnt, adclickcnt, adconvcnt, adconvprice, clickcnt)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.advertiserId}, #{I.pCode}, <![CDATA[ #{I.cate} ]]>, #{I.viewCnt}, #{I.adViewCnt}, #{I.adClickCnt}, #{I.adConvCnt}, #{I.adConvPrice}, #{I.clickCnt})
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			viewcnt=viewcnt+VALUES(viewcnt), adviewcnt=adviewcnt+VALUES(adviewcnt), adclickcnt=adclickcnt+VALUES(adclickcnt)
+			, adconvcnt=adconvcnt+VALUES(adconvcnt), adconvprice=adconvprice+VALUES(adconvprice), clickcnt=clickcnt+VALUES(clickcnt);
+	</update>
+	<update id="sp_shop_stats_NEW_W_billing" parameterType="List">
+		/* sp_shop_stats_NEW_W */
+		INSERT INTO stats_shopdata_new(sdate, userid, pcode, cate1, viewcnt, adviewcnt, adclickcnt, adconvcnt, adconvprice, clickcnt)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.advertiserId}, #{I.pCode}, <![CDATA[ #{I.cate} ]]>, #{I.viewCnt}, #{I.adViewCnt}, #{I.adClickCnt}, #{I.adConvCnt}, #{I.adConvPrice}, #{I.clickCnt})
+			</foreach>
+		ON DUPLICATE KEY UPDATE 
+			viewcnt=viewcnt+VALUES(viewcnt), adviewcnt=adviewcnt+VALUES(adviewcnt), adclickcnt=adclickcnt+VALUES(adclickcnt)
+			, adconvcnt=adconvcnt+VALUES(adconvcnt), adconvprice=adconvprice+VALUES(adconvprice), clickcnt=clickcnt+VALUES(clickcnt);
+	</update>
+	<update id="sp_shop_stats_NEW_M" parameterType="List">
+		/* sp_shop_stats_NEW_M */
+		INSERT INTO stats_shopdata_mob_TEST(sdate, userid, pcode, cate1, viewcnt, adviewcnt, adclickcnt, adconvcnt, adconvprice, clickcnt)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.advertiserId}, #{I.pCode}, <![CDATA[ #{I.cate} ]]>, #{I.viewCnt}, #{I.adViewCnt}, #{I.adClickCnt}, #{I.adConvCnt}, #{I.adConvPrice}, #{I.clickCnt})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			viewcnt=viewcnt+VALUES(viewcnt), adviewcnt=adviewcnt+VALUES(adviewcnt), adclickcnt=adclickcnt+VALUES(adclickcnt)
+			, adconvcnt=adconvcnt+VALUES(adconvcnt), adconvprice=adconvprice+VALUES(adconvprice), clickcnt=clickcnt+VALUES(clickcnt);
+	</update>
+	<update id="sp_shop_stats_NEW_M_billing" parameterType="List">
+		/* sp_shop_stats_NEW_M */
+		INSERT INTO stats_shopdata_mob(sdate, userid, pcode, cate1, viewcnt, adviewcnt, adclickcnt, adconvcnt, adconvprice, clickcnt)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd}, #{I.advertiserId}, #{I.pCode}, <![CDATA[ #{I.cate} ]]>, #{I.viewCnt}, #{I.adViewCnt}, #{I.adClickCnt}, #{I.adConvCnt}, #{I.adConvPrice}, #{I.clickCnt})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			viewcnt=viewcnt+VALUES(viewcnt), adviewcnt=adviewcnt+VALUES(adviewcnt), adclickcnt=adclickcnt+VALUES(adclickcnt)
+			, adconvcnt=adconvcnt+VALUES(adconvcnt), adconvprice=adconvprice+VALUES(adconvprice), clickcnt=clickcnt+VALUES(clickcnt);
+	</update>
+	
+	 
+	 <update id="insertADVER_PRDT_MNG" parameterType="List">
+	 	/* insert : MDPCODE ADVER_PRDT_MNG */
+	 	INSERT INTO ADVER_PRDT_MNG(ADVER_ID, PRDT_CODE, RCMD_PRDT_CODE
+		 	, REG_USER_ID, REG_DTTM)
+	 	VALUES
+	 		<foreach item="I" collection="list" separator=" , ">
+	 		(#{I.advertiserId}, #{I.pCode}, #{I.rcmdPrdtCode}
+	 			, 'BATCH', NOW())
+	 		</foreach>
+	 	ON DUPLICATE KEY UPDATE
+	 		ALT_USER_ID='BATCH', ALT_DTTM=NOW()
+	 </update>
+
+
+	<insert id="insConvFreqABTest" parameterType="convData">
+        INSERT INTO conversion_ab_log2 (yyyymmdd, ip, order_no, user_id, site_code, price
+        	, ab_type, in_hour, direct, before_in_hour, before_direct)
+        VALUES (DATE_FORMAT(now(),'%Y%m%d'), #{keyIp}, #{ordCode}, #{advertiserId}, #{siteCode}, #{price}
+        	, #{abType}, #{inHour}, #{direct}, #{before_inHour}, #{before_direct})
+    </insert>
+    
+    
+    <insert id="insAdverPrdtCtgrInfo" parameterType="billingVo">
+	    INSERT INTO ADVER_PRDT_CTGR_INFO
+		(CTGR_HIRNK_SEQ , ADVER_ID , ADVER_CTGR_NM , CTGR_LV , USE_YN , REG_USER_ID)
+		SELECT DISTINCT * FROM (
+		SELECT NULL, USERID, CATE1 AS ADVER_CTGR_NM, 1 AS CTGR_LV, 'Y', 'BILLING_BATCH'
+		  FROM (
+					SELECT USERID , CATE1
+					  FROM SHOP_DATA A
+					 WHERE NO > ${shopDataNo} - 50000
+					 GROUP BY USERID , CATE1
+		       ) A
+		UNION ALL
+		SELECT NULL, USERID, CATE1, 1, 'Y', 'BILLING_BATCH'
+		  FROM (
+					SELECT USERID , CATE1
+					  FROM MOB_SHOP_DATA
+					 WHERE NO > ${mobShopDataNo} - 50000
+					 GROUP BY USERID , CATE1
+		       ) B
+		) Z WHERE ADVER_CTGR_NM != '' AND NOT EXISTS (SELECT 1 FROM ADVER_PRDT_CTGR_INFO X WHERE Z.CTGR_LV = X.CTGR_LV AND Z.USERID = X.ADVER_ID AND Z.ADVER_CTGR_NM = X.ADVER_CTGR_NM)
+		;
+		INSERT INTO ADVER_PRDT_CTGR_INFO
+		(CTGR_HIRNK_SEQ , ADVER_ID , ADVER_CTGR_NM , CTGR_LV , USE_YN , REG_USER_ID)
+		SELECT DISTINCT * FROM (
+		SELECT CTGR_SEQ, USERID, CATE2 AS ADVER_CTGR_NM, 2 AS CTGR_LV, 'Y', 'BILLING_BATCH'
+		  FROM (
+					SELECT USERID , CATE2, CTGR_SEQ
+					  FROM SHOP_DATA A
+					     , ADVER_PRDT_CTGR_INFO B
+					 WHERE NO > ${shopDataNo} - 50000
+					   AND CATE2 != ''
+					   AND A.USERID = B.ADVER_ID
+					   AND A.CATE1 = B.ADVER_CTGR_NM
+					   AND B.CTGR_LV = 1
+					 GROUP BY USERID , CATE2, CTGR_SEQ
+		       ) A
+		UNION ALL
+		SELECT CTGR_SEQ, USERID, CATE2, 2, 'Y', 'BILLING_BATCH'
+		  FROM (
+					SELECT USERID , CATE2, CTGR_SEQ
+					  FROM MOB_SHOP_DATA A
+					  	 , ADVER_PRDT_CTGR_INFO B
+					 WHERE NO > ${mobShopDataNo} - 50000
+					   AND CATE2 != ''
+					   AND A.USERID = B.ADVER_ID
+					   AND A.CATE1 = B.ADVER_CTGR_NM
+					   AND B.CTGR_LV = 1
+					 GROUP BY USERID , CATE2, CTGR_SEQ
+		       ) B
+		) Z WHERE ADVER_CTGR_NM != '' AND NOT EXISTS (SELECT 1 FROM ADVER_PRDT_CTGR_INFO X WHERE Z.CTGR_LV = X.CTGR_LV AND Z.USERID = X.ADVER_ID AND Z.ADVER_CTGR_NM = X.ADVER_CTGR_NM)
+    <selectKey keyProperty="shopDataNo,mobShopDataNo" resultType="hashmap" order="AFTER">
+		SELECT MAX(shopDataNo) AS shopDataNo , MAX(mobShopDataNo) AS mobShopDataNo FROM (
+		SELECT * FROM (SELECT NO AS shopDataNo , 0 AS mobShopDataNo FROM SHOP_DATA ORDER BY NO DESC LIMIT 1) Z
+		UNION ALL
+		SELECT * FROM (SELECT 0 AS shopDataNo , NO AS mobShopDataNo FROM MOB_SHOP_DATA ORDER BY NO DESC LIMIT 1 ) X
+		) Y
+	</selectKey>
+    </insert>
+    
+    
+    <select id="selMaxShopNo" resultType="billingVo">
+    	SELECT MAX(shopDataNo) AS shopDataNo , MAX(mobShopDataNo) AS mobShopDataNo FROM (
+		SELECT * FROM (SELECT NO AS shopDataNo , 0 AS mobShopDataNo FROM SHOP_DATA ORDER BY NO DESC LIMIT 1) Z
+		UNION ALL
+		SELECT * FROM (SELECT 0 AS shopDataNo , NO AS mobShopDataNo FROM MOB_SHOP_DATA ORDER BY NO DESC LIMIT 1 ) X
+		) Y
+    </select>
+    
+    
+    
+    
+</mapper>
+

@@ -1,0 +1,17 @@
+spring:
+    billing:
+         datasource:
+            type: com.zaxxer.hikari.HikariDataSource
+            driver-class-name: com.mysql.cj.jdbc.Driver
+            jdbc-url: jdbc:mysql://192.168.2.80:3306/BILLING?characterEncoding=utf8&autoReconnect=true&serverTimezone=UTC
+            username: billing
+            password: qlf!@fld$#mobon
+---
+openrtbconfig:
+    devStatus: false
+    itlTpCodeList:
+        - '04'
+        - '05'
+        - '08'
+    #manuallyFilePath: C:\\Users\\Shin\\Desktop\\test\\check_date
+    manuallyFilePath: /home/dreamsearch/openrtb/correction/check/check_date

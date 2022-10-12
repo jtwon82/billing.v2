@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="frameDataMapper">
+
+	<select id="selectNOW" resultType="java.lang.String">
+		SELECT now() now
+	</select>
+
+	<insert id="insertFrameCycleLog" parameterType="List">
+		INSERT INTO FRME_CYCLE_LOG(
+			MEDIA_SCRIPT_NO, ALGM_SEQ, PRDT_TP_CODE, FRME_CODE, CYCLE_TRN
+				,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				,REG_USER_ID,REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.mediaCode}, #{I.frameSelector}, #{I.prdtTpCode}, #{I.frameId}, #{I.frameCycleNum}
+				, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+				, 'BATCH', NOW() )
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</insert>
+
+	<insert id="insertFrameDayStats" parameterType="List">
+		INSERT INTO FRME_DAY_STATS(
+			STATS_DTTM, MEDIA_SCRIPT_NO, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, FRME_CODE, FRME_SEND_TP_CODE
+				,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				,REG_USER_ID,REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, ${I.mediaCode}, #{I.frameSelector}, #{I.prdtTpCode}, #{I.advrtsTpCode}, #{I.frameId}, #{I.frameSendTpCode}
+				, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+				, 'BATCH', NOW() )
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</insert>
+	
+	<insert id="insertFrmeDayAbStats" parameterType="List">
+		INSERT INTO FRME_DAY_AB_STATS(
+			STATS_DTTM, MEDIA_SCRIPT_NO, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, FRME_CODE, FRME_SEND_TP_CODE , AB_TEST_TY
+				,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				,REG_USER_ID,REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+		(${I.yyyymmdd}, ${I.mediaCode}, #{I.frameSelector}, #{I.prdtTpCode}, #{I.advrtsTpCode}, #{I.frameId}, #{I.frameSendTpCode}, #{I.abTestTy}
+				, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+				, 'BATCH', NOW() )
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</insert>
+	
+	
+	<insert id="insertFrameTrnLog" parameterType="List">
+		INSERT INTO FRME_TRN_LOG(
+			FRME_CODE, CYCLE_TRN, ALGM_SEQ
+				,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				,REG_USER_ID, REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.frameId}, #{I.frameCycleNum}, #{I.frameSelector}
+				, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+				, 'BATCH', NOW() )
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</insert>
+
+	<insert id="insertFrameCombiDayStats" parameterType="List">
+		INSERT INTO FRME_COMBI_DAY_STATS(
+			STATS_DTTM, PAR_NO, ADVRTS_TP_CODE, FRME_COMBI_KEY
+				,ADVER_ID, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				,REG_USER_ID, REG_DTTM, CTGR_SEQ)
+			SELECT STATS_DTTM, PAR_NO, ADVRTS_TP_CODE, FRME_COMBI_KEY, ADVER_ID
+			     , SUM(PAR_EPRS_CNT) AS PAR_EPRS_CNT
+			     , SUM(CLICK_CNT) AS CLICK_CNT
+			     , SUM(ADVRTS_AMT) AS ADVRTS_AMT
+			     , SUM(ORDER_AMT) AS ORDER_AMT
+			     , SUM(ORDER_CNT) AS ORDER_CNT
+			     , 'BATCH' AS REG_USER_ID
+				 , NOW() AS REG_DTTM
+				 , CTGR_SEQ
+			  FROM (
+			<foreach item="I" collection="list" separator=" UNION ALL ">
+			SELECT ${I.yyyymmdd} AS STATS_DTTM
+			     , ${I.mediaCode} AS PAR_NO
+			     , #{I.advrtsTpCode} AS ADVRTS_TP_CODE
+			     , #{I.frameCombiKey} AS FRME_COMBI_KEY
+				 , #{I.userId} AS ADVER_ID
+				 , #{I.viewCnt3} AS PAR_EPRS_CNT
+				 , #{I.clickCnt} AS CLICK_CNT
+				 , #{I.point} AS ADVRTS_AMT
+				 , #{I.price} AS ORDER_AMT
+				 , #{I.orderCnt} AS ORDER_CNT
+				 , CTGR_SEQ 
+			  FROM dreamsearch.MOB_CTGR_USER_INFO WHERE USER_ID = #{I.userId} 
+			</foreach>
+			) Z
+			GROUP BY STATS_DTTM, PAR_NO, ADVRTS_TP_CODE, FRME_COMBI_KEY, ADVER_ID, CTGR_SEQ
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</insert>
+
+	<insert id="insertFrameAdverDayStats" parameterType="List">
+		INSERT INTO FRME_ADVER_DAY_STATS(
+		STATS_DTTM, ADVER_ID, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, BNR_CODE ,FRME_CODE, FRME_SEND_TP_CODE
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.userId} , #{I.frameSelector}, #{I.prdtTpCode}, #{I.advrtsTpCode}, #{I.bnrCode}, #{I.frameId}, #{I.frameSendTpCode}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT);
+	</insert>
+
+	<insert id="insertFrameAdverDayAbStats" parameterType="List">
+		INSERT INTO FRME_ADVER_DAY_AB_STATS(
+		STATS_DTTM, ADVER_ID, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, BNR_CODE ,FRME_CODE, FRME_SEND_TP_CODE, AB_TEST_TY
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.userId} , #{I.frameSelector}, #{I.prdtTpCode}, #{I.advrtsTpCode}, #{I.bnrCode}, #{I.frameId}, #{I.frameSendTpCode}, #{I.abTestTy}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT);
+	</insert>
+	
+	
+	<insert id="insertFrameSizeDataStats" parameterType="List">
+		
+		 INSERT INTO FRME_IMG_DAY_STATS (
+		STATS_DTTM , 
+		ADVER_ID , 
+		ALGM_SEQ ,
+		PLTFOM_TP_CODE , 
+		ADVRTS_PRDT_CODE ,
+		ADVRTS_TP_CODE , 
+		ITL_TP_CODE ,
+		BNR_CODE , 
+		FRME_SIZE , 
+		IMG_TP_CODE ,
+		CATE1_SEQ , 
+		SESS_ORDER_CNT, 
+		SESS_ORDER_AMT,
+		SESS2_ORDER_CNT, 
+		SESS2_ORDER_AMT, 
+		DIRECT_ORDER_CNT, 
+		DIRECT_ORDER_AMT,
+		PAR_EPRS_CNT ,
+		PAR_EPRS_CNT_D,
+		CLICK_CNT , 
+		ADVRTS_AMT , 
+		ORDER_AMT , 
+		ORDER_CNT ,
+		REG_USER_ID,
+		REG_DTTM,
+		ALT_USER_ID, 
+		ALT_DTTM
+		)
+		VALUES
+		<foreach collection="list" item="I" separator=" , ">
+			(
+			${I.yyyymmdd}, 
+			#{I.userId}, 
+			#{I.matrAlgmSeq}, 
+			#{I.platform}, 
+			#{I.product}, 
+			#{I.advrtsTpCode}, 
+			#{I.interlock},
+			#{I.bnrCode}, 
+			#{I.frameSize}, 
+			#{I.imgTpCode},
+			#{I.cate1}, 
+			#{I.sessionOrderCnt},
+			#{I.sessionOrderAmt},
+			#{I.browserSessionOrderCnt},
+			#{I.browserSessionOrderAmt},
+			#{I.directOrderCnt},
+			#{I.directOrderAmt},
+			#{I.viewCnt3},
+			#{I.divisionViewCnt}, 
+			#{I.clickCnt}, 
+			#{I.point}, 
+			#{I.price}, 
+			#{I.orderCnt},
+			'BATCH',
+			 NOW(),
+			 NULL ,
+			 NULL
+			)
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT),
+		PAR_EPRS_CNT_D = PAR_EPRS_CNT_D + VALUES(PAR_EPRS_CNT_D),
+		CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT), 
+		ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT),
+		ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT),
+		ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT),
+		SESS_ORDER_CNT =SESS_ORDER_CNT + VALUES(SESS_ORDER_CNT),
+		SESS_ORDER_AMT = SESS_ORDER_AMT + VALUES(SESS_ORDER_AMT),
+		SESS2_ORDER_CNT =SESS2_ORDER_CNT + VALUES(SESS2_ORDER_CNT),
+		SESS2_ORDER_AMT = SESS2_ORDER_AMT + VALUES(SESS2_ORDER_AMT), 
+		DIRECT_ORDER_CNT =DIRECT_ORDER_CNT + VALUES(DIRECT_ORDER_CNT), 
+		DIRECT_ORDER_AMT =DIRECT_ORDER_AMT + VALUES(DIRECT_ORDER_AMT),
+		ALT_USER_ID = 'BATCH',
+		ALT_DTTM = NOW()
+	</insert>
+	
+	<insert id="insertFrameActionLog" parameterType="List">
+	INSERT INTO BILLING.FRME_ACTION_LOG (
+	STATS_DTTM,
+	IP,
+	PRODUCT, 
+	ADVRTS_TP_CODE, 
+	SITE_CODE, 
+	PAR_NO, 
+	ADVER_ID , 
+	MEDIA_ID , 
+	ALGM_SEQ,
+	IMG_TP_CODE, 
+	CATE1_SEQ
+	) VALUES 
+		<foreach collection="list" item="I" separator=" , ">
+		(
+		${I.yyyymmdd},
+		#{I.ip},
+		#{I.product},
+		#{I.advrtsTpCode},
+		#{I.siteCode},
+		#{I.mediaCode},
+		#{I.userId},
+		#{I.scriptUserId},
+		#{I.frameSelector},
+		#{I.imgTpCode},
+		#{I.cate1}
+		)
+		</foreach>
+	</insert>
+
+	<insert id="insertFrameMediaAdverStats_02" parameterType="List">
+		INSERT INTO FRME_MEDIA_ADVER_STATS_W02(
+		STATS_DTTM, ALGM_SEQ, ADVER_ID, MEDIA_SCRIPT_NO, FRME_CODE
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.frameSelector}, #{I.userId} , #{I.mediaCode}, #{I.frameId}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT);
+	</insert>
+
+	<insert id="insertFrameMediaAdverStats_06" parameterType="List">
+		INSERT INTO FRME_MEDIA_ADVER_STATS_W06(
+		STATS_DTTM, ALGM_SEQ, ADVER_ID, MEDIA_SCRIPT_NO, FRME_CODE
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.frameSelector}, #{I.userId} , #{I.mediaCode}, #{I.frameId}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT);
+	</insert>
+
+	<insert id="insertFrameMediaAdverStats_12" parameterType="List">
+		INSERT INTO FRME_MEDIA_ADVER_STATS_W12(
+		STATS_DTTM, ALGM_SEQ, ADVER_ID, MEDIA_SCRIPT_NO, FRME_CODE
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.frameSelector}, #{I.userId} , #{I.mediaCode}, #{I.frameId}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT);
+	</insert>
+	
+	<insert id="insertFrmeAdverCtgrDayStats" parameterType="List">
+		INSERT INTO FRME_ADVER_PRDT_CTGR_DAY_STATS (
+		STATS_DTTM, ALGM_SEQ, PRDT_TP_CODE, ADVER_ID ,ADVRTS_TP_CODE, BNR_CODE ,FRME_CODE, CTGR_SEQ
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.frameSelector}, #{I.prdtTpCode}, #{I.userId}, #{I.advrtsTpCode}, #{I.bnrCode}, #{I.frameId}, #{I.ctgrNo}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT);
+	
+	</insert>
+	<insert id="insertFrameKaistCombiDayStats" parameterType="List">
+	INSERT INTO FRME_KAIST_COMBI_DAY_STATS(
+			STATS_DTTM, ALGM_SEQ, PAR_NO, ADVRTS_TP_CODE, FRME_COMBI_KEY
+				, ADVER_ID, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				, KAIST_RTN_CODE, REG_DTTM, CTGR_SEQ)
+			SELECT STATS_DTTM, ALGM_SEQ, PAR_NO, ADVRTS_TP_CODE, FRME_COMBI_KEY, ADVER_ID
+			     , SUM(PAR_EPRS_CNT) AS PAR_EPRS_CNT
+			     , SUM(CLICK_CNT) AS CLICK_CNT
+			     , SUM(ADVRTS_AMT) AS ADVRTS_AMT
+			     , SUM(ORDER_AMT) AS ORDER_AMT
+			     , SUM(ORDER_CNT) AS ORDER_CNT
+			     , KAIST_RTN_CODE
+				 , NOW() AS REG_DTTM
+				 , CTGR_SEQ
+			  FROM (
+			<foreach item="I" collection="list" separator=" UNION ALL ">
+			SELECT ${I.yyyymmdd} AS STATS_DTTM
+				 , ${I.frameSelector} AS ALGM_SEQ
+			     , ${I.mediaCode} AS PAR_NO
+			     , #{I.advrtsTpCode} AS ADVRTS_TP_CODE
+			     , #{I.frameCombiKey} AS FRME_COMBI_KEY
+				 , #{I.userId} AS ADVER_ID
+				 , #{I.viewCnt3} AS PAR_EPRS_CNT
+				 , #{I.clickCnt} AS CLICK_CNT
+				 , #{I.point} AS ADVRTS_AMT
+				 , #{I.price} AS ORDER_AMT
+				 , #{I.orderCnt} AS ORDER_CNT
+				 , #{I.frameKaistRstCode} AS KAIST_RTN_CODE
+				 , CTGR_SEQ 
+			  FROM dreamsearch.MOB_CTGR_USER_INFO WHERE USER_ID = #{I.userId} 
+			</foreach>
+			) Z
+			GROUP BY STATS_DTTM, ALGM_SEQ, PAR_NO, ADVRTS_TP_CODE, FRME_COMBI_KEY, ADVER_ID, CTGR_SEQ, KAIST_RTN_CODE
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_DTTM = NOW();
+	
+	</insert>
+
+	<insert id="insertFrameCodeStats" parameterType="List">
+		INSERT INTO FRME_CODE_STATS(
+		STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_TP_CODE, PRDT_TP_CODE, FRME_CODE
+		,PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+		, SESS_ORDER_AMT
+		, SESS_ORDER_CNT
+		, DIRECT_ORDER_AMT
+		, DIRECT_ORDER_CNT
+		,REG_USER_ID,REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.advrtsTpCode}, #{I.prdtTpCode}, #{I.frameId}
+			, #{I.viewCnt3}, #{I.clickCnt}, #{I.point}, #{I.price}, #{I.orderCnt}
+			, #{I.sessionOrderAmt}
+			, #{I.sessionOrderCnt}
+			, #{I.directOrderAmt}
+			, #{I.directOrderCnt}
+			, 'BATCH', NOW() )
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+		, SESS_ORDER_AMT = SESS_ORDER_AMT+VALUES(SESS_ORDER_AMT)
+		, SESS_ORDER_CNT = SESS_ORDER_CNT+VALUES(SESS_ORDER_CNT)
+		, DIRECT_ORDER_AMT = DIRECT_ORDER_AMT+VALUES(DIRECT_ORDER_AMT)
+		, DIRECT_ORDER_CNT = DIRECT_ORDER_CNT+VALUES(DIRECT_ORDER_CNT)
+		, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</insert>
+	
+	<insert id="insertFrmeCtgrDayStats" parameterType="List">
+	INSERT INTO FRME_CTGR_DAY_STATS(
+			STATS_DTTM, MEDIA_SCRIPT_NO, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, FRME_CODE, CTGR_SEQ, FRME_SEND_TP_CODE
+				,PAR_EPRS_CNT, CLICK_CNT,  ADVRTS_AMT, ORDER_AMT, ORDER_CNT
+				,REG_DTTM)
+			SELECT STATS_DTTM, MEDIA_SCRIPT_NO, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, FRME_CODE, CTGR_SEQ, FRME_SEND_TP_CODE
+				,SUM(PAR_EPRS_CNT), SUM(CLICK_CNT),  SUM(ADVRTS_AMT), SUM(ORDER_AMT), SUM(ORDER_CNT) , NOW() AS REG_DTTM
+		FROM (
+			<foreach item="I" collection="list" separator=" UNION ALL ">
+				SELECT ${I.yyyymmdd} AS STATS_DTTM
+				, ${I.mediaCode} AS MEDIA_SCRIPT_NO
+				, #{I.frameSelector} AS ALGM_SEQ
+				, #{I.prdtTpCode} AS PRDT_TP_CODE
+				, #{I.advrtsTpCode} AS ADVRTS_TP_CODE
+				, #{I.frameId} AS FRME_CODE
+				, D.CTGR_SEQ
+				, #{I.frameSendTpCode} AS FRME_SEND_TP_CODE
+				, #{I.viewCnt3} AS PAR_EPRS_CNT
+				, #{I.clickCnt} AS CLICK_CNT
+				, #{I.point} AS ADVRTS_AMT
+				, #{I.price} AS ORDER_AMT
+				, #{I.orderCnt} AS ORDER_CNT
+				FROM dreamsearch.MOB_CTGR_USER_INFO A
+				, dreamsearch.MOB_CTGR_INFO B -- 3 DEPTH
+				, dreamsearch.MOB_CTGR_INFO C -- 2 DEPTH
+				, dreamsearch.MOB_CTGR_INFO D -- 1 DEPTH
+				WHERE A.USER_ID = #{I.userId}
+				AND B.CTGR_SEQ = A.CTGR_SEQ
+				AND B.HIRNK_CTGR_SEQ = C.CTGR_SEQ
+				AND C.HIRNK_CTGR_SEQ = D.CTGR_SEQ
+			</foreach>
+		) Z GROUP BY STATS_DTTM, MEDIA_SCRIPT_NO, ALGM_SEQ, PRDT_TP_CODE, ADVRTS_TP_CODE, FRME_CODE, CTGR_SEQ, FRME_SEND_TP_CODE
+			ON DUPLICATE KEY UPDATE
+				PAR_EPRS_CNT = PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT+VALUES(CLICK_CNT) 
+				, ADVRTS_AMT = ADVRTS_AMT+VALUES(ADVRTS_AMT), ORDER_AMT = ORDER_AMT+VALUES(ORDER_AMT), ORDER_CNT = ORDER_CNT+VALUES(ORDER_CNT)
+				, ALT_DTTM = NOW();
+	
+	</insert>
+</mapper>
+

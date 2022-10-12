@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="knoKpiDataMapper">
+
+	<select id="getCurrentData" resultType="Map">
+		SELECT now() now
+	</select>
+
+	<update id="INSERT_KPI_MEDIA_STATS" parameterType="List">
+		INSERT INTO MOB_KPI_MEDIA_STATS
+				(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE
+					, ADVER_ID, KPI_NO, MEDIA_ID, MEDIA_SCRIPT_NO
+					, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.hh}, #{I.platformCode}, #{I.productCode}, #{I.adGubunCode}
+					, <choose>
+						<when test="I.scriptUserId=='kakao' or I.scriptUserId=='mkakao'">'03'</when>
+						<when test="I.scriptUserId=='agooglemedia' or I.scriptUserId=='googlemedia' or I.scriptUserId=='mgooglemedia'">'04'</when>
+						<when test="I.scriptUserId=='igaworks' or I.scriptUserId=='igaworks02' or I.scriptUserId=='igaworksm' or I.scriptUserId=='igaworksp'">'08'</when>
+						<when test="I.scriptUserId=='rtbmobon'">'10'</when>
+						<otherwise>'01'</otherwise></choose>
+					, #{I.advertiserId}, #{I.kpiNo}, #{I.scriptUserId}, #{I.scriptNo}
+					, ${I.viewCnt}, ${I.viewCnt3}
+					, <choose>
+						<when test="I.productCode=='03'">${I.viewCnt}</when>
+						<otherwise>${I.clickCnt}</otherwise>
+						</choose>
+					, ${I.point})
+			</foreach>
+			;
+	</update>
+	
+</mapper>

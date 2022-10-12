@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<!-- 시간 -->
+	<task:scheduled-tasks scheduler="mySchedulerHH">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaHH"
+			fixed-delay="10000" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerHH" />
+	<!-- 일 -->
+	<task:scheduled-tasks scheduler="mySchedulerDD">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaDD"
+			cron="*/30 * * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerDD" />
+	
+	
+
+	<!-- 시간 배치 처리 지연시 MOB_COM_HH_STATS_INFO 테이블(화면사용)을 우선 집계하는 방어용 스케쥴 -->
+	<task:scheduled-tasks scheduler="mySchedulerCOMINFODefHH">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaCOMINFODefHH"
+			fixed-delay="100000" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerCOMINFODefHH" />
+	
+	<!-- 시간 데이타 보정 배치 -->
+	<task:scheduled-tasks scheduler="mySchedulerRevision">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaRevisionHH"
+			cron="0 20,50 * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerRevision" />
+
+	<!-- 일자별로 매체데이타 백업 -->
+	<task:scheduled-tasks scheduler="myScheduler-snapShotMediaScript">
+		<task:scheduled ref="taskHHtoHHDD" method="snapShotMediaScript" cron="0 0 7 * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler-snapShotMediaScript" />
+
+
+
+
+
+
+
+	<!-- MediaChrg 일 -->
+	<!-- 일배치로 해당 스케쥴 이동
+	<task:scheduled-tasks scheduler="mySchedulerDDMediaChrg">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaDDMediaChrg"
+			cron="0 30,0 * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerDDMediaChrg" />
+    -->
+
+	<!-- IntgCntr 일 (20분마다) -->
+	<task:scheduled-tasks scheduler="mySchedulerDDIntgCntr">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaDDIntgCntr"
+			cron="0 0/20 * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerDDIntgCntr" />
+
+	<!-- IntgCntrConv 일 (20분마다) -->
+	<task:scheduled-tasks scheduler="mySchedulerDDIntgCntrConv">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaDDIntgCntrConv"
+			cron="0 0/20 * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerDDIntgCntrConv" />
+
+
+
+	<!-- 타겟 광고주 월별시간통계 (일1회) -->
+	<task:scheduled-tasks scheduler="mySchedulerAdverMTHhh">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaAdverMTHhh" cron="0 0 3 * * *" />
+<!-- 		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaAdverMTHhh" cron="*/60 * * * * *" /> -->
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerAdverMTHhh" />
+
+
+	<!-- parGatrMTH (일1회) -->
+<!-- 	<task:scheduled-tasks scheduler="mySchedulerParGatrMTH"> -->
+<!-- 		<task:scheduled ref="taskHHtoHHDD" method="mongoToParGatrMTH" cron="0 0 16 * * *" /> -->
+<!-- 		<task:scheduled ref="taskHHtoHHDD" method="mongoToParGatrMTH" cron="*/30 * * * * *" /> -->
+<!-- 	</task:scheduled-tasks> -->
+<!-- 	<task:scheduler id="mySchedulerParGatrMTH" /> -->
+
+
+	<!-- 지역 -->
+	<task:scheduled-tasks scheduler="myScheduler-Near">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaNear"
+			fixed-delay="300000" />
+		<!-- <task:scheduled ref="taskHHtoHHDD" method="mongoToMariaNear" cron="0 
+			5,25,45 * * * *" /> -->
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler-Near" />
+	<!-- 지역 보정 -->
+	<task:scheduled-tasks scheduler="mySchedulerNearRevision">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToNearRevision"
+			cron="0 10 04 * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerNearRevision" />
+
+
+	<!-- 플레이링크 -->
+	<task:scheduled-tasks scheduler="mySchedulerPLink">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToMariaPlank"
+			fixed-delay="300000" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerPLink" />
+
+
+	<!-- DreamSearch status_conversion 데이타 저장 -->
+	<task:scheduled-tasks scheduler="mySchedulerDreamConvDB">
+		<task:scheduled ref="taskHHtoHHDD" method="mongoToDreamConvDB"
+			cron="0 10 03 * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerDreamConvDB" />
+
+	<!-- 상품 카테고리 정보 잭저 배치 -->
+	<task:scheduled-tasks scheduler="mySchedulerShopInfo">
+		<task:scheduled ref="taskHHtoHHDD" method="insertadverPrdtCtgrInfo"
+			fixed-delay="100000" />
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerShopInfo" />
+	
+	
+
+	<!-- * * 23 * * * -->
+	<!-- Seconds YES 0-59 , - * / -->
+	<!-- Minutes YES 0-59 , - * / -->
+	<!-- Hours YES 0-23 , - * / -->
+	<!-- Day of month YES 1-31 , - * ? / L W -->
+	<!-- Month YES 1-12 or JAN-DEC , - * / -->
+	<!-- Day of week YES 1-7 or SUN-SAT , - * ? / L # -->
+	<!-- Year NO empty, 1970-2099 , - * / -->
+
+</beans>

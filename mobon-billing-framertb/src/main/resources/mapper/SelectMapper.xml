@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="selectMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+	<select id="selectNow" resultType="Map" >
+		SELECT NOW() NOW
+	</select>
+
+	<select id="selectAdgubunKey_old" resultType="Map" useCache="true">
+		/* 키그룹 조회하기 */
+		SELECT b.code_val adGubun, a.w platform
+		FROM (
+			SELECT 'W'w UNION SELECT 'M'w
+		)a, (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b
+	</select>
+	
+	<select id="selectAdgubunKey" resultType="Map" useCache="true">
+		/* 키그룹 조회하기 : ClickView */
+		SELECT b.CODE_ID adGubun, c.CODE_VAL scriptNo
+		FROM (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b, (
+			SELECT CODE_VAL-1 CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='HH_TP_CODE' AND CODE_VAL BETWEEN 1 AND 10
+		)c
+	</select>
+
+	<select id="selectAdvrtsTpCode"  resultType="Map">
+   	    /* SELECT : ADVRTS_TP_CODE */
+		SELECT CODE_ID
+		     , CODE_VAL
+		  FROM dreamsearch.MOBON_COM_CODE
+		  LEFT OUTER JOIN (SELECT SUM(TOT_EPRS_CNT) TOT_EPRS_CNT , ADVRTS_TP_CODE 
+								   FROM MOB_MEDIA_PAR_MTH_STATS 
+								  WHERE STATS_MTH = CAST(DATE_FORMAT(NOW(),'%Y%m') AS INT)
+								  GROUP BY ADVRTS_TP_CODE
+								) Z ON CODE_ID = ADVRTS_TP_CODE
+		 WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		 ORDER BY IFNULL(Z.TOT_EPRS_CNT,0) DESC , CODE_ID DESC
+	</select>
+	
+	<select id = "selectInhourActionLog" resultType="Map">
+			SELECT 
+			CASE
+			 WHEN TIMESTAMPDIFF(HOUR, A.REG_DTTM, #{sendDate})<![CDATA[ <= ]]> #{cookieDirect} 
+			 THEN '24' 
+			 ELSE '0'END inHour,
+			 CASE 
+			WHEN TIMESTAMPDIFF(SECOND,A.REG_DTTM, #{sendDate}) <![CDATA[<= ]]> 1800
+			THEN '1'
+			ELSE '0' END broswerSession
+			FROM 
+				BILLING.FRME_ACTION_LOG AS A
+			WHERE
+				A.IP = #{ip}
+				AND A.ADVER_ID = #{userId}
+				AND A.PAR_NO = #{mediaCode}
+				AND A.SITE_CODE = #{siteCode}
+				AND A.CATE1_SEQ = #{cate1}
+				AND A.ALGM_SEQ = #{frameSelector}
+				AND A.IMG_TP_CODE = #{imgTpCode}
+				AND A.STATS_DTTM <![CDATA[ >= ]]> ${recognitionYyyymmdd}
+				AND A.STATS_DTTM <![CDATA[ <= ]]> ${yyyymmdd}
+				AND A.NO = (
+					SELECT 
+						MAX(A1.NO)
+					FROM BILLING.FRME_ACTION_LOG A1 
+					WHERE 
+					A1.IP = #{ip}
+					AND A1.ADVER_ID = #{userId}
+					AND A1.PAR_NO = #{mediaCode}
+					AND A1.SITE_CODE = #{siteCode}
+					AND A1.CATE1_SEQ = #{cate1}
+					AND A1.ALGM_SEQ = #{frameSelector}
+					AND A1.IMG_TP_CODE = #{imgTpCode}
+					AND A1.STATS_DTTM <![CDATA[ >= ]]> ${recognitionYyyymmdd}
+					AND A1.STATS_DTTM <![CDATA[ <= ]]> ${yyyymmdd}
+					)
+	</select>
+	<select id="selectDisCollectMediaNo" resultType="Integer">
+		SELECT MEDIA_SCRIPT_NO FROM dreamsearch.FRME_MEDIA_INFO WHERE PAR_TP_CODE!='01'
+	</select>
+</mapper>

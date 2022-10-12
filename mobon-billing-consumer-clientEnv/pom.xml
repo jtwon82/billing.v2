@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>mobon-billing</groupId>
+		<artifactId>mobon-billing</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>mobon-billing-consumer-clientEnv</groupId>
+	<artifactId>mobon-billing-consumer-clientEnv</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>mobon-billing-consumer-clientEnv</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<env></env>
+		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+		<buildNumber>${maven.build.timestamp}</buildNumber>
+		<fileName>${project.groupId}-${project.version}</fileName>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>localConsumerClientEnv</id>
+			<properties>
+				<start-class>org.mobon.billing.consumer.AppConsumer</start-class>
+				<fileName>billing-ClientEnv-${project.version}.localClientEnv.${buildNumber}</fileName>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>devConsumerClientEnv</id>
+			<properties>
+				<start-class>org.mobon.billing.consumer.AppConsumer</start-class>
+				<fileName>billing-ClientEnv-${project.version}.devClientEnv.${buildNumber}</fileName>
+			</properties>
+		</profile>
+		<profile>
+			<id>realConsumerClientEnv</id>
+			<properties>
+				<start-class>org.mobon.billing.consumer.AppConsumer</start-class>
+				<fileName>billing-ClientEnv-${project.version}.realClientEnv.${buildNumber}</fileName>
+			</properties>
+		</profile>
+		<profile>
+			<id>localConsumerClientEnvHA</id>
+			<properties>
+				<start-class>org.mobon.billing.consumer.AppConsumer</start-class>
+				<fileName>billing-ClientEnv-${project.version}.localClientEnvHA.${buildNumber}</fileName>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>devConsumerClientEnvHA</id>
+			<properties>
+				<start-class>org.mobon.billing.consumer.AppConsumer</start-class>
+				<fileName>billing-ClientEnv-${project.version}.devClientEnvHA.${buildNumber}</fileName>
+			</properties>
+		</profile>
+		<profile>
+			<id>realConsumerClientEnvHA</id>
+			<properties>
+				<start-class>org.mobon.billing.consumer.AppConsumer</start-class>
+				<fileName>billing-ClientEnv-${project.version}.realClientEnvHA.${buildNumber}</fileName>
+			</properties>
+		</profile>
+	</profiles>
+	
+	<build>
+		<finalName>${fileName}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>1.4.2.RELEASE</version>
+    			<executions>
+	                <execution>
+	                    <configuration>
+	                        <mainClass>${start-class}</mainClass>
+	                    </configuration>
+	                </execution>
+	            </executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerArgument>-Xlint:all</compilerArgument>
+					<showWarnings>false</showWarnings>
+					<showDeprecation>false</showDeprecation>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>mobon-billing</groupId>
+			<artifactId>mobon-data</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>mobon-billing-resource</groupId>
+			<artifactId>mobon-billing-resource</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>mobon-billing-core</groupId>
+			<artifactId>mobon-billing-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		
+<!-- log4jdbc -->
+		<dependency>
+		    <groupId>org.bgee.log4jdbc-log4j2</groupId>
+		    <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+		    <version>1.16</version>
+		</dependency>
+				<!-- mariadb driver -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+		</dependency>
+		<!-- Spring Kafka -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.springframework.kafka</groupId> -->
+<!-- 			<artifactId>spring-kafka</artifactId> -->
+<!-- 		</dependency> -->
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.41</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.owlike</groupId>
+		    <artifactId>genson</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

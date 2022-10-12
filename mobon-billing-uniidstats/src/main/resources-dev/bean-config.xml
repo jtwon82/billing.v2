@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="UseridVoWorkQueue" class="com.mobon.billing.uniidstats.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="UseridVoWorkQueue" />
+		<constructor-arg index="1" value="3" />
+	</bean>
+
+	<bean id="RetryWorkQueue" class="com.mobon.billing.uniidstats.service.WorkQueue">
+		<constructor-arg index="0" value="RetryWorkQueue" />
+		<constructor-arg index="1" value="1" />
+	</bean>
+
+</beans>

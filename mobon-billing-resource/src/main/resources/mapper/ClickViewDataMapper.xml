@@ -1,0 +1,1937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="clickViewDataMapper">
+
+	<update id="sp_point_NEW" parameterType="java.util.List">
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				UPDATE admember
+				SET POINT = POINT - ${I.point}, lastupdate= NOW()
+					WHERE userid = #{I.advertiserId};
+			</if>
+			<if test="I.mpoint>0">
+				UPDATE admember
+				SET mpoint = mpoint + ${I.mpoint}, lastupdate= NOW()
+					WHERE userid = #{I.scriptUserId};
+			</if>
+		</foreach>
+	</update>
+
+
+	<sql id="sp_sky_view_NEW">
+		/* sp_sky_view_NEW HH 1-1   */ INSERT INTO MOB_CAMP_MEDIA_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+			
+			
+			
+		/* sp_sky_view_NEW DD 1-2 */ INSERT INTO MOB_CAMP_MEDIA_STATS
+		(STATS_DTTM,  PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</sql>
+	<update id="sp_sky_view_NEW_NK" parameterType="List">
+		<include refid="sp_sky_view_NEW"/>
+	</update>
+	<update id="sp_sky_view_NEW_K" parameterType="List">
+		INSERT INTO MOB_KWRD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, KWRD_APPN_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.kno}, #{I.interlock}
+				, #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_sky_view_point_billing_NEW" parameterType="java.util.List">
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				UPDATE admember
+				SET POINT=POINT - #{I.point}, lastupdate=NOW()
+					WHERE userid = #{I.advertiserId};
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney + #{I.point}
+					WHERE site_code=#{I.siteCode} AND svc_type='sky';
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney + #{I.point}
+					WHERE site_code_s=#{I.siteCode} AND svc_type='sky' AND gubun=#{I.adGubun};
+					
+			</if>
+			<if test="I.mpoint>0">
+				UPDATE admember
+				SET mpoint=mpoint + #{I.mpoint}, lastupdate=NOW()
+					WHERE userid = #{I.scriptUserId};
+			</if>
+		</foreach>
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<sql id="sp_sky_click_NEW">
+		/* sp_sky_click_NEW HH 3-2 */ INSERT INTO MOB_CAMP_MEDIA_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, TRGT_CLICK_CNT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.clickCnt}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+			
+			
+			
+		/* sp_sky_click_NEW DD 3-2 */ INSERT INTO MOB_CAMP_MEDIA_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, TRGT_CLICK_CNT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.clickCnt}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+			
+			
+			
+	</sql>
+	<update id="sp_sky_click_NEW_NK" parameterType="java.util.List">
+		<include refid="sp_sky_click_NEW"/>
+	</update>
+	<update id="sp_sky_click_NEW_K" parameterType="java.util.List">
+		INSERT INTO MOB_KWRD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, KWRD_APPN_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, TRGT_CLICK_CNT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.kno}, #{I.interlock}
+				, #{I.clickCnt}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+
+
+	<update id="SQL_INSERT_OPEN_RTB_STATIS_INFO">
+		INSERT INTO OpenRTB.ORTB_CAMP_MEDIA_HH_STATS(
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, ADVER_ID, MEDIA_ID
+			,TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, STATS_ALT_DT, REG_DTTM
+			)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">			
+			(
+				${I.yyyymmdd}, #{I.hh}
+				, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.advertiserId}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, <choose>
+					<when test="I.clickCnt == null or I.clickCnt == 0 "><choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose></when>
+					<otherwise>#{I.clickCnt}</otherwise>
+				</choose>
+				, #{I.point}, #{I.mpoint}
+				, CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT)			
+				, NOW()
+			)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				ALT_DTTM = NOW()
+				, TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+				, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+				, MEDIA_PYMNT_AMT = MEDIA_PYMNT_AMT + VALUES(MEDIA_PYMNT_AMT)
+				, STATS_ALT_DT = CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT)
+			;			
+			
+		INSERT INTO OpenRTB.ORTB_CAMP_MEDIA_STATS(
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, ADVER_ID, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM
+			)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">			
+			(
+				${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.advertiserId}, #{I.scriptUserId}	
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, <choose>
+					<when test="I.clickCnt == null or I.clickCnt == 0 "><choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose></when>
+					<otherwise>#{I.clickCnt}</otherwise>
+				</choose>
+				, #{I.point}, #{I.mpoint}
+				, NOW()			
+			)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				ALT_DTTM = NOW()
+				, TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+				, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+				, MEDIA_PYMNT_AMT = MEDIA_PYMNT_AMT + VALUES(MEDIA_PYMNT_AMT)
+			;	
+		</update>
+		<update id="SQL_INSERT_BILLING_STATS">
+		INSERT INTO BILLING.MOB_CAMP_MEDIA_STATS (
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, ADVER_ID, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT,TRGT_ADVRTS_AMT
+			,REG_USER_ID , REG_DTTM
+			) VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(
+				${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}, #{I.advertiserId}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt3}, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'OPENRTB', NOW()
+				)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			ALT_DTTM = NOW()
+			, TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT)
+			, PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+			, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, MEDIA_PYMNT_AMT = MEDIA_PYMNT_AMT + VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT = TRGT_EPRS_CNT + VALUES(TRGT_EPRS_CNT)
+			, TRGT_PAR_EPRS_CNT = TRGT_PAR_EPRS_CNT + VALUES(TRGT_PAR_EPRS_CNT)
+			, TRGT_CLICK_CNT = TRGT_CLICK_CNT + VALUES(TRGT_CLICK_CNT)
+			, TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT)
+			;
+
+			INSERT INTO BILLING.MOB_CAMP_MEDIA_HH_STATS  (
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, ADVER_ID, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT ,TRGT_ADVRTS_AMT
+			,REG_USER_ID , REG_DTTM , STATS_ALT_DT
+			) VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(
+				${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}, #{I.advertiserId}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt3}, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'OPENRTB', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT)
+				)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			ALT_DTTM = NOW()
+			, TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+			, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+			, MEDIA_PYMNT_AMT = MEDIA_PYMNT_AMT + VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT = TRGT_EPRS_CNT + VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT = TRGT_PAR_EPRS_CNT + VALUES(TRGT_PAR_EPRS_CNT)
+			, TRGT_CLICK_CNT = TRGT_CLICK_CNT + VALUES(TRGT_CLICK_CNT)
+			, TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT)
+			;
+
+
+		</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<sql id="sp_banner_view_NEW">
+		/* sp_banner_view_NEW HH 3-2 */ INSERT INTO MOB_CAMP_MEDIA_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+
+
+		/* sp_banner_view_NEW DD 3-2 */ INSERT INTO MOB_CAMP_MEDIA_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+
+	</sql>
+	<update id="sp_banner_view_NEW_NK" parameterType="java.util.List">
+		<include refid="sp_banner_view_NEW"/>
+	</update>
+	<update id="sp_banner_view_NEW_K" parameterType="java.util.List">
+		INSERT INTO MOB_KWRD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, KWRD_APPN_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.kno}, #{I.interlock}
+				, <choose><when test="I.adGubun=='02' or I.adGubun=='09'">1</when><otherwise>#{I.viewCnt}</otherwise></choose>
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_banner_view_point_mobon_NEW" parameterType="java.util.List">
+		<foreach item="I" collection="list">
+			<if test="I.mpoint>0">
+				UPDATE admember SET mpoint=mpoint+#{I.mpoint}, lastupdate=NOW() WHERE userid = #{I.scriptUserId};
+			</if>
+			<if test="I.point>0">
+				UPDATE admember SET point=point-#{I.point}, lastupdate=NOW() WHERE userid = #{I.advertiserId};
+			</if>
+		</foreach>
+	</update>
+	
+	<update id="sp_banner_pl_view_NEW" parameterType="java.util.List">
+		/* playlink : PLINK_AVAL_STATS_INS */
+	    INSERT INTO PLINK_AVAL_STATS_INS
+			(STATS_DTTM, PLTFOM_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO
+		    	, ADVER_AVAL_CNT, MEDIA_AVAL_CNT, ADVER_SALAMT, MEDIA_SALAMT, ADVER_ID
+		    	, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.siteCode}, #{I.scriptNo}
+				, ${I.plAdviewCnt}, ${I.plMediaViewCnt}, ${I.point}, ${I.mpoint}, #{I.advertiserId}
+				, 'BATCH', NOW())
+			</foreach>;
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	<sql id="sp_banner_click_NEW">
+		/* sp_banner_click_NEW HH 3-2 */ INSERT INTO MOB_CAMP_MEDIA_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+			
+			
+		/* sp_banner_click_NEW DD 3-2 */ INSERT INTO MOB_CAMP_MEDIA_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+			
+	</sql>
+	<update id="sp_banner_click_NEW_NK" parameterType="java.util.List">
+		<include refid="sp_banner_click_NEW"/>
+	</update>
+	<update id="sp_banner_click_NEW_K" parameterType="java.util.List">
+		INSERT INTO MOB_KWRD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, KWRD_APPN_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.kno}, #{I.interlock}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_banner_click_point_billing_NEW" parameterType="java.util.List">
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				UPDATE admember SET POINT = POINT - ${I.point}, lastupdate=NOW() WHERE userid = #{I.advertiserId};
+				<choose>
+					<when test="I.scriptUserId=='kakao' or I.scriptUserId=='mkakao'">
+						<if test='I.rtbUseMoneyYn=="Y"'>
+							<if test="I.platform=='01'">
+								UPDATE adsite_rtb_info SET w_usedmoney = w_usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+							</if>
+							<if test="I.platform=='02'">
+								UPDATE adsite_rtb_info SET m_usedmoney = m_usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+							</if>
+						</if>
+						<if test='I.rtbUseMoneyYn=="N"'>
+							UPDATE adsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+						</if>
+					</when>
+					<otherwise>
+						<choose>
+							<when test="I.product=='02' or I.product=='03'">
+								UPDATE iadsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+							</when>
+							<when test="I.product=='06'">
+								UPDATE iadsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode} AND svc_type = 'pl';
+							</when>
+							<otherwise>
+								<choose>
+									<when test="I.adGubun=='02' or I.adGubun=='03' or I.adGubun=='13' or I.adGubun=='14'">
+										UPDATE iadsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+									</when>
+									<otherwise>
+										UPDATE adsite SET usedmoney = usedmoney + ${I.point} WHERE site_code = #{I.siteCode};
+									</otherwise>
+								</choose>
+							</otherwise>
+						</choose>
+					</otherwise>
+				</choose>
+			</if>
+			<if test="I.mpoint>0">
+				UPDATE admember SET mpoint=mpoint + ${I.mpoint}, lastupdate=NOW() WHERE userid = #{I.scriptUserId};
+			</if>
+		</foreach>
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<sql id="sp_ico_view_NEW">
+		/* sp_ico_view_NEW HH 3-2 */ INSERT INTO MOB_CAMP_MEDIA_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt}, #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+			
+			
+		/* sp_ico_view_NEW DD 3-2 */ INSERT INTO MOB_CAMP_MEDIA_STATS
+		(STATS_DTTM,  PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt}, #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</sql>
+	<update id="sp_ico_view_NEW_NK" parameterType="java.util.List">
+		<include refid="sp_ico_view_NEW"/>
+	</update>
+	<update id="sp_ico_view_NEW_K" parameterType="java.util.List">
+		INSERT INTO MOB_KWRD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, KWRD_APPN_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.kno}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_ico_view_point_billing_NEW" parameterType="java.util.List">
+		<foreach item="I" collection="list">
+			<if test="I.point>0">
+				UPDATE admember
+				SET POINT=POINT-#{I.point}, lastupdate=NOW()
+					WHERE userid = #{I.advertiserId};
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney+#{I.point}
+					WHERE site_code=#{I.siteCode} AND svc_type='';
+					
+				UPDATE iadsite
+				SET usedmoney=usedmoney+#{I.point}
+					WHERE site_code_s=#{I.siteCode} AND svc_type='' AND gubun = #{I.adGubun};
+			</if>
+			<if test="I.mpoint>0">
+				UPDATE admember
+				SET mpoint=mpoint+#{I.mpoint}, lastupdate=NOW()
+					WHERE userid = #{I.scriptUserId};
+			</if>
+			
+		</foreach>
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 
+
+	<update id="update_CAMP_MEDIA_STATS" parameterType="java.util.List">
+		/* sp_external_NEW HH 3-2 */ INSERT INTO MOB_CAMP_MEDIA_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, '99', #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(),STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+			
+			
+		/* sp_external_NEW DD 3-2 */ INSERT INTO MOB_CAMP_MEDIA_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();			
+	</update>
+	
+<!-- 	<update id="sp_external_point_NEW_PV" parameterType="java.util.List"> -->
+<!-- 		/* sp_external_point_NEW_PV */ -->
+<!-- 		INSERT INTO external_report_TEST(sdate, userid, zoneid, media_id, media_site, media_code, ad_type, gubun, transmit, regdate -->
+<!-- 			, totalcall, viewcnt, viewcnt_mobon, clickcnt, clickcnt_mobon, passback -->
+<!-- 			, imv, point, ppoint) -->
+<!-- 		VALUES -->
+<!-- 			<foreach item="I" collection="list" separator=" , "> -->
+<!-- 			(${I.yyyymmdd} -->
+<!-- 				, <choose><when test="I.advertiserId==''">''</when><otherwise>#{I.advertiserId}</otherwise></choose> -->
+<!-- 				, #{I.zoneId}, #{I.scriptUserId}, #{I.mediaSite}, #{I.scriptNo}, #{I.adType}, #{I.adGubun}, #{I.transmit}, NOW() -->
+<!-- 				, #{I.totalCall}, #{I.viewCnt}, #{I.viewCntMobon}, #{I.clickCnt}, #{I.clickCntMobon}, #{I.passbackCnt} -->
+<!-- 				, #{I.imv}, #{I.point}, #{I.mpoint} ) -->
+<!-- 			</foreach> -->
+<!-- 		ON DUPLICATE KEY UPDATE -->
+<!-- 			passback=passback+VALUES(passback), viewcnt_mobon=viewcnt_mobon+VALUES(viewcnt_mobon); -->
+<!-- 	</update> -->
+<!-- 	<update id="sp_external_point_NEW_C" parameterType="java.util.List"> -->
+<!-- 		/* sp_external_point_NEW_C */ -->
+<!-- 		INSERT INTO external_report_TEST(sdate, userid, zoneid, media_id, media_site, media_code, ad_type, gubun, transmit, regdate -->
+<!-- 			, totalcall, viewcnt, viewcnt_mobon, clickcnt, clickcnt_mobon, passback -->
+<!-- 			, imv, point, ppoint) -->
+<!-- 		VALUES -->
+<!-- 			<foreach item="I" collection="list" separator=" , "> -->
+<!-- 			(${I.yyyymmdd} -->
+<!-- 				, <choose><when test="I.advertiserId==''">''</when><otherwise>#{I.advertiserId}</otherwise></choose> -->
+<!-- 				, #{I.zoneId}, #{I.scriptUserId}, #{I.mediaSite}, #{I.scriptNo}, #{I.adType}, #{I.adGubun}, #{I.transmit}, NOW() -->
+<!-- 				, #{I.totalCall}, #{I.viewCnt}, #{I.viewCntMobon}, #{I.clickCnt}, #{I.clickCntMobon}, #{I.passbackCnt} -->
+<!-- 				, #{I.imv}, #{I.point}, #{I.mpoint} ) -->
+<!-- 			</foreach> -->
+<!-- 		ON DUPLICATE KEY UPDATE clickcnt_mobon=clickcnt_mobon+VALUES(clickcnt_mobon), point=point+VALUES(point); -->
+<!-- 	</update> -->
+	
+	<update id="update_EXL_ITL_RCV_STATS" parameterType="java.util.List">
+		INSERT INTO BILLING.EXL_ITL_RCV_STATS
+			(STATS_DTTM, EXL_ITL_SEQ
+				, TOT_EPRS_CNT, PAR_EPRS_CNT, EXL_ITL_EPRS_CNT, EXL_ITL_CLICK_CNT, ADVRTS_AMT, PB_CNT
+				, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, ${I.exl_seq}
+				, ${I.totalCall}, ${I.viewCntMobon}, ${I.viewCnt}, ${I.clickCnt}, ${I.point}, ${I.passbackCnt}
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), EXL_ITL_EPRS_CNT=EXL_ITL_EPRS_CNT+VALUES(EXL_ITL_EPRS_CNT)
+			, EXL_ITL_CLICK_CNT=EXL_ITL_CLICK_CNT+VALUES(EXL_ITL_CLICK_CNT), ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), PB_CNT=PB_CNT+VALUES(PB_CNT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</update>
+	<update id="update_EXL_ITL_SEND_STATS" parameterType="java.util.List">
+		INSERT INTO BILLING.EXL_ITL_SEND_HH_STATS
+			(STATS_DTTM, STATS_HH, SEND_TP_CODE, PAR_NO
+				, PAR_EPRS_CNT, CLICK_CNT, PB_CNT
+				, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.send_tp_code}, #{I.scriptNo}
+				, ${I.viewCnt}, ${I.clickCnt}, ${I.passbackCnt}
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), PB_CNT = PB_CNT + VALUES(PB_CNT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+			
+			
+		INSERT INTO BILLING.EXL_ITL_SEND_STATS
+			(STATS_DTTM, SEND_TP_CODE, PAR_NO
+				, PAR_EPRS_CNT, CLICK_CNT, PB_CNT
+				, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.send_tp_code}, #{I.scriptNo}
+				, ${I.viewCnt}, ${I.clickCnt}, ${I.passbackCnt}
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT), CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), PB_CNT = PB_CNT + VALUES(PB_CNT)
+			, ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</update>
+	
+	<update id="update_SSP_ITL_STATS" parameterType="java.util.List">
+		INSERT INTO SSP_ITL_STATS(STATS_DTTM, SSP_MEDIA_SEQ
+			, TOT_EPRS_CNT, SSP_ITL_EPRS_CNT, SSP_ITL_CLICK_CNT, ADVRTS_AMT, ADVRTS_AMT_USD
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.mediaSeq}
+				, ${I.totalCall}, ${I.viewCnt}, ${I.clickCnt}, ${I.point}, ${I.pointUSD}
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), SSP_ITL_EPRS_CNT = SSP_ITL_EPRS_CNT + VALUES(SSP_ITL_EPRS_CNT)
+			, SSP_ITL_CLICK_CNT = SSP_ITL_CLICK_CNT + VALUES(SSP_ITL_CLICK_CNT), ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+		, ADVRTS_AMT_USD = ADVRTS_AMT_USD + VALUES(ADVRTS_AMT_USD), ALT_USER_ID = 'BATCH', ALT_DTTM = NOW();
+	</update>
+	 
+	 
+<!-- 	<update id="sp_external_point_NEW" parameterType="java.util.List"> -->
+<!-- 		/* sp_external_point_NEW */ -->
+<!-- 		INSERT INTO admember_verify2_TEST(sdate, hh, userid, point, mpoint, reg_date) -->
+<!-- 		VALUES -->
+<!-- 		<foreach item="I" collection="list" separator=" , "> -->
+<!-- 			(${I.yyyymmdd}, #{I.hh}, #{I.advertiserId}, -${I.point}, ${I.mpoint}, now()) -->
+<!-- 		</foreach>; -->
+<!-- 		INSERT INTO adsite_verify2_TEST(sdate, hh, userid, site_code, usedmoney, reg_date) -->
+<!-- 		VALUES -->
+<!-- 		<foreach item="I" collection="list" separator=" , "> -->
+<!-- 			(${I.yyyymmdd}, #{I.hh}, #{I.advertiserId}, #{I.siteCode}, ${I.point}, now()) -->
+<!-- 		</foreach>; -->
+<!-- 	</update> -->
+<!-- 	<update id="sp_external_point_NEW_P" parameterType="java.util.List"> -->
+<!-- 		/* sp_external_point_NEW_P */ -->
+<!-- 		INSERT INTO external_report_TEST(sdate, userid, zoneid, media_id, media_site, media_code, ad_type, gubun, transmit, regdate -->
+<!-- 			, totalcall, viewcnt, viewcnt_mobon, clickcnt, clickcnt_mobon, passback -->
+<!-- 			, imv, point, ppoint) -->
+<!-- 		VALUES -->
+<!-- 			<foreach item="I" collection="list" separator=" , "> -->
+<!-- 			(${I.yyyymmdd} -->
+<!-- 				, <choose><when test="I.advertiserId==''">''</when><otherwise>#{I.advertiserId}</otherwise></choose> -->
+<!-- 				, #{I.zoneId}, #{I.scriptUserId}, #{I.mediaSite}, #{I.scriptNo}, #{I.adType}, #{I.adGubun}, #{I.transmit}, NOW() -->
+<!-- 				, #{I.totalCall}, #{I.viewCnt}, #{I.viewCntMobon}, #{I.clickCnt}, #{I.clickCntMobon}, #{I.passbackCnt} -->
+<!-- 				, #{I.imv}, #{I.point}, #{I.mpoint} ) -->
+<!-- 			</foreach> -->
+<!-- 		ON DUPLICATE KEY UPDATE passback=passback+VALUES(passback); -->
+<!-- 	</update> -->
+<!-- 	<update id="sp_external_point_NEW_V" parameterType="java.util.List"> -->
+<!-- 		/* sp_external_point_NEW_V */ -->
+<!-- 		INSERT INTO external_report_TEST(sdate, userid, zoneid, media_id, media_site, media_code, ad_type, gubun, transmit, regdate -->
+<!-- 			, totalcall, viewcnt, viewcnt_mobon, clickcnt, clickcnt_mobon, passback -->
+<!-- 			, imv, point, ppoint) -->
+<!-- 		VALUES -->
+<!-- 			<foreach item="I" collection="list" separator=" , "> -->
+<!-- 			(${I.yyyymmdd} -->
+<!-- 				, <choose><when test="I.advertiserId==''">''</when><otherwise>#{I.advertiserId}</otherwise></choose> -->
+<!-- 				, #{I.zoneId}, #{I.scriptUserId}, #{I.mediaSite}, #{I.scriptNo}, #{I.adType}, #{I.adGubun}, #{I.transmit}, NOW() -->
+<!-- 				, #{I.totalCall}, #{I.viewCnt}, #{I.viewCntMobon}, #{I.clickCnt}, #{I.clickCntMobon}, #{I.passbackCnt} -->
+<!-- 				, #{I.imv}, #{I.point}, #{I.mpoint} ) -->
+<!-- 			</foreach> -->
+<!-- 		ON DUPLICATE KEY UPDATE viewcnt_mobon=viewcnt_mobon+VALUES(viewcnt_mobon); -->
+<!-- 	</update> -->
+<!-- 	<update id="sp_external_point_NEW_step2" parameterType="java.util.List"> -->
+<!-- 		/* sp_external_point_NEW_STEP2 */ -->
+<!-- 		INSERT INTO external_report_TEST -->
+<!-- 			(sdate, media_site, media_code, zoneid, media_id, userid, ad_type, gubun -->
+<!-- 			, totalcall, viewcnt, viewcnt_mobon, clickcnt, clickcnt_mobon, imv, point, ppoint -->
+<!-- 			, regdate) -->
+<!-- 		VALUES -->
+<!-- 			<foreach item="I" collection="list" separator=" , "> -->
+<!-- 				(${I.yyyymmdd}, #{I.mediaSite}, #{I.scriptNo}, #{I.zoneId}, #{I.scriptUserId}, #{I.advertiserId}, #{I.adType}, #{I.adGubun} -->
+<!-- 				, #{I.totalCall}, #{I.viewCnt}, #{I.viewCntMobon}, #{I.clickCnt}, #{I.clickCntMobon}, #{I.imv}, #{I.point}, #{I.ppoint} -->
+<!-- 				, now()) -->
+<!-- 			</foreach> -->
+<!-- 		ON DUPLICATE KEY UPDATE  -->
+<!-- 			totalcall=totalcall+VALUES(totalcall) -->
+<!-- 			, imv=imv+VALUES(imv), viewcnt=viewcnt+VALUES(viewcnt), clickcnt=clickcnt+VALUES(clickcnt), point=point+VALUES(point), ppoint=ppoint+VALUES(ppoint); -->
+<!-- 	</update> -->
+
+
+		<update id="unexposure_camp_media_click_banner">
+			/* unexposure_camp_media_click_banner HH */ INSERT INTO MOB_CAMP_MEDIA_UNEXPOSURE_HH_STATS
+			(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+
+
+			/* unexposure_camp_media_click_banner DD */ INSERT INTO MOB_CAMP_MEDIA_UNEXPOSURE_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+		</update>
+
+		<update id="unexposure_camp_media_view_banner">
+			/* unexposure_camp_media_view_banner HH */ INSERT INTO MOB_CAMP_MEDIA_UNEXPOSURE_HH_STATS
+			(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+
+
+			/* unexposure_camp_media_view_banner DD */ INSERT INTO MOB_CAMP_MEDIA_UNEXPOSURE_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+		</update>
+
+		<update id="unexposure_camp_media_ico">
+			/* unexposure_camp_media_ico HH */ INSERT INTO MOB_CAMP_MEDIA_UNEXPOSURE_HH_STATS
+			(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT , CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, STATS_ALT_DT, ADVER_ID, MEDIA_ID)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt} , #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), CAST(DATE_FORMAT(NOW(),'%Y%m%d%H%i') AS INT), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT) , CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW(), STATS_ALT_DT = DATE_FORMAT(NOW(),'%Y%m%d%H%i');
+
+
+			/* unexposure_camp_media_ico DD */ INSERT INTO MOB_CAMP_MEDIA_UNEXPOSURE_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT , CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM, ADVER_ID, MEDIA_ID)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.scriptNo}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt} , #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW(), #{I.advertiserId}, #{I.scriptUserId})
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT) , CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+		</update>
+
+
+		<update id="adblock_adver_click_banner">
+
+			/* adblock_adver_click_banner */ INSERT INTO ADBLOCK_ADVER_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, ADBLOCK_YN
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, IF(#{I.mainDomainYN}='Y','N','Y')
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+		</update>
+
+		<update id="adblock_adver_view_banner">
+
+			/* adblock_adver_view_banner */ INSERT INTO ADBLOCK_ADVER_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, ADBLOCK_YN
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, IF(#{I.mainDomainYN}='Y','N','Y')
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+		</update>
+
+		<update id="adblock_adver_ico">
+
+			/* adblock_adver_ico */ INSERT INTO ADBLOCK_ADVER_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, ADBLOCK_YN
+			, TOT_EPRS_CNT, PAR_EPRS_CNT , CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+			VALUES
+			<foreach item="I" collection="list" separator=" , ">
+				(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, IF(#{I.mainDomainYN}='Y','N','Y')
+				, #{I.viewCnt}, #{I.viewCnt} , #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT) , CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+		</update>
+        
+	<update id="crossAUID_adver_click_banner">
+
+		/* corssauid_adver_click_banner */ INSERT INTO CROSS_DEVICE_ADVER_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, CROSS_DEVICE_YN
+		, CLICK_CNT
+		, ADVRTS_AMT, MEDIA_PYMNT_AMT
+		, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+		, REG_USER_ID, REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, IF(#{I.isCrossAuIdYN}=true,'Y','N')
+			, #{I.clickCnt}
+			, #{I.point}, #{I.mpoint}
+			<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+			</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			, 'BATCH', NOW())
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+		, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+		, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+	</update>
+
+	<update id="crossAUID_adver_view_banner">
+
+		/* crossAUID_adver_view_banner */ INSERT INTO CROSS_DEVICE_ADVER_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, CROSS_DEVICE_YN
+		, TOT_EPRS_CNT, PAR_EPRS_CNT
+		, ADVRTS_AMT, MEDIA_PYMNT_AMT
+		, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+		, REG_USER_ID, REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, IF(#{I.isCrossAuIdYN}=true,'Y','N')
+			, #{I.viewCnt}, #{I.viewCnt3}
+			, #{I.point}, #{I.mpoint}
+			 <choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			, 'BATCH', NOW())
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+		, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+		, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+		, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+	</update>
+
+	<update id="crossAUID_adver_ico">
+
+		/* crossAUID_adver_ico */ INSERT INTO CROSS_DEVICE_ADVER_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, CROSS_DEVICE_YN
+		, TOT_EPRS_CNT, PAR_EPRS_CNT , CLICK_CNT
+		, ADVRTS_AMT, MEDIA_PYMNT_AMT
+		, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+		, REG_USER_ID, REG_DTTM)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, IF(#{I.isCrossAuIdYN}=true,'Y','N')
+			, #{I.viewCnt}, #{I.viewCnt} , #{I.viewCnt}
+			, #{I.point}, #{I.mpoint}
+			 <choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			, 'BATCH', NOW())
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT) , CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+		, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+		, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+		, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+
+	</update>
+	
+	<update id="camp_media_unique_click">
+		INSERT INTO BILLING.MOB_CAMP_MEDIA_UNIQCLICK_RENEW_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, IP, ITL_TP_CODE
+			, UNIQUE_CNT, TOT_CLICK_CNT, ADVRTS_AMT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, ADVER_ID)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.keyIp}, #{I.interlock}
+			, '1', #{I.clickCnt}, #{I.point}
+			<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+			, #{I.advertiserId}
+			)
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_CLICK_CNT=TOT_CLICK_CNT+VALUES(TOT_CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_DTTM=NOW();
+	</update>
+</mapper>
+

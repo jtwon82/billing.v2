@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<task:scheduled-tasks scheduler="myScheduler">
+		<!-- 		<task:scheduled ref="nearDataLogZip" method="logFileZip" cron="0 5 * * * *" /> -->
+		<!--		<task:scheduled ref="convLogZip" method="logFileZip" cron="0 10 * * * *" /> -->
+		<task:scheduled ref="externalLogZip" method="logFileZip" cron="0 10 * * * *" />
+		<task:scheduled ref="shopLogZip" method="logShopFileZip" cron="0 10 * * * *" />
+		<task:scheduled ref="fromAppDataLogZip" method="logFileZip" cron="0 20 * * * *" />
+		<!-- <task:scheduled ref="advertiserDataLogZip" method="logFileZip" cron="0 20 * * * *" /> -->
+		<task:scheduled ref="succConvLogZip2" method="logFileZip" cron = "0 20 * * * *"/>
+		<!--		<task:scheduled ref="rfDataLogZip" method="logFileZip" cron="0 20 * * * *" /> -->
+		<!-- 		<task:scheduled ref="consumerLogZip" method="logFileZip" cron="0 45 * * * *" />  -->
+		<task:scheduled ref="insiteDataLogZip" method="logFileStarter" cron="0 30 * * * *"/>
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler" />
+
+	<task:scheduled-tasks scheduler="myScheduler2">
+		<task:scheduled ref="billingService" method="chkingBeforeHourData" cron="0 */10 * * * *" />
+		<task:scheduled ref="billingService" method="buildBatchRunningTime" cron="0 */4 * * * *" />
+		<task:scheduled ref="billingService" method="buildReportCtr" cron="0 28 */1 * * *" />
+		<task:scheduled ref="billingService" method="selectChkingZeroViewClickConv" cron="0 */1 * * * *" />
+ 		<task:scheduled ref="billingService" method="buildRebuildConversionMonitor" cron="0 */5 * * * *" />
+		<task:scheduled ref="billingService" method="buildFrameMonitor" cron="1 1 1 * * 1" />
+ 		
+		<!-- 		<task:scheduled ref="billingService" method="buildMediaChrgMonitor" cron="0 4,24,44 8-23 * * *" /> -->
+		<task:scheduled ref="clickViewPointLogZip" method="logClickViewPointFileZip" cron="0 20 * * * *" />
+		<task:scheduled ref="algoViewDataLogZip" method="logFileZip" cron="0 30 * * * *" />
+		<task:scheduled ref="openRtbDataLogZip" method="logFileZip" cron="0 35 * * * *" />
+		<!--	<task:scheduled ref="pointLogZip" method="PointFileZip" cron="0 40 * * * *"/>-->
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler2" />
+
+	<task:scheduled-tasks scheduler="myScheduler3">
+		<task:scheduled ref="frequencyFileUpper" method="doing" cron="0 25 * * * *" />
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler3" />
+	<!-- * * 23 * * * -->
+	<!-- Seconds YES 0-59 , - * / -->
+	<!-- Minutes YES 0-59 , - * / -->
+	<!-- Hours YES 0-23 , - * / -->
+	<!-- Day of month YES 1-31 , - * ? / L W -->
+	<!-- Month YES 1-12 or JAN-DEC , - * / -->
+	<!-- Day of week YES 1-7 or SUN-SAT , - * ? / L # -->
+	<!-- Year NO empty, 1970-2099 , - * / -->
+
+</beans>

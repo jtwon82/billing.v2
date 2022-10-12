@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="basketDataMapper">
+	
+    <update id="insertBasketData" parameterType="List">
+        INSERT INTO BILLING.MOB_CART_LOG
+        (STATS_DTTM, IP, AU_ID, ADVER_ID, PCODE, PNM, CART_TP_CODE, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, PAR_NO, MEDIA_ID, MEDIA_TP_CODE,
+        SESION_SELNG_YN , SESION_SELNG2_YN , DIRECT_YN, CLICK_DTTM)
+        VALUES
+        <foreach item="I" collection="list" separator=" , ">
+        (
+        #{I.statsDttm}, #{I.ip}, #{I.auid}, #{I.adverId}, #{I.pcode}, #{I.pnm}, #{I.cartTpCode}, #{I.platfromTpCode},
+            #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.parNo} , #{I.mediaId},
+            #{I.mediaTpCode}, #{I.sessionSelngYn} , #{I.sessionSelng2Yn},
+            case when TIMESTAMPDIFF(DAY,DATE_FORMAT(#{I.clickDttm}, '%Y-%m-%d %H:%i:%s'), NOW()) <![CDATA[<= ]]> #{I.direct} then 'Y' else 'N' end ,
+            DATE_FORMAT(#{I.clickDttm}, '%Y-%m-%d %H:%i:%s')
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE REG_DTTM = NOW()
+        ;
+    </update>
+
+
+</mapper>
