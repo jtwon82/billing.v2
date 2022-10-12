@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>mobon-billing</groupId>
+		<artifactId>mobon-billing</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	
+	<groupId>mobon-billing-frequency</groupId>
+	<artifactId>mobon-billing-frequency</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>mobon-billing-frequency</name>
+	<packaging>jar</packaging>
+	
+	<!-- Properties -->
+	<properties>
+		<project.database>maria</project.database>
+		<java.version>1.8</java.version>
+		<deploy.target.dir>target/${project.name}</deploy.target.dir>
+		<project.resources>${project.basedir}/src/main/resources</project.resources>
+		<deploy.target.dir>target/${project.name}</deploy.target.dir>
+		<deploy.target.lib.dir>${project.basedir}/${deploy.target.dir}/lib</deploy.target.lib.dir>
+	</properties>
+
+	<!-- Profiles -->
+	<profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>local_${project.database}</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>real</id>
+			<properties>
+				<build.profile.id>real_${project.database}</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+
+	<!-- Dependencies -->
+	<dependencies>
+
+		<!-- SpringBoot -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-configuration-processor</artifactId>
+        	<optional>true</optional>
+        </dependency>
+		
+		<!-- SpringBatch -->
+        <dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-core</artifactId>
+			<version>4.0.0.RELEASE</version>
+		</dependency>
+		
+		<!-- SpringBatch unit test -->
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-test</artifactId>
+			<version>2.2.0.RELEASE</version>
+		</dependency>
+		
+		<!-- DB Connector -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+			 <version>1.4.1.RELEASE</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.mariadb.jdbc</groupId>
+		    <artifactId>mariadb-java-client</artifactId>
+		    <version>2.3.0</version>
+		</dependency>
+		<dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.37</version>
+        </dependency>
+		
+		<!-- Mybatis -->
+		<dependency>
+		    <groupId>org.mybatis.spring.boot</groupId>
+		    <artifactId>mybatis-spring-boot-starter</artifactId>
+		    <version>1.3.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis</artifactId>
+		    <version>3.4.5</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis-spring</artifactId>
+		    <version>2.0.1</version>
+		</dependency>
+		
+		<!-- Json -->		
+		<dependency>
+		    <groupId>com.googlecode.json-simple</groupId>
+		    <artifactId>json-simple</artifactId>
+		    <version>1.1.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>2.9.8</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>2.9.8</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20160810</version>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>1.7.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>	
+		
+		<!-- 기타 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.4</version>
+		</dependency>
+		
+	</dependencies>
+
+
+	<build>
+
+		<!-- resources -->
+		<resources>
+			<resource>
+				<filtering>true</filtering>
+		 		<directory>src/main/resources</directory>
+		 	</resource>
+   		</resources>
+
+		<!-- filters -->
+   		<filters>
+			<filter>profile/${build.profile.id}.properties</filter>
+		</filters>
+
+		<!-- plugins -->
+		<plugins>
+				
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<!-- maven-resources-plugin -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+			        <id>copy-resources-1</id>
+			        <phase>compile</phase>
+			        <goals>
+			          <goal>copy-resources</goal>
+			        </goals>
+			        <configuration>
+			        	<encoding>utf8</encoding>
+			          	<outputDirectory>${deploy.target.dir}</outputDirectory>
+			          <resources>
+			            <resource>
+		                  <directory>${project.resources}</directory>
+				          <excludes>
+					          <exclude>*.yml</exclude>
+					          <exclude>*.xml</exclude>
+					          <exclude>*.properties</exclude>
+				          </excludes>
+		                  <filtering>true</filtering>
+		                </resource>
+			          </resources>
+			        </configuration>
+			      </execution>
+			      <execution>
+			        <id>copy-resources-2</id>
+			        <phase>compile</phase>
+			        <goals>
+			          <goal>copy-resources</goal>
+			        </goals>
+			        <configuration>
+			          <outputDirectory>${deploy.target.dir}/conf</outputDirectory>
+			          <resources>
+			           <resource>
+		                  <directory>${project.resources}</directory>
+		                  <includes>
+					          <include>*.yml</include>
+ 					          <include>*.xml</include>
+ 					          <exclude>*.properties</exclude>
+				          </includes>
+		                  <filtering>true</filtering>
+		                </resource>
+			          </resources>
+			        </configuration>
+			      </execution>
+				</executions>
+		 	</plugin>
+			
+			<!-- maven-jar-plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<includes>
+						<include>**/*.class</include>
+					</includes>
+				
+					<finalName>${jar.name}</finalName>
+					<!-- jar 파일이 생성될 폴더 -->
+					<outputDirectory>${deploy.target.lib.dir}</outputDirectory>
+					<archive>
+						<manifest>
+							<!-- public static void main() 함수가 있는 클래스 지정 -->
+							<mainClass>com.mobon.billing.frequency.FrequencyActor</mainClass>
+							  
+							<!-- jar 파일 META-INF/MANIFEST.MF 에 클래스패스 정보 추가 -->
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>. resources/</Class-Path>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			
+			<!-- package 실행할때 프로젝트 디펜던시들을 특정폴더로 복사해주게 설정  -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${deploy.target.lib.dir}</outputDirectory>
+					<overWriteIfNewer>true</overWriteIfNewer>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>

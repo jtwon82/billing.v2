@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+<!-- 	<appender name="dailyRollingDebug" class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!-- 		<File>logs/log4j/kafka-hHtoDD.debuglog.log</File> -->
+<!-- 		<encoder> -->
+<!-- 			<charset>UTF-8</charset> -->
+<!-- 			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C [%L] %m %n</pattern> -->
+<!-- 		</encoder> -->
+<!-- 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!-- 			<fileNamePattern>logs/log4j/kafka-hHtoDD.debuglog.log.%d{yyyy-MM-dd}</fileNamePattern> -->
+<!-- 			<maxHistory>5</maxHistory> -->
+<!-- 		</rollingPolicy> -->
+<!-- 	</appender> -->
+
+	<appender name="dailyRollingInfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/log4j/kafka-hHtoDD.infolog.log</File>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C{1} [%L] %m %n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/log4j/kafka-hHtoDD.infolog.log.%d{yyyy-MM-dd}</fileNamePattern>
+			<maxHistory>5</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="dailyRollingError" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>logs/log4j/kafka-hHtoDD.errorlog.log</File>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] [%thread] %C{1} [%L] %m %n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/log4j/kafka-hHtoDD.errorlog.log.%d{yyyy-MM-dd}</fileNamePattern>
+			<maxHistory>5</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%-5p][%d{yyyy-MM-dd HH:mm:ss}] %C{1} [%L] %m %n</pattern>
+		</encoder>
+    </appender>
+
+    <logger name="com.mobon" level="INFO" />
+    <logger name="net.sf.json" level="OFF" />
+
+    <root level="INFO">
+<!--         <appender-ref ref="dailyRollingDebug" /> -->
+        <appender-ref ref="dailyRollingInfo" />
+        <appender-ref ref="dailyRollingError" />
+<!--         <appender-ref ref="STDOUT" /> -->
+    </root>
+
+</configuration>

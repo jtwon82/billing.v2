@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mediaChrgDataMapper">
+
+
+	<update id="sp_sky_view_NEW_MEDIAID" parameterType="List">
+		/* sp_sky_view_NEW_MEDIAID */
+		INSERT INTO MOB_MEDIA_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptUserId}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_sky_view_NEW_SCRIPT" parameterType="List">
+		/* sp_sky_view_NEW_SCRIPT */
+		INSERT INTO MOB_MEDIA_SCRIPT_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, MEDIA_TP_CODE, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.interlock}
+				, #{I.mediaTpCode}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt3}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_sky_click_NEW_MEDIAID" parameterType="java.util.List">
+		/* sp_sky_click_NEW_MEDIAID */
+		INSERT INTO MOB_MEDIA_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+			, CLICK_CNT
+			, TRGT_CLICK_CNT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptUserId}, #{I.interlock}
+				, #{I.clickCnt}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_sky_click_NEW_SCRIPT" parameterType="java.util.List">
+		/* sp_sky_click_NEW_SCRIPT */
+		INSERT INTO MOB_MEDIA_SCRIPT_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE 
+			, MEDIA_TP_CODE, MEDIA_ID
+			, CLICK_CNT
+			, TRGT_CLICK_CNT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.interlock}
+				, #{I.mediaTpCode}, #{I.scriptUserId}
+				, #{I.clickCnt}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+
+
+	<update id="sp_banner_view_NEW_MEDIAID" parameterType="java.util.List">
+		/* sp_banner_view_NEW_MEDIAID */
+		INSERT INTO MOB_MEDIA_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptUserId}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_banner_view_NEW_SCRIPT" parameterType="java.util.List">
+		/* sp_banner_view_NEW_SCRIPT */
+		INSERT INTO MOB_MEDIA_SCRIPT_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, MEDIA_TP_CODE, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.interlock}
+				, #{I.mediaTpCode}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_banner_click_NEW_MEDIAID" parameterType="java.util.List">
+		/* sp_banner_click_NEW_MEDIAID */
+		INSERT INTO MOB_MEDIA_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptUserId}, #{I.interlock}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_banner_click_NEW_SCRIPT" parameterType="java.util.List">
+		/* sp_banner_click_NEW_SCRIPT */
+		INSERT INTO MOB_MEDIA_SCRIPT_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, MEDIA_TP_CODE, MEDIA_ID
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.interlock}
+				, #{I.mediaTpCode}, #{I.scriptUserId}
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+
+	<update id="sp_banner_NOTYPE_NEW_SCRIPT" parameterType="java.util.List">
+		/* sp_banner_NOTYPE_NEW_SCRIPT : 외부연동데이터 */
+		INSERT INTO MOB_MEDIA_SCRIPT_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, MEDIA_TP_CODE, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.interlock}
+				, #{I.mediaTpCode}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt}, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+	
+	
+
+
+	<update id="sp_ico_view_NEW_MEDIAID" parameterType="java.util.List">
+		/* sp_ico_view_NEW_MEDIAID */
+		INSERT INTO MOB_MEDIA_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptUserId}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt}, #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	<update id="sp_ico_view_NEW_SCRIPT" parameterType="java.util.List">
+		/* sp_ico_view_NEW_SCRIPT */
+		INSERT INTO MOB_MEDIA_SCRIPT_CHRG_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE
+			, MEDIA_TP_CODE, MEDIA_ID
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.scriptNo}, #{I.interlock}
+				, #{I.mediaTpCode}, #{I.scriptUserId}
+				, #{I.viewCnt}, #{I.viewCnt}, #{I.viewCnt}
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT), CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+
+	 
+	 
+	 
+	 
+	 <select id="selectMediaChrgReBuildDate" resultType="Map">
+	 	/* selectMediaChrgReBuildDate */
+		SELECT a.STATS_DTTM
+		FROM (
+			SELECT 'MOB_MEDIA_SCRIPT_STATS'G, STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+				, SUM(TOT_EPRS_CNT)TOT_EPRS_CNT, SUM(PAR_EPRS_CNT)PAR_EPRS_CNT, SUM(CLICK_CNT)CLICK_CNT, SUM(ADVRTS_AMT)ADVRTS_AMT, SUM(MEDIA_PYMNT_AMT)MEDIA_PYMNT_AMT
+				, SUM(TRGT_EPRS_CNT)TRGT_EPRS_CNT, SUM(TRGT_PAR_EPRS_CNT)TRGT_PAR_EPRS_CNT, SUM(TRGT_CLICK_CNT)TRGT_CLICK_CNT, SUM(TRGT_ADVRTS_AMT)TRGT_ADVRTS_AMT
+			FROM BILLING.MOB_MEDIA_SCRIPT_STATS a JOIN dreamsearch.media_script b ON a.MEDIA_SCRIPT_NO = b.NO
+			WHERE b.EPRS_REST_RATE=100 AND STATS_DTTM BETWEEN DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -10 DAY), '%Y%m%d') AND DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1 DAY), '%Y%m%d')
+			GROUP BY STATS_DTTM
+		)a LEFT JOIN (
+			SELECT 'MOB_MEDIA_SCRIPT_CHRG_STATS'G, STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+				, SUM(TOT_EPRS_CNT)TOT_EPRS_CNT, SUM(PAR_EPRS_CNT)PAR_EPRS_CNT, SUM(CLICK_CNT)CLICK_CNT, SUM(ADVRTS_AMT)ADVRTS_AMT, SUM(MEDIA_PYMNT_AMT)MEDIA_PYMNT_AMT
+				, SUM(TRGT_EPRS_CNT)TRGT_EPRS_CNT, SUM(TRGT_PAR_EPRS_CNT)TRGT_PAR_EPRS_CNT, SUM(TRGT_CLICK_CNT)TRGT_CLICK_CNT, SUM(TRGT_ADVRTS_AMT)TRGT_ADVRTS_AMT
+			FROM BILLING.MOB_MEDIA_SCRIPT_CHRG_STATS a JOIN dreamsearch.media_script b ON a.MEDIA_SCRIPT_NO = b.NO
+			WHERE b.EPRS_REST_RATE=100 AND STATS_DTTM BETWEEN DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -10 DAY), '%Y%m%d') AND DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1 DAY), '%Y%m%d')
+			GROUP BY STATS_DTTM
+		)b
+		ON a.STATS_DTTM=b.STATS_DTTM AND b.PLTFOM_TP_CODE=b.PLTFOM_TP_CODE AND a.ADVRTS_PRDT_CODE=b.ADVRTS_PRDT_CODE AND a.ADVRTS_TP_CODE=b.ADVRTS_TP_CODE AND a.MEDIA_SCRIPT_NO=b.MEDIA_SCRIPT_NO
+			AND a.ITL_TP_CODE=b.ITL_TP_CODE AND a.MEDIA_TP_CODE=b.MEDIA_TP_CODE AND a.MEDIA_ID=b.MEDIA_ID
+		WHERE (a.TOT_EPRS_CNT!=b.TOT_EPRS_CNT OR a.PAR_EPRS_CNT!=b.PAR_EPRS_CNT OR a.CLICK_CNT!=b.CLICK_CNT )
+		GROUP BY a.STATS_DTTM;
+	 </select>
+	 
+	 <update id="updateMediaChrgStep1" parameterType="Map">
+	 	/* updateMediaChrgStep1 : updateMediaChrgStep1 */
+		INSERT INTO BILLING.MOB_MEDIA_SCRIPT_CHRG_STATS(
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+				, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+				, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			)
+			SELECT * FROM (
+				SELECT a.STATS_DTTM, a.PLTFOM_TP_CODE, a.ADVRTS_PRDT_CODE, a.ADVRTS_TP_CODE, a.MEDIA_SCRIPT_NO, a.ITL_TP_CODE, a.MEDIA_TP_CODE, a.MEDIA_ID
+					, SUM(a.TOT_EPRS_CNT)TOT_EPRS_CNT, SUM(a.PAR_EPRS_CNT)PAR_EPRS_CNT, SUM(a.CLICK_CNT)CLICK_CNT
+					, SUM(a.ADVRTS_AMT)ADVRTS_AMT, SUM(a.MEDIA_PYMNT_AMT)MEDIA_PYMNT_AMT
+					, SUM(a.TRGT_EPRS_CNT)TRGT_EPRS_CNT, SUM(a.TRGT_PAR_EPRS_CNT)TRGT_PAR_EPRS_CNT, SUM(a.TRGT_CLICK_CNT)TRGT_CLICK_CNT, SUM(a.TRGT_ADVRTS_AMT)TRGT_ADVRTS_AMT
+				FROM (
+					SELECT 'MOB_MEDIA_SCRIPT_STATS'G, STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+					, SUM(TOT_EPRS_CNT)TOT_EPRS_CNT, SUM(PAR_EPRS_CNT)PAR_EPRS_CNT, SUM(CLICK_CNT)CLICK_CNT, SUM(ADVRTS_AMT)ADVRTS_AMT, SUM(MEDIA_PYMNT_AMT)MEDIA_PYMNT_AMT
+					, SUM(TRGT_EPRS_CNT)TRGT_EPRS_CNT, SUM(TRGT_PAR_EPRS_CNT)TRGT_PAR_EPRS_CNT, SUM(TRGT_CLICK_CNT)TRGT_CLICK_CNT, SUM(TRGT_ADVRTS_AMT)TRGT_ADVRTS_AMT
+					FROM BILLING.MOB_MEDIA_SCRIPT_STATS a JOIN dreamsearch.media_script b ON a.MEDIA_SCRIPT_NO = b.NO
+					WHERE b.EPRS_REST_RATE=100 AND STATS_DTTM = ${STATS_DTTM}
+					GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+				)a LEFT JOIN (
+					SELECT 'MOB_MEDIA_SCRIPT_CHRG_STATS'G, STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+					, SUM(TOT_EPRS_CNT)TOT_EPRS_CNT, SUM(PAR_EPRS_CNT)PAR_EPRS_CNT, SUM(CLICK_CNT)CLICK_CNT, SUM(ADVRTS_AMT)ADVRTS_AMT, SUM(MEDIA_PYMNT_AMT)MEDIA_PYMNT_AMT
+					, SUM(TRGT_EPRS_CNT)TRGT_EPRS_CNT, SUM(TRGT_PAR_EPRS_CNT)TRGT_PAR_EPRS_CNT, SUM(TRGT_CLICK_CNT)TRGT_CLICK_CNT, SUM(TRGT_ADVRTS_AMT)TRGT_ADVRTS_AMT
+					FROM BILLING.MOB_MEDIA_SCRIPT_CHRG_STATS a JOIN dreamsearch.media_script b ON a.MEDIA_SCRIPT_NO = b.NO
+					WHERE b.EPRS_REST_RATE=100 AND STATS_DTTM = ${STATS_DTTM}
+					GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, MEDIA_TP_CODE, MEDIA_ID
+				)b
+				ON a.STATS_DTTM=b.STATS_DTTM AND b.PLTFOM_TP_CODE=b.PLTFOM_TP_CODE AND a.ADVRTS_PRDT_CODE=b.ADVRTS_PRDT_CODE AND a.ADVRTS_TP_CODE=b.ADVRTS_TP_CODE AND a.MEDIA_SCRIPT_NO=b.MEDIA_SCRIPT_NO
+					AND a.ITL_TP_CODE=b.ITL_TP_CODE AND a.MEDIA_TP_CODE=b.MEDIA_TP_CODE AND a.MEDIA_ID=b.MEDIA_ID
+				WHERE (a.TOT_EPRS_CNT!=b.TOT_EPRS_CNT OR a.PAR_EPRS_CNT!=b.PAR_EPRS_CNT OR a.CLICK_CNT!=b.CLICK_CNT OR a.ADVRTS_AMT!=b.ADVRTS_AMT )
+				GROUP BY a.STATS_DTTM, a.PLTFOM_TP_CODE, a.ADVRTS_PRDT_CODE, a.ADVRTS_TP_CODE, a.MEDIA_SCRIPT_NO, a.ITL_TP_CODE, a.MEDIA_TP_CODE, a.MEDIA_ID
+			)a
+		ON DUPLICATE KEY UPDATE TOT_EPRS_CNT = a.TOT_EPRS_CNT, PAR_EPRS_CNT=a.PAR_EPRS_CNT, CLICK_CNT=a.CLICK_CNT
+			, ADVRTS_AMT=a.ADVRTS_AMT, MEDIA_PYMNT_AMT=a.MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT=a.TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT=a.TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT=a.TRGT_CLICK_CNT, TRGT_ADVRTS_AMT=a.TRGT_ADVRTS_AMT
+			, ALT_USER_ID ='BATCH'
+			, ALT_DTTM = NOW();
+	 </update>
+	 
+	 <update id="updateMediaChrgStep2" parameterType="Map">
+	 	/* updateMediaChrgStep2 : updateMediaChrgStep2 */
+		INSERT INTO BILLING.MOB_MEDIA_CHRG_STATS(
+			STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+				, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, MEDIA_PYMNT_AMT
+				, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+				, REG_USER_ID, REG_DTTM, ALT_USER_ID, ALT_DTTM
+			)
+				SELECT * FROM (
+					SELECT
+						STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+						, SUM(TOT_EPRS_CNT)TOT_EPRS_CNT, SUM(PAR_EPRS_CNT)PAR_EPRS_CNT, SUM(CLICK_CNT)CLICK_CNT, SUM(ADVRTS_AMT)ADVRTS_AMT, SUM(MEDIA_PYMNT_AMT)MEDIA_PYMNT_AMT
+						, SUM(TRGT_EPRS_CNT)TRGT_EPRS_CNT, SUM(TRGT_PAR_EPRS_CNT)TRGT_PAR_EPRS_CNT, SUM(TRGT_CLICK_CNT)TRGT_CLICK_CNT, SUM(TRGT_ADVRTS_AMT)TRGT_ADVRTS_AMT
+						, REG_USER_ID, REG_DTTM, ALT_USER_ID, ALT_DTTM
+					FROM BILLING.MOB_MEDIA_SCRIPT_CHRG_STATS
+					WHERE STATS_DTTM = ${STATS_DTTM}
+					GROUP BY STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, MEDIA_ID, ITL_TP_CODE
+					
+				) S
+		ON DUPLICATE KEY UPDATE
+			MOB_MEDIA_CHRG_STATS.TOT_EPRS_CNT = S.TOT_EPRS_CNT
+			, MOB_MEDIA_CHRG_STATS.PAR_EPRS_CNT = S.PAR_EPRS_CNT
+			, MOB_MEDIA_CHRG_STATS.CLICK_CNT = S.CLICK_CNT
+			, MOB_MEDIA_CHRG_STATS.ADVRTS_AMT = S.ADVRTS_AMT
+			, MOB_MEDIA_CHRG_STATS.MEDIA_PYMNT_AMT = S.MEDIA_PYMNT_AMT
+			, MOB_MEDIA_CHRG_STATS.TRGT_EPRS_CNT = S.TRGT_EPRS_CNT
+			, MOB_MEDIA_CHRG_STATS.TRGT_PAR_EPRS_CNT = S.TRGT_PAR_EPRS_CNT
+			, MOB_MEDIA_CHRG_STATS.TRGT_CLICK_CNT = S.TRGT_CLICK_CNT
+			, MOB_MEDIA_CHRG_STATS.TRGT_ADVRTS_AMT = S.TRGT_ADVRTS_AMT
+			, MOB_MEDIA_CHRG_STATS.ALT_USER_ID ='BATCH'
+			, MOB_MEDIA_CHRG_STATS.ALT_DTTM = NOW();
+	 </update>
+</mapper>
+

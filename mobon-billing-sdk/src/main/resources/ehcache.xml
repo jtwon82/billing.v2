@@ -1,0 +1,77 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true"
+	monitoring="autodetect" dynamicConfig="true">
+
+	<!-- By default, Ehcache stored the cached files in temp folder. -->
+  <!-- diskStore path="java.io.tmpdir" /-->
+	
+	<diskStore path="/home/dreamsearch/packaging/cache" />
+
+	<cache name="count" 
+		maxEntriesLocalHeap="1000000"
+		maxEntriesLocalDisk="10000000" 
+		eternal="false" 
+		diskSpoolBufferSizeMB="50"
+		timeToIdleSeconds="0" timeToLiveSeconds="0"
+		memoryStoreEvictionPolicy="LFU" 
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	
+<cache name="package" 
+		maxEntriesLocalHeap="1000000"
+		maxEntriesLocalDisk="10000000" 
+		eternal="false" 
+		diskSpoolBufferSizeMB="50"
+		timeToIdleSeconds="0" timeToLiveSeconds="0"
+		memoryStoreEvictionPolicy="LFU" 
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	
+	
+<cache name="package_finished" 
+		maxEntriesLocalHeap="1000000"
+		maxEntriesLocalDisk="10000000" 
+		eternal="false" 
+		diskSpoolBufferSizeMB="50"
+		timeToIdleSeconds="0" timeToLiveSeconds="0"
+		memoryStoreEvictionPolicy="LFU" 
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+
+
+<cache name="adid" 
+		maxEntriesLocalHeap="1000000"
+		maxEntriesLocalDisk="10000000" 
+		eternal="false" 
+		diskSpoolBufferSizeMB="50"
+		timeToIdleSeconds="0" timeToLiveSeconds="0"
+		memoryStoreEvictionPolicy="LFU" 
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	
+	<cache name="package_key" 
+		maxEntriesLocalHeap="1000000"
+		maxEntriesLocalDisk="10000000" 
+		eternal="false" 
+		diskSpoolBufferSizeMB="50"
+		timeToIdleSeconds="0" timeToLiveSeconds="0"
+		memoryStoreEvictionPolicy="LFU" 
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	
+	<cache name="package_campaign" 
+		maxEntriesLocalHeap="1000000"
+		maxEntriesLocalDisk="10000000" 
+		eternal="false" 
+		diskSpoolBufferSizeMB="50"
+		timeToIdleSeconds="0" timeToLiveSeconds="0"
+		memoryStoreEvictionPolicy="LFU" 
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+</ehcache>

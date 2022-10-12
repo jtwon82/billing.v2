@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<!-- parGatrMTH (일1회) -->
+	<task:scheduled-tasks scheduler="mySchedulerAdverMTHhh">
+<!-- 		<task:scheduled ref="taskHHtoHHDD" method="heartBeat" cron="*/60 * * * * *" /> -->
+		<task:scheduled ref="taskDDtoMTH" method="mongoToParGatrMTH" cron="0 0 6 * * *" />
+		<task:scheduled ref="taskDDtoMTH" method="revisionMTH" cron="0 0 7 1,2,3,4,5,6 * *" />
+		<task:scheduled ref="taskDDtoMTH" method="revisionMTH2" cron="0 0 3 7 * *" />
+		<task:scheduled ref="taskDDtoMTH" method="revisionMTH3" cron="0 0 3 8 * *" />
+		<task:scheduled ref="taskDDtoMTH" method="revisionMTH" cron="0 0 3 9 * *" />
+		<task:scheduled ref="taskDDtoMTH" method="cnvrsMTHStatsRevision" cron="0 0 3 1,2,3,4 * *" />
+		
+<!-- 		<task:scheduled ref="taskDDtoMTH" method="revisionMTH" cron="0 50 11 * * *" /> -->
+		
+<!-- 		<task:scheduled ref="taskDDtoMTH" method="revisionMTH" cron="0 50 9 1 * *" /> -->
+<!-- 		<task:scheduled ref="taskDDtoMTH" method="revisionMTH2" cron="0 0 2 17 * *" /> -->
+<!-- 		<task:scheduled ref="taskDDtoMTH" method="revisionMTH3" cron="0 0 4 17 * *" /> -->
+<!-- 		<task:scheduled ref="taskDDtoMTH" method="dataMigration" cron="0 40 12 12 * *" /> -->
+		
+	</task:scheduled-tasks>
+	<task:scheduler id="mySchedulerAdverMTHhh" />
+
+	<!-- * * 23 * * * -->
+	<!-- Seconds YES 0-59 , - * / -->
+	<!-- Minutes YES 0-59 , - * / -->
+	<!-- Hours YES 0-23 , - * / -->
+	<!-- Day of month YES 1-31 , - * ? / L W -->
+	<!-- Month YES 1-12 or JAN-DEC , - * / -->
+	<!-- Day of week YES 1-7 or SUN-SAT , - * ? / L # -->
+	<!-- Year NO empty, 1970-2099 , - * / -->
+
+</beans>

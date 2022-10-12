@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<task:scheduled-tasks scheduler="myScheduler">
+<!-- 		<task:scheduled ref="taskAppTargetData" method="mongoToMariaAppTargetData" fixed-delay="3000" /> -->
+<!-- 		<task:scheduled ref="taskMediaChrgData" method="mongoToMariaMediaChrgV3" fixed-delay="1000" />  -->
+		
+<!--         <task:scheduled ref="taskIntgCntrActionData" method="mongoToMariaIntgCntrActionDataV3" fixed-delay="1000" /> -->
+ 		<!-- <task:scheduled ref="taskIntgCntrData" method="mongoToMariaIntgCntrV3" fixed-delay="1000" /> -->
+<!-- 		<task:scheduled ref="taskIntgCntrKgrData" method="mongoToMariaIntgCntrKgrV3" fixed-delay="1000" /> -->
+<!-- 		<task:scheduled ref="taskIntgCntrTtimeData" method="mongoToMariaIntgCntrTtimeV3" fixed-delay="1000" />  -->
+		<task:scheduled ref="taskAiCampData" method="mongoToMariaAiCampV3" fixed-delay="1000" />
+		
+        
+		<!-- required Task -->
+        <task:scheduled ref="taskCronwork" method="chkingQueueSize" fixed-delay="10000" />
+        <task:scheduled ref="taskRetryData" method="consumerRetry" fixed-delay="5000" />
+        
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler"/>
+	
+	<!-- 토픽별 로그파일 처리   -->
+	<task:scheduled-tasks scheduler="myScheduler2">        
+        <task:scheduled ref="consumerTopicReTry" method="processTopicFile" fixed-delay="10000" />
+	</task:scheduled-tasks>		
+	<task:scheduler id="myScheduler2"/>
+
+
+<!-- * * 23 * * * -->
+<!-- Seconds	YES	0-59	, - * / -->
+<!-- Minutes	YES	0-59	, - * / -->
+<!-- Hours	YES	0-23	, - * / -->
+<!-- Day of month	YES	1-31	, - * ? / L W -->
+<!-- Month	YES	1-12 or JAN-DEC	, - * / -->
+<!-- Day of week	YES	1-7 or SUN-SAT	, - * ? / L # -->
+<!-- Year	NO	empty, 1970-2099	, - * / -->
+    
+</beans>

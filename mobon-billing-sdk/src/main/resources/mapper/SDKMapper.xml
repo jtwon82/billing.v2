@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sdkMapper">
+	<select
+		id="selectNOW"
+		resultType="java.lang.String"> SELECT now() now
+	</select>
+
+<select
+		id="selectAppCampInfoCount"
+		resultType="java.lang.Integer">
+		select COUNT(APP_SEQ) from APP_CAMP_INFO 
+		
+	</select>
+	
+	<select
+		id="selectAppCampInfo"
+		resultType="java.util.HashMap">
+		select APP_SEQ from APP_CAMP_INFO  
+		
+		LIMIT 1000 OFFSET #{OFFSET}
+	</select>
+	
+<select
+		id="selectAppInfoCount"
+		resultType="java.lang.Integer">
+		select count(APP_SEQ) from APP_INFO
+		WHERE  APP_USE_YN="Y"
+	</select>
+	
+	<select
+		id="selectAppInfo"
+		resultType="java.util.HashMap">
+		select APP_SEQ, APP_PKG_NM from APP_INFO 
+		WHERE 
+		APP_USE_YN="Y"
+		LIMIT 1000 OFFSET #{OFFSET}
+	</select>
+	
+	<insert
+		id="insertAPP_INFO"
+		parameterType="java.util.HashMap" > 
+		<![CDATA[
+		INSERT INTO APP_INFO( 
+				OS_TP_CODE, 
+				APP_PKG_NM,
+				APP_TITLE_NM, 
+				APP_LAST_ALT_DT, 
+				APP_CTGR_SEQ, 
+				REG_USER_ID, 
+				REG_DTTM,
+				ALT_USER_ID, 
+				ALT_DTTM) 
+		VALUES(
+		 		#{OS_TP_CODE}, 
+		 		#{APP_PKG_NM},
+				#{APP_TITLE_NM}, #{APP_LAST_ALT_DT}, #{APP_CTGR_SEQ}, #{REG_USER_ID},
+		#{REG_DTTM}, #{ALT_USER_ID}, #{ALT_DTTM} ) 
+		ON DUPLICATE KEY UPDATE
+		ALT_DTTM = #{ALT_DTTM}
+			]]>
+	</insert>
+	
+<insert id="insertAPP_USER_TRML_INFO" parameterType="map">
+<![CDATA[
+	INSERT INTO APP_USER_TRML_INFO(
+		TRML_UNQ_VAL,
+		OS_TP_CODE,
+		REG_USER_ID,
+		REG_DTTM
+) VALUES(
+		#{TRML_UNQ_VAL},
+		#{OS_TP_CODE},
+		#{REG_USER_ID},
+		#{REG_DTTM})
+ON DUPLICATE KEY
+UPDATE  ALT_DTTM = #{ALT_DTTM}
+	]]>
+</insert>
+
+</mapper>

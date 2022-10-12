@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="updateMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+	<insert id="insertNewtable" parameterType="java.util.List">
+		INSERT INTO newtable2(stats_dttm, product_tp_code, adgubun_tp_code, site_code, media_script_no, type
+			, viewcnt, clickcnt)
+		VALUES 
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, '${I.product}', '${I.adGubun}', '${I.siteCode}', '${I.scriptNo}', '${I.type}'
+				, ${I.viewcnt1}, ${I.clickcnt})
+			</foreach> 
+			ON CONFLICT (stats_dttm, product_tp_code, adgubun_tp_code, site_code, media_script_no, type) DO UPDATE
+				SET viewcnt = newtable2.viewcnt + excluded.viewcnt
+				, clickcnt = newtable2.clickcnt + excluded.clickcnt;
+	</insert>
+	
+	<insert id="insertNewtableMariaDB" parameterType="java.util.List">
+		INSERT INTO test.NewTable(stats_dttm, product_tp_code, adgubun_tp_code, site_code, media_script_no, type
+			, viewcnt, clickcnt)
+		VALUES 
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, '${I.product}', '${I.adGubun}', '${I.siteCode}', '${I.scriptNo}', '${I.type}'
+				, ${I.viewcnt1}, ${I.clickcnt})
+			</foreach> 
+			ON DUPLICATE KEY UPDATE viewcnt = viewcnt + values(viewcnt), clickcnt = clickcnt+ values(clickcnt)
+		;
+	</insert>
+</mapper>

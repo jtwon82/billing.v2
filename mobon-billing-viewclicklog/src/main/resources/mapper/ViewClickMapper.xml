@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="viewClickMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+	<select id="selectMatchedLogCheck" parameterType="Map" resultType="Map">
+		/* selectMatchedLogCheck */
+		SELECT
+			IP, AU_ID
+		FROM
+			default.BRAND_CAMP_MEDIA_LOG
+		WHERE
+			STATS_DTTM BETWEEN ${indirectDttm} AND ${yyyymmdd}
+			AND ADVER_ID = #{advertiserId}
+			AND (IP IN
+				<foreach collection="ipList" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			    OR AU_ID = #{auId})
+			AND TOT_EPRS_CNT <![CDATA[>]]> 0
+		LIMIT 1;
+	</select>
+
+	<select id="selectMatchedLogByIp" parameterType="Map" resultType="Map">
+		/* selectMatchedLogByIp */
+		SELECT
+			A.PLTFOM_TP_CODE, A.ADVRTS_PRDT_CODE, A.ADVRTS_TP_CODE, A.CTGR_SEQ, A.KPI_NO, A.SITE_CODE,
+			A.MEDIA_TP_CODE, A.MEDIA_SCRIPT_NO, A.ITL_TP_CODE, A.UNEXPOSURE_YN, A.MEDIA_ID,
+			A.DIFF_SEND_DTTM, A.LOG_DTTM, A.SEND_DTTM, A.POS_IP_INFO
+		FROM
+			(SELECT
+				PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CTGR_SEQ, KPI_NO, SITE_CODE,
+				MEDIA_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, UNEXPOSURE_YN, MEDIA_ID, SEND_DTTM,
+				date_diff(SECOND, SEND_DTTM, toDateTime(#{sendDate}, 'Asia/Seoul')) AS DIFF_SEND_DTTM,
+				formatDateTime(SEND_DTTM, '%Y-%m-%d %H:%M:%S', 'Asia/Seoul') AS LOG_DTTM,
+				CASE
+					WHEN IP = ''
+					THEN 0
+					ELSE position(#{ipInfoList}, IP)
+				END AS POS_IP_INFO
+			FROM
+				default.BRAND_CAMP_MEDIA_LOG
+			WHERE
+				STATS_DTTM BETWEEN ${indirectDttm} AND ${yyyymmdd}
+				AND ADVER_ID = #{advertiserId}
+				AND IP IN
+					<foreach collection="ipList" item="item" open="(" close=")" separator=",">
+						#{item}
+					</foreach>
+				AND TOT_EPRS_CNT <![CDATA[>]]> 0) AS A
+		ORDER BY
+			A.SEND_DTTM DESC
+		LIMIT 1;
+	</select>
+
+	<select id="selectMatchedLogByAuid" parameterType="Map" resultType="Map">
+		/* selectMatchedLogByAuid */
+		SELECT
+			A.PLTFOM_TP_CODE, A.ADVRTS_PRDT_CODE, A.ADVRTS_TP_CODE, A.CTGR_SEQ, A.KPI_NO, A.SITE_CODE,
+			A.MEDIA_TP_CODE, A.MEDIA_SCRIPT_NO, A.ITL_TP_CODE, A.UNEXPOSURE_YN, A.MEDIA_ID,
+			A.DIFF_SEND_DTTM, A.LOG_DTTM, A.SEND_DTTM, A.POS_IP_INFO
+		FROM
+			(SELECT
+				PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, CTGR_SEQ, KPI_NO, SITE_CODE,
+				MEDIA_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, UNEXPOSURE_YN, MEDIA_ID, SEND_DTTM,
+				date_diff(SECOND, SEND_DTTM, toDateTime(#{sendDate}, 'Asia/Seoul')) AS DIFF_SEND_DTTM,
+				formatDateTime(SEND_DTTM, '%Y-%m-%d %H:%M:%S', 'Asia/Seoul') AS LOG_DTTM,
+				CASE
+					WHEN IP = ''
+					THEN 0
+					ELSE position(#{ipInfoList}, IP)
+				END AS POS_IP_INFO
+			FROM
+			default.BRAND_CAMP_MEDIA_LOG
+			WHERE
+				STATS_DTTM BETWEEN ${indirectDttm} AND ${yyyymmdd}
+				AND ADVER_ID = #{advertiserId}
+				AND AU_ID = #{auId}
+				AND TOT_EPRS_CNT <![CDATA[>]]> 0) AS A
+		ORDER BY
+			A.SEND_DTTM DESC
+		LIMIT 1;
+	</select>
+
+	<update id="insertViewClickLog">
+		/* insertViewClickLog */
+		INSERT INTO default.BRAND_CAMP_MEDIA_LOG
+			(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE,
+				SITE_CODE, MEDIA_SCRIPT_NO, CTGR_SEQ, KPI_NO, MEDIA_TP_CODE,
+				UNEXPOSURE_YN, ITL_TP_CODE, ADVER_ID, MEDIA_ID, TOT_EPRS_CNT,
+			 	PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, IP, AU_ID, SEND_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platformCode}, #{I.productCode}, #{I.adGubunCode},
+				#{I.siteCode}, #{I.scriptNo}, #{I.ctgrSeq}, #{I.kpiNo}, #{I.mediaTpCode},
+				#{I.noExposureYN}, #{I.interlock}, #{I.advertiserId}, #{I.scriptUserId}, #{I.viewcnt1},
+			 	#{I.viewcnt3}, #{I.clickcnt}, #{I.point}, #{I.ip}, #{I.auId}, toDateTime(#{I.sendDate}, 'Asia/Seoul'))
+			</foreach>
+		;
+	</update>
+
+</mapper>

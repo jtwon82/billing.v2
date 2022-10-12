@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+ 
+	<task:scheduled-tasks scheduler="myScheduler">
+		
+<!-- 		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameRtbData" fixed-delay="3000" /> -->
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameCycleLog" fixed-delay="1000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameDayData" fixed-delay="1000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameDayAbData" fixed-delay="1000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameTrnData" fixed-delay="1000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameCombiDayStats" fixed-delay="1000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameAdverDayStats" fixed-delay="3000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameAdverDayAbStats" fixed-delay="3000" />
+	    <task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameSizeStats" fixed-delay="3000" /> 
+	    <task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameActionLog" fixed-delay="3000"/>
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameMediaAdverStats" fixed-delay="3000" />
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameAdverPrdtCtgrDayStats" fixed-delay="3000"/>
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameCodeStats" fixed-delay="3000"/>
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameKaistCombiDayStats" fixed-delay="3000"/>
+		<task:scheduled ref="taskFrameRtbData" method="mongoToMariaFrameCtgrDayStats" fixed-delay="3000"/>
+        <task:scheduled ref="taskRetryData" method="consumerRetry" fixed-delay="1000" />
+        
+	</task:scheduled-tasks>
+	<task:scheduler id="myScheduler"/>
+	
+	<!-- 토픽별 로그파일 처리   -->
+	<task:scheduled-tasks scheduler="myScheduler2">        
+        <task:scheduled ref="consumerTopicReTry" method="processTopicFile" fixed-delay="10000" />
+	</task:scheduled-tasks>		
+	<task:scheduler id="myScheduler2"/>
+	
+</beans>

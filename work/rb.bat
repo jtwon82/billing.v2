@@ -1,0 +1,1 @@
+java -jar C:\workset\workspace\mobon-billing-v1\mobon-billing-consumer-branch\target\mobon-billing-consumer-branch-0.0.1-SNAPSHOT.jar

@@ -1,0 +1,12 @@
+mongo localhost --port 10001
+
+use billing
+
+/** 계정 미생성 협의후 생성예정 yhlim 20171024 **/
+-- db.createUser({ user: "billing", pwd: "Billingdbwj2017)&*", roles: ["dbAdmin", "readWrite"]})
+
+sh.enableSharding('billing');
+
+
+
+db.printShardingStatus();

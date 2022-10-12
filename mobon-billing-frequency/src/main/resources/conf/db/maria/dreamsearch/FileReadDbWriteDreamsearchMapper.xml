@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.mobon.billing.frequency.mapper.dreamsearch.FileReadDbWriteDreamsearchMapper">
+ 
+ 	<!--  
+    <insert id="insertMediaGradeList" parameterType="java.util.Map">
+    	INSERT INTO dreamsearch.PAR_GRAD_MGMT 
+			( WORKDAY, PAR_SEQ, TARGET_TYPE, ADVRTS_PRDT_CODE, PAR_GRAD, PAR_RNK, REG_USER_ID )
+		VALUES 
+		<foreach collection="list" item="item" separator=" , " >
+    		( DATE_FORMAT(NOW(),'%Y%m%d'), #{item.MEDIA_NO}, #{item.TARGET_TYPE}, #{item.ADVRTS_PRDT_CODE}, #{item.MEDIA_GRADE}, #{item.RNUM}, #{item.MEDIA_ID} )
+    	</foreach>
+    </insert>
+    
+    <insert id="insertCampaignMediaGradeList" parameterType="java.util.Map">
+    	INSERT INTO dreamsearch.PAR_CAMP_GRAD_MGMT 
+			( SITE_CODE, PAR_SEQ, PAR_GRAD, PAR_RNK, REG_USER_ID )
+		VALUES 
+		<foreach collection="list" item="item" separator=" , " >
+    		( #{item.SITE_CODE}, #{item.MEDIA_NO}, #{item.MEDIA_GRADE}, #{item.RNUM}, #{item.MEDIA_ID} )
+    	</foreach>
+    
+    </insert>
+    -->
+    
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="selectMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+	<select id="selectExternalUserInfo" resultType="Map" useCache="true">
+		SELECT DISTINCT external_id userId FROM dreamsearch.external_match
+	</select>
+	
+	<select id="selectItlInfo" resultType="baseCVData" useCache="true">
+		/* select kakao n daisy */
+		SELECT CASE WHEN a.userid LIKE ('%kakao%') THEN 'kakao'
+			WHEN a.userid LIKE ('%daisy%') THEN 'daisy' END scriptUserId
+			, a.no scriptNo
+		FROM dreamsearch.media_script a WHERE a.userid IN('kakao','mkakao', 'daisy','mdaisy')
+	</select>
+	
+	<select id="selectMediaInfo" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		/* select media info */
+		SELECT userid scriptUserId, w_type platform, s_type product, ad_type type
+		FROM dreamsearch.media_script a 
+		WHERE a.NO=#{scriptNo}
+	</select>
+
+	<select id="selectRtbInfo" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		/* 카카오 RTB 의 포인트 소진위치 조회 */
+		SELECT userid advertiserId, site_code siteCode, rtb_usemoney_yn rtbUseMoneyYn
+		FROM dreamsearch.adsite_rtb_info a
+		WHERE a.site_code=#{siteCode}
+	</select>
+	
+	<select id="selectDaylySucc" parameterType="baseCVData" resultType="baseCVData" useCache="true">
+		/* 일자별 말아올리는쿼리 플래그 조회 */
+		SELECT DATE_FORMAT(a.REG_DTTM,'%Y%m%d') yyyymmdd
+		FROM BILLING.MOB_COM_FLAG_INFO a 
+		WHERE a.STATS_DTTM=#{yyyymmdd} AND a.STATS_HH=#{hh} AND a.PLTFOM_TP_CODE=#{platform} AND a.ADVRTS_TP_CODE=#{adGubun}
+	</select>
+	
+	<select id="selectAdgubunKey" resultType="Map" useCache="false">
+		/* 키그룹 조회하기 */
+		SELECT b.code_id, a.w
+		FROM (
+			SELECT '01'w UNION SELECT '02'w
+		)a, (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b
+	</select>
+
+	<select id="selectConvertTpCode" resultType="Map" useCache="false">
+		/* 코드변환 */
+		SELECT CODE_VAL K, CODE_ID 
+		FROM dreamsearch.MOBON_COM_CODE 
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		UNION ALL
+		SELECT CODE_ID K, CODE_ID 
+		FROM dreamsearch.MOBON_COM_CODE 
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+	</select>
+	
+	<select id="mangoStyle" parameterType="baseCVData" resultType="Map" useCache="false">
+		/* select mangoStyle : 지정날짜의 이미 수집된 노출클릭 가져오기 (전송된값에서 기존값의 차이를 디비에 반영해야한다.) */
+		SELECT SUM(a.TOT_EPRS_CNT) ago_viewcnt1, SUM(a.PAR_EPRS_CNT) ago_viewcnt3
+		FROM MOB_CAMP_MEDIA_HH_STATS a, dreamsearch.adsite b
+		WHERE a.SITE_CODE=b.site_code 
+			AND a.STATS_DTTM=#{yyyymmdd}
+			AND a.MEDIA_SCRIPT_NO=#{scriptNo}
+			AND b.userid=#{advertiserId}
+	</select>
+
+
+</mapper>

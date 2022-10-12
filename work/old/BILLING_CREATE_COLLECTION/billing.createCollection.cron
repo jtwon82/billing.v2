@@ -1,0 +1,2 @@
+# userlog remove 2017-10-23 yhlim
+02 00 */3 * * sh /home/dreamsearch/scripts/billing.createCollection.sh

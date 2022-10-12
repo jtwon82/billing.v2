@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="actionRenewLogDataMapper">
+	<update id="sp_action_renew_log_data_billing" parameterType="List">
+		INSERT INTO default.ACTION_RENEW_LOG
+		( STATS_DTTM, STATS_HH, IP, AU_ID, ADVRTS_PRDT_CODE, ADPRODUCT, ADVRTS_TP_CODE, ADVRSB_TP_CODE, RECOM_TP_CODE, RECOM_ALGO_CODE, SITE_CODE, PAR_NO,
+		AB_TEST, MOBON_AD_GRP_ID_I, AD_GRP_TP_CODE_I, IMG_TP_CODE, MOBON_AD_GRP_ID_C, AD_GRP_TP_CODE_C, CP_TP_CODE, ADVRTS_STLE_TP_CODE
+		,UNEXPOSURE_YN, MAIN_PCODE, CLICK_PCODE, ADVER_ID, MEDIA_ID, FROM_APP, FREQ_CNT)
+		VALUES
+		<foreach item="I" collection="list" separator=" , ">
+			( #{I.yyyymmdd}, #{I.hh}, #{I.keyIp}, #{I.au_id}, #{I.prdtTpCode}, #{I.product}, #{I.adGubunCode}, #{I.subAdGubunCode}, #{I.recomTpCode},
+			<choose><when test="I.recomAlgoCode==null or I.recomAlgoCode==''">'99'</when><otherwise>#{I.recomAlgoCode}</otherwise></choose>
+			, #{I.siteCode}, #{I.scriptNo}, #{I.abTests}, #{I.mobonAdGrpIdI},
+			#{I.adGrpTpCodeI}, #{I.imageTpCode}, #{I.mobonAdGrpIdC}, #{I.adGrpTpCodeC}, #{I.cpTpCode}, #{I.advrtsStleTpCode},
+			<choose><when test="I.noExposureYN">'Y'</when><otherwise>'N'</otherwise></choose>
+			, #{I.mainPcode}, #{I.clickPcode}, #{I.advertiserId}, #{I.scriptUserId}
+			, left(#{I.fromApp},1)
+			, #{I.freqCnt})
+		</foreach>
+		;
+	</update>
+	<select id="selectActionRenewLog" parameterType="Map" resultType="Map">
+		SELECT
+		MOBON_AD_GRP_ID_I,
+		AD_GRP_TP_CODE_I,
+		IMG_TP_CODE,
+		MOBON_AD_GRP_ID_C,
+		AD_GRP_TP_CODE_C,
+		CP_TP_CODE,
+		ADVRTS_STLE_TP_CODE
+		FROM default.ACTION_RENEW_LOG arl
+		WHERE
+			IP IN
+			<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		AND SITE_CODE  = #{siteCode}
+		and PAR_NO  = toString(#{scriptNo})
+		AND ADVER_ID  = #{advertiserId}
+		AND UNEXPOSURE_YN  = #{unExposureYn}
+		and ADVRTS_TP_CODE = #{adGubunCode}
+		AND ADPRODUCT = #{product}
+		AND STATS_DTTM <![CDATA[ >= ]]> toInt32(#{yyyymmdd})
+		AND STATS_DTTM <![CDATA[ <= ]]> toInt32(#{origin_yyyymmdd})
+		AND REG_DTTM = (
+			SELECT MAX(REG_DTTM)
+		FROM default.ACTION_RENEW_LOG
+		WHERE IP IN
+		<foreach collection="keyIp" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		AND SITE_CODE  = #{siteCode}
+		AND PAR_NO  = toString(#{scriptNo})
+		AND ADVER_ID  = #{advertiserId}
+		AND UNEXPOSURE_YN  = #{unExposureYn}
+		and ADVRTS_TP_CODE = #{adGubunCode}
+		AND ADPRODUCT = #{product}
+		AND STATS_DTTM <![CDATA[ >= ]]> toInt32(#{yyyymmdd})
+		AND STATS_DTTM <![CDATA[ <= ]]> toInt32(#{origin_yyyymmdd})
+		) as a
+	</select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+
+        <!-- lazy로딩 수행여부 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="true"/>
+
+        <!-- insert구문 사용시 GENERATED_KEYS 기능을 사용해야 한다면 true로 설정 기본값: false
+             insert시 자동생성된 key를 추가 sql없이 얻을수 있음 -->
+        <setting name="useGeneratedKeys" value="true"/>
+        
+        <setting name="multipleResultSetsEnabled" value="true"/> 
+        <setting name="useColumnLabel" value="true"/>
+        
+        <!-- mybatis 의 defaultExecutorType를 설정한다 기본값 : SIMPLE-->
+        <!-- dbcp에서 preparedStatement cache 를 수행하므로 REUSE를 사용할 필요는 없음. -->
+        <setting name="defaultExecutorType" value="BATCH"/>
+
+        <!--defaultQueryTiemout을 설정한다. 초단위 -->
+        <setting name="defaultStatementTimeout" value="120"/>
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        
+        <!-- 값이 null일때도 setter 매소드를 수행함 -->
+        <setting name="callSettersOnNulls" value="true" />
+    </settings>
+    
+    <typeAliases>
+    	<typeAlias alias="baseCVData" type="com.mobon.billing.model.v15.BaseCVData"/>
+    	<typeAlias alias="convData" type="com.mobon.billing.model.v15.ConvData"/>
+    	<typeAlias alias="shopInfoData" type="com.mobon.billing.model.v15.ShopInfoData"/>
+    	<typeAlias alias="actionLogData" type="com.mobon.billing.model.v15.ActionLogData"/>
+    	<typeAlias alias="conversionInfo" type="com.mobon.conversion.domain.old.ConversionInfo"/>
+    	<typeAlias alias="conversionInfoFilter" type="com.mobon.conversion.domain.old.ConversionInfoFilter"/>
+    	<typeAlias alias="billingVo" type="com.mobon.billing.model.BillingVo"/>
+    	<typeAlias alias="chrgLogData" type="com.mobon.billing.model.v15.ChrgLogData"/>
+    	<typeAlias alias="pluscallLogData" type="com.mobon.billing.model.v15.PluscallLogData"/>
+<!--     	<typeAlias alias="freqState" type="com.mobon.billing.logging.frequency.FreqState"/> -->
+<!--     	<typeAlias alias="msState" type="com.mobon.billing.logging.frequency.MsState"/> -->
+<!--     	<typeAlias alias="personClassifState" type="com.mobon.billing.logging.frequency.PersonClassifState"/> -->
+<!--     	<typeAlias alias="adSiteState" type="com.mobon.billing.logging.frequency.AdSiteState"/> -->
+    	
+    	<!-- <typeAlias alias="hMap" type="java.util.HashMap"/> -->
+<!--         <package name="com.onlytigi.springStudy.model"/> -->
+    </typeAliases>
+</configuration>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="selectMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+	<select id="selectNow" resultType="hMap" >
+		SELECT NOW() NOW
+	</select>
+	
+	<select id="selectAdvrtsTpCode"  resultType="Map">
+   	    /* SELECT : ADVRTS_TP_CODE */
+		SELECT CODE_ID
+		     , CODE_VAL
+		  FROM dreamsearch.MOBON_COM_CODE
+		  LEFT OUTER JOIN (SELECT SUM(TOT_EPRS_CNT) TOT_EPRS_CNT , ADVRTS_TP_CODE 
+								   FROM MOB_MEDIA_PAR_MTH_STATS 
+								  WHERE STATS_MTH = CAST(DATE_FORMAT(NOW(),'%Y%m') AS INT)
+								  GROUP BY ADVRTS_TP_CODE
+								) Z ON CODE_ID = ADVRTS_TP_CODE
+		 WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		 ORDER BY IFNULL(Z.TOT_EPRS_CNT,0) DESC , CODE_ID DESC
+	</select>
+	
+	
+	<select id="selectGroupKeyXX" resultType="sampleVo" useCache="true">
+		SELECT b.CODE_VAL adGubun, c.CODE_VAL seq
+		FROM (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b, (
+			SELECT CODE_VAL-1 CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='HH_TP_CODE' AND CODE_VAL BETWEEN 1 AND 10
+		)c
+	</select>
+	
+	<select id="selectMedia" resultType="Map" parameterType="UseridVo" useCache="true">
+		select no, userid from dreamsearch.media_script where no=${scriptNo}
+	</select>
+</mapper>

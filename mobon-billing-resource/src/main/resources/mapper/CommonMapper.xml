@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="commonMapper">
+
+	<select id="getCurrentData" resultType="Map">
+		SELECT userid from adsite order by rand()
+	</select>
+	
+	<select id="select_date_between" parameterType="Map" resultType="String">
+		/* 최근 5일 이내 날짜*/
+		SELECT DATE_FORMAT(DATE_ADD(LEFT(NOW(),10), INTERVAL idx * #{range} +1 DAY),'%Y%m%d')d FROM dumy LIMIT #{limit}
+	</select>
+	
+	<select id="select_date_diff" parameterType="Map" resultType="int">
+		/* 차이 */
+		SELECT ifnull(DATEDIFF(#{date}, #{comp}),0) diff
+	</select>
+	
+	<select id="selectSleep" parameterType="Map" resultType="int">
+		SELECT SLEEP(${sleep}) a
+	</select>
+	
+	<select id="selectAdvrtsTpCode"  resultType="Map">
+   	    /* SELECT : ADVRTS_TP_CODE */
+		SELECT CODE_ID
+		     , CODE_VAL
+		  FROM dreamsearch.MOBON_COM_CODE
+		  LEFT OUTER JOIN (SELECT SUM(TOT_EPRS_CNT) TOT_EPRS_CNT , ADVRTS_TP_CODE 
+								   FROM MOB_MEDIA_PAR_MTH_STATS 
+								  WHERE STATS_MTH = CAST(DATE_FORMAT(NOW(),'%Y%m') AS INT)
+								  GROUP BY ADVRTS_TP_CODE
+								) Z ON CODE_ID = ADVRTS_TP_CODE
+		 WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		 ORDER BY IFNULL(Z.TOT_EPRS_CNT,0) DESC , CODE_ID DESC
+	</select>
+	
+	
+	
+	
+	
+
+	<!-- 	adsite -->
+	<update id="updateAdsiteTableStep1" parameterType="Map" >
+		/* step1 */
+		CREATE TABLE IF NOT EXISTS BILLING.adsite_TEST_${CREATEyyyyMMdd} SELECT * FROM BILLING.adsite_TEST
+	</update>
+	<update id="updateAdsiteTableStep2" parameterType="Map" >
+		/* step2 */
+		CREATE TABLE IF NOT EXISTS BILLING.adsite_${CREATEyyyyMMdd} SELECT * FROM dreamsearch.adsite
+	</update>
+	<update id="updateAdsiteTableStep3" parameterType="Map" >
+		/* step3 */
+		TRUNCATE TABLE BILLING.adsite_TEST
+	</update>
+	<update id="updateAdsiteTableStep4" parameterType="Map" >
+		/* step4 */
+		INSERT IGNORE INTO BILLING.adsite_TEST SELECT * FROM dreamsearch.adsite
+	</update>
+	<update id="updateAdsiteTableStep5" parameterType="Map" >
+		/* step5 */
+		DROP TABLE IF EXISTS BILLING.adsite_TEST_${DROPyyyyMMdd}
+	</update>
+	<update id="updateAdsiteTableStep6" parameterType="Map" >
+		/* step6 */
+		DROP TABLE IF EXISTS BILLING.adsite_${DROPyyyyMMdd}
+	</update>
+	<update id="updateAdsiteTableStep7" parameterType="Map" >
+		/* step7 */
+		update BILLING.adsite_TEST set usedmoney=0 where usedmoney > 0
+	</update>
+
+
+	<!-- 	iadsite -->
+	<update id="updateIAdsiteTableStep1" parameterType="Map" >
+		/* step1 */
+		CREATE TABLE IF NOT EXISTS BILLING.iadsite_TEST_${CREATEyyyyMMdd} SELECT * FROM BILLING.iadsite_TEST
+	</update>
+	<update id="updateIAdsiteTableStep2" parameterType="Map" >
+		/* step2 */
+		CREATE TABLE IF NOT EXISTS BILLING.iadsite_${CREATEyyyyMMdd} SELECT * FROM dreamsearch.iadsite
+	</update>
+	<update id="updateIAdsiteTableStep3" parameterType="Map" >
+		/* step3 */
+		TRUNCATE TABLE BILLING.iadsite_TEST
+	</update>
+	<update id="updateIAdsiteTableStep4" parameterType="Map" >
+		/* step4 */
+		INSERT IGNORE INTO BILLING.iadsite_TEST SELECT * FROM dreamsearch.iadsite
+	</update>
+	<update id="updateIAdsiteTableStep5" parameterType="Map" >
+		/* step5 */
+		DROP TABLE IF EXISTS BILLING.iadsite_TEST_${DROPyyyyMMdd}
+	</update>
+	<update id="updateIAdsiteTableStep6" parameterType="Map" >
+		/* step6 */
+		DROP TABLE IF EXISTS BILLING.iadsite_${DROPyyyyMMdd}
+	</update>
+	<update id="updateIAdsiteTableStep7" parameterType="Map" >
+		/* step7 */
+		update BILLING.iadsite_TEST set usedmoney=0 where usedmoney > 0
+	</update>
+
+
+	<!-- 	adsite_rtb_info -->
+	<update id="updateAdsiteRtbInfoTableStep1" parameterType="Map" >
+		/* step1 */
+		CREATE TABLE IF NOT EXISTS BILLING.adsite_rtb_info_TEST_${CREATEyyyyMMdd} SELECT * FROM BILLING.adsite_rtb_info_TEST
+	</update>
+	<update id="updateAdsiteRtbInfoTableStep2" parameterType="Map" >
+		/* step2 */
+		CREATE TABLE IF NOT EXISTS BILLING.adsite_rtb_info_${CREATEyyyyMMdd} SELECT * FROM dreamsearch.adsite_rtb_info
+	</update>
+	<update id="updateAdsiteRtbInfoTableStep3" parameterType="Map" >
+		/* step3 */
+		TRUNCATE TABLE BILLING.adsite_rtb_info_TEST
+	</update>
+	<update id="updateAdsiteRtbInfoTableStep4" parameterType="Map" >
+		/* step4 */
+		INSERT IGNORE INTO BILLING.adsite_rtb_info_TEST SELECT * FROM dreamsearch.adsite_rtb_info
+	</update>
+	<update id="updateAdsiteRtbInfoTableStep5" parameterType="Map" >
+		/* step5 */
+		DROP TABLE IF EXISTS BILLING.adsite_rtb_info_TEST_${DROPyyyyMMdd}
+	</update>
+	<update id="updateAdsiteRtbInfoTableStep6" parameterType="Map" >
+		/* step6 */
+		DROP TABLE IF EXISTS BILLING.adsite_rtb_info_${DROPyyyyMMdd}
+	</update>
+	<update id="updateAdsiteRtbInfoTableStep7" parameterType="Map" >
+		/* step7 */
+		update BILLING.adsite_rtb_info set w_usedmoney=0, m_usedmoney=0 where (w_usedmoney > 0 OR m_usedmoney > 0)
+	</update>
+
+	
+	<!-- 	admember -->
+	<update id="updateAdmemberTableStep1" parameterType="Map" >
+		/* step1 */
+		CREATE TABLE IF NOT EXISTS BILLING.admember_TEST_${CREATEyyyyMMdd} SELECT * FROM BILLING.admember_TEST
+	</update>
+	<update id="updateAdmemberTableStep2" parameterType="Map" >
+		/* step2 */
+		CREATE TABLE IF NOT EXISTS BILLING.admember_${CREATEyyyyMMdd} SELECT * FROM dreamsearch.admember
+	</update>
+	<update id="updateAdmemberTableStep3" parameterType="Map" >
+		/* step3 */
+		TRUNCATE TABLE BILLING.admember_TEST
+	</update>
+	<update id="updateAdmemberTableStep4" parameterType="Map" >
+		/* step4 */
+		INSERT IGNORE INTO BILLING.admember_TEST SELECT * FROM dreamsearch.admember
+	</update>
+	<update id="updateAdmemberTableStep5" parameterType="Map" >
+		/* step5 */
+		DROP TABLE IF EXISTS BILLING.admember_TEST_${DROPyyyyMMdd}
+	</update>
+	<update id="updateAdmemberTableStep6" parameterType="Map" >
+		/* step6 */
+		DROP TABLE IF EXISTS BILLING.admember_${DROPyyyyMMdd}
+	</update>
+	
+
+
+	<!-- 	actionlog -->
+	<update id="actionLogManage1" parameterType="Map" >
+		ALTER TABLE ACTION_LOG_TEST DROP PARTITION ACTION_LOG_TEST_${DROPyyyyMMdd}
+	</update>
+	<update id="actionLogManage2" parameterType="Map" >
+		ALTER TABLE ACTION_LOG_TEST ADD PARTITION (PARTITION `ACTION_LOG_TEST_${CREATEyyyyMMdd}` VALUES IN (${CREATEyyyyMMdd}) ENGINE = INNODB)
+	</update>
+
+	<select id="selectNewAdvrtsTpCode" resultType="Map">
+		SELECT A.CODE_ID
+		, A.CODE_VAL
+		, IFNULL(B.TARGET_YN,'N') AS  TARGET_YN
+		FROM dreamsearch.MOBON_COM_CODE AS A
+		LEFT OUTER JOIN (SELECT SUM(TOT_EPRS_CNT) TOT_EPRS_CNT , ADVRTS_TP_CODE
+		FROM BILLING.MOB_MEDIA_PAR_MTH_STATS
+		WHERE STATS_MTH = CAST(DATE_FORMAT(NOW(),'%Y%m') AS INT)
+		GROUP BY ADVRTS_TP_CODE
+		) Z ON CODE_ID = ADVRTS_TP_CODE
+		LEFT JOIN (
+		SELECT CODE_ID , CODE_VAL, 'Y' AS TARGET_YN
+		FROM dreamsearch.MOBON_COM_CODE
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		AND CODE_ID  IN ('04','10','16','17','34','37','40','41','42','47','49','50','54','55','56','57')
+		) AS B  ON A.CODE_ID  = B.CODE_ID AND A.CODE_VAL  = B.CODE_VAL
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		ORDER BY IFNULL(Z.TOT_EPRS_CNT,0) DESC , CODE_ID DESC
+		;
+	</select>
+</mapper>
+

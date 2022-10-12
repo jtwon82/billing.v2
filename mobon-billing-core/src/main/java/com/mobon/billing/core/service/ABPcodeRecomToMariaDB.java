@@ -1,0 +1,135 @@
+package com.mobon.billing.core.service;
+
+import com.adgather.constants.G;
+import com.adgather.util.old.DateUtils;
+import com.adgather.util.old.StringUtils;
+import com.mobon.billing.core.service.dao.ABPcodeRecomDao;
+import com.mobon.billing.core.service.dao.SelectDao;
+import com.mobon.billing.model.v15.BaseCVData;
+import com.mobon.billing.util.ConsumerFileUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+@Service
+public class ABPcodeRecomToMariaDB {
+
+    private static final Logger logger = LoggerFactory.getLogger(ABPcodeRecomToMariaDB.class);
+
+    @Value("${log.path}")
+    private String	logPath;
+
+   @Autowired
+    private ABPcodeRecomDao ABPcodeRecomDao;
+
+
+   @Autowired
+    private SelectDao selectDao;
+
+  public boolean intoMariaABPcodeRecomDataV3(String id, List<BaseCVData> aggregateList , boolean toMongodb) {
+      boolean result = false;
+
+      if (aggregateList != null) {
+          HashMap<String, ArrayList<BaseCVData>> flushMap = makeFlushMap(aggregateList);
+
+          if (flushMap.entrySet().size() != 0) {
+              if (toMongodb) {
+                  try {
+                      String writeFileName = String.format("insertIntoError_%s_%s", Thread.currentThread().getName(), DateUtils.getDate("yyyyMMdd_HHmm") );
+                      ConsumerFileUtils.writeLine( logPath +"retry/", writeFileName, G.ABPcodeRecomData, aggregateList);
+                  } catch (IOException e) {
+                      logger.error("err - {}", e);
+                  }
+                  logger.info("chking fail ABPcodeRecomData fileWriteOk flushMap.keySet() - {}", flushMap.keySet() );
+                  result = true;
+              } else {
+                  result = ABPcodeRecomDao.transectionRunningV2(flushMap);
+              }
+          } else {
+              result = true;
+          }
+      } else {
+          result = true;
+      }
+      return result;
+  }
+
+    public  HashMap<String, ArrayList<BaseCVData>> makeFlushMap(List<BaseCVData> aggregateList) {
+        HashMap<String, ArrayList<BaseCVData>> flushMap = new HashMap();
+
+        for (BaseCVData vo : aggregateList) {
+            try {
+                if (vo != null) {
+                    if (vo.getYyyymmdd()==null || vo.getPlatform()==null || vo.getAdGubun()==null
+                            || vo.getSiteCode()==null || vo.getScriptNo()==0 || vo.getAdvertiserId()==null || vo.getType()==null) {
+                        logger.error("Missing required, vo - {}", vo.toString());
+                        continue;
+                    }
+
+                    if( StringUtils.isEmpty(vo.getProduct()) || StringUtils.isEmpty(vo.getScriptUserId()) ) {
+                        BaseCVData minfo = selectDao.selectMediaInfo(vo);
+                        if( minfo!=null ) {
+                            logger.error("map - {}", minfo);
+
+                            if( StringUtils.isEmpty(vo.getProduct()) ) {
+                                vo.setProduct( StringUtils.trimToNull2(minfo.getProduct()));	// 모비온에서 넘어온값으로 써야됨
+                                logger.error("chking vo - {}", vo);
+                            }
+                            if( StringUtils.isEmpty(vo.getScriptUserId()) ) {
+                                vo.setScriptUserId( StringUtils.trimToNull2(minfo.getScriptUserId())); //map.get("scriptUserId")) );
+                                logger.error("chking vo - {}", vo);
+                            }
+                        }
+                    }
+                    //상품 타겟팅 여부 확인용 메소드
+                    if (vo.getAdGubun() != null) {
+                        vo.setTargetYn(G.checkTargetYN(vo.getAdGubun()));
+                    }
+
+                    logger.debug("vo - {}", vo);
+                    String mapperId = "";
+
+                    switch (vo.getType()) {
+                        case "V" :  mapperId = "INSERT_AB_PCODE_ADVER_STATS_VIEW"
+                                ;break;
+                        case "C" : mapperId = "INSERT_AB_PCODE_ADVER_STATS_CLICK"
+                                ;break;
+                        default:
+                            ;break;
+                    }
+
+                    this.add(flushMap, mapperId, vo);
+                }
+            } catch (Exception e) {
+                logger.error("err item - {}, msg - {}", vo, e);
+            }
+        }
+        return flushMap;
+    }
+
+
+    private void add(HashMap<String, ArrayList<BaseCVData>> flushMap, String key, BaseCVData vo) {
+        if(flushMap.get(key)==null){
+            flushMap.put(key, new ArrayList());
+        }
+        ArrayList<BaseCVData> l = flushMap.get(key);
+        logger.debug("s - {}, statYn - {}", vo.getScriptNo(), vo.getStatYn());
+        if("N".equals(vo.getStatYn())) {
+            if(key.indexOf("point")>0) {
+                l.add(vo);
+            }
+        }
+        else {
+            l.add(vo);
+        }
+
+    }
+}

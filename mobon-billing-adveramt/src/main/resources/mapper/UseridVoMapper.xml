@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="useridVoMapper">
+
+	<select id="selectNOW" resultType="java.lang.String">
+		SELECT now() now
+	</select>
+
+	<update id="insertUseridStats">
+		/* jtwon : INSERT INTO mob_userid_stats */
+		INSERT INTO mob_userid_stats
+				(STATS_DTTM, STATS_HH, ADVER_ID, MEDIA_ID, ADVRTS_AMT, REG_DTTM)
+				VALUES
+					<foreach item="I" collection="list" separator=" , ">
+					(${I.yyyymmdd}, #{I.hh}, #{I.siteCode}, #{I.scriptUserId}, #{I.point}, NOW())
+					</foreach>
+				ON DUPLICATE KEY UPDATE
+					ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT)
+					, ALT_DTTM=NOW();
+	</update>
+</mapper>
+

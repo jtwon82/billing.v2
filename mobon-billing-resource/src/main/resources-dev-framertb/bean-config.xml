@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="RetryWorkQueue" class="com.mobon.billing.framertb.service.WorkQueue">
+		<constructor-arg index="0" value="RetryWorkQueue"/>
+		<constructor-arg index="1" value="1"/>
+	</bean>
+	
+	<bean id="FrameRtbType1DataWorkQueue" class="com.mobon.billing.framertb.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="FrameRtbType1DataWorkQueue"/>
+		<constructor-arg index="1" value="5"/>
+	</bean>
+	
+</beans>

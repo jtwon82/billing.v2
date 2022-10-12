@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="databaseInsertMapper">
+	<insert id="insertFrameAdverDayStats" parameterType="list">
+		INSERT INTO BILLING.`FRME_ADVER_DAY_STATS` 
+		(`STATS_DTTM`, 
+		 `ADVER_ID`, 
+		 `ALGM_SEQ`, 
+		 `PRDT_TP_CODE`, 
+		 `ADVRTS_TP_CODE`, 
+		 `BNR_CODE`, 
+		 `FRME_CODE`, 
+		 `PAR_EPRS_CNT`, 
+		 `CLICK_CNT`, 
+		 `FRME_CLICK_CNT`, 
+		 `ADVRTS_AMT`, 
+		 `ORDER_AMT`, 
+		 `ORDER_CNT`, 
+		 `REG_DTTM`)
+		VALUES 
+		<foreach item = "I" collection="list" separator =" , ">
+		(${I.yyyyMMdd}, #{I.adverId}, #{I.algmSeq}, #{I.prdtTpCode}, #{I.advrtsTpCode}, #{I.bnrCode}, #{I.frmeCode},
+		 #{I.viewCnt}, #{I.clickCnt}, #{I.frmeClickCnt},#{I.advrtsAmt}, #{I.orderAmt}, #{I.orderCnt}, NOW())		
+		</foreach>
+	</insert>
+	
+	<insert id="insertFrmeCycleLog">
+	INSERT INTO BILLING.`FRME_CYCLE_LOG`
+	(`MEDIA_SCRIPT_NO`,
+	 `ALGM_SEQ`,
+	 `PRDT_TP_CODE`,
+	 `FRME_CODE`, 
+	 `CYCLE_TRN`,
+	 `PAR_EPRS_CNT`,
+	 `CLICK_CNT`, 
+	 `FRME_CLICK_CNT`,
+	 `ADVRTS_AMT`,
+	 `ORDER_AMT`, 
+	 `ORDER_CNT`,
+	 `REG_USER_ID`,
+	 `REG_DTTM`, 
+	 `ALT_USER_ID`,
+	 `ALT_DTTM`		
+	) VALUES
+	<foreach item = "I" collection="list" separator=" , ">
+	(
+		#{I.scriptNo}, #{I.algmSeq}, #{I.prdtTpCode},#{I.frmeCode},#{I.cycleTrn} ,#{I.viewCnt}, #{I.clickCnt},
+		 #{I.frmeClickCnt},#{I.advrtsAmt}, #{I.orderAmt}, #{I.orderCnt},'BATCH', NOW(), 'BATCH', NOW()
+	)
+	</foreach>
+	ON DUPLICATE KEY UPDATE 
+	PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT), 
+	CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT),
+	FRME_CLICK_CNT = FRME_CLICK_CNT + VALUES(FRME_CLICK_CNT),
+	ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT),
+	ORDER_AMT = ORDER_AMT + VALUES(ORDER_AMT),
+	ORDER_CNT = ORDER_CNT + VALUES(ORDER_CNT);
+	</insert>
+</mapper>

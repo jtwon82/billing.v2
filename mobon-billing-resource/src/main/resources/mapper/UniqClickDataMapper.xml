@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="uniqClickDataMapper">
+	
+	<update id="camp_media_unique_click">
+		INSERT INTO default.MOB_CAMP_MEDIA_UNIQCLICK_RENEW_STATS
+			(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, IP, AU_ID, ITL_TP_CODE, SVC_TP_CODE, CHRG_TP_CODE
+			, UNIQUE_CNT, TOT_CLICK_CNT, ADVRTS_AMT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, ADVER_ID, CLICK_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.keyIp}, #{I.au_id}, #{I.interlock}, #{I.svcTpCode}, #{I.chrgTpCode}
+			, '1', #{I.clickCnt}, #{I.point}
+			<choose>
+		        <when test="I.targetYn">
+					, #{I.clickCnt}
+		        </when>
+		        <otherwise>, 0</otherwise>
+		    </choose>
+		    <choose>
+		        <when test="I.targetYn">
+					, #{I.point}
+		        </when>
+		        <otherwise>, 0</otherwise>
+		    </choose>
+			, #{I.advertiserId}, toDateTime(#{I.sendDate})
+			)
+			</foreach>
+			;
+	</update>
+	
+	
+	<select id="selectActionLog" parameterType="Map" resultType="Map">
+		SELECT CONCAT('now()', '	Unique_Click	',JSON_OBJECT('svcTpCode','','chrgTpCode','01'
+		,'yyyymmdd',PARTDT
+		,'platform',(case when left(ADPRODUCT,1)='m' then '02' else '01' end)
+		,'product',(case when ADPRODUCT='mbe' then '03' when ADPRODUCT='mbw' then '01' when ADPRODUCT='ico' then '03' when ADPRODUCT='mnt' then '07' when ADPRODUCT='nor' then '01' when ADPRODUCT='pnt' then '07' when ADPRODUCT='nct' then '05' when ADPRODUCT='mct' then '05' when ADPRODUCT='mpw' then '08' end)
+		,'adGubun',B.CODE_ID
+		,'siteCode',SITECODE,'scriptNo',MEDIA_CODE,'advertiserId',MCODE,'scriptUserId',MEDIA_ID,'type','C'
+		,'interlock',CASE WHEN MEDIA_ID IN('kakao', 'mkakao') THEN '03' WHEN MEDIA_ID IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04' WHEN MEDIA_ID IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08' WHEN MEDIA_ID IN('rtbmobon') THEN '10' ELSE '01' END
+		,'keyIp',IP,'clickCnt',1,'point',POINT,'sendDate',DATE_FORMAT(PARTDT, '%Y-%m-%d %H:%m:%s'), 'hh',CASE WHEN PARTDT=DATE_FORMAT(NOW(),'%Y%m%d') THEN DATE_FORMAT(NOW(),'%H') ELSE '00' END
+		,'ACTION_NO',(${ACTION_NO}+10000)
+		)) 'data'
+			from dreamsearch.ACTION_LOG A JOIN (select * from dreamsearch.MOBON_COM_CODE where CODE_TP_ID='ADVRTS_TP_CODE' ) B on A.ADGUBUN =B.CODE_VAL
+		where no between ${ACTION_NO} and ${ACTION_NO}+10000 AND PARTDT BETWEEN 20220407 AND 20220426 and `point` >0
+	</select>
+	
+</mapper>

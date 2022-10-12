@@ -1,0 +1,4 @@
+alias kstart='/usr/local/kafka/bin/kafka-server-start.sh -daemon /usr/local/kafka/config/server.properties'
+alias kstop='/usr/local/kafka/bin/kafka-server-stop.sh'
+alias zstart='/usr/local/kafka/bin/zookeeper-server-start.sh -daemon /usr/local/kafka/config/zookeeper.properties'
+alias zstop='/usr/local/kafka/bin/zookeeper-server-stop.sh'

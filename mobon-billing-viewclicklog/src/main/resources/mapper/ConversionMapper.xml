@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="conversionMapper">
+
+	<!-- Frequency - START -->
+	<select id="selectFrequencyCount" parameterType="Map" resultType="int" useCache="false" flushCache="true">
+		/* selectFrequencyCount */
+		SELECT
+			COUNT(1)
+		FROM default.BRAND_CNVRS_FREQ_LOG
+		WHERE
+			STATS_DTTM BETWEEN
+				formatDateTime(date_sub(HOUR, ${intervalHour}, NOW()), '%Y%m%d') AND formatDateTime(NOW(), '%Y%m%d')
+		  	AND MEDIA_SCRIPT_NO = ${scriptNo}
+		  	AND ADVER_ID = #{advertiserId}
+		  	AND SVC_TP_CODE = #{svcTpCode}
+		  	AND CHRG_TP_CODE = #{chrgTpCode}
+		  	AND (IP = #{ip} OR AU_ID = #{auId})
+		  	AND date_sub(HOUR, ${intervalHour}, NOW()) <![CDATA[<]]> SEND_DTTM;
+	</select>
+
+	<select id="selectFrequencyDuplicateData" parameterType="Map" resultType="int" useCache="false" flushCache="true">
+		/* selectFrequencyDuplicateData */
+		SELECT
+			COUNT(1)
+		FROM default.BRAND_CNVRS_FREQ_LOG
+		WHERE
+			STATS_DTTM = #{yyyymmdd}
+			AND MEDIA_SCRIPT_NO = ${scriptNo}
+		  	AND ADVER_ID = #{advertiserId}
+		  	AND SVC_TP_CODE = #{svcTpCode}
+		  	AND (IP = #{ip} OR AU_ID = #{auId})
+			AND ORDER_NO = #{ordCode};
+	</select>
+
+	<update id="insertFrequency" parameterType="conversionVo">
+		/* insertFrequency */
+		INSERT INTO default.BRAND_CNVRS_FREQ_LOG (
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE,
+		    SITE_CODE, MEDIA_TP_CODE, MEDIA_SCRIPT_NO, ITL_TP_CODE, UNEXPOSURE_YN,
+		    ADVER_ID, MEDIA_ID, SVC_TP_CODE, CHRG_TP_CODE, IP, AU_ID, LOG_PCODE,
+			PNM, ORDER_NO, ORDER_AMT, ORDER_CNT, ORDER_QY, LOG_DTTM, SEND_DTTM)
+		VALUES(
+			${yyyymmdd}, #{hh}, #{platformCode}, #{productCode}, #{adGubunCode},
+			#{siteCode}, #{mediaTpCode}, ${scriptNo}, #{interlock}, #{noExposureYN},
+			#{advertiserId}, #{scriptUserId}, #{svcTpCode}, #{chrgTpCode}, #{ip}, #{auId}, #{ordPcode},
+			#{pnm}, #{ordCode}, ${price}, 1, ${ordQty}, toDateTime(#{logDttm}, 'Asia/Seoul'), toDateTime(#{sendDate}, 'Asia/Seoul')
+		);
+	</update>
+	<!-- Frequency - END -->
+
+	<!-- Conversion - START -->
+	<select id="selectDuplicatedOrderNo" parameterType="conversionVo" resultType="string" useCache="false" flushCache="true">
+		/* selectDuplicatedOrderNo */
+		SELECT
+			ORDER_NO
+		FROM
+			default.BRAND_CNVRS_LOG
+		WHERE
+			ADVER_ID = #{advertiserId}
+			AND ORDER_NO = #{ordCode}
+		LIMIT 1;
+	</select>
+
+	<update id="insertConversionLog" parameterType="conversionVo">
+		/* insertConversionLog */
+		INSERT INTO default.BRAND_CNVRS_LOG (
+			STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE,
+			CTGR_SEQ, KPI_NO, SITE_CODE, MEDIA_TP_CODE, MEDIA_SCRIPT_NO, TRK_TP_CODE, ITL_TP_CODE, UNEXPOSURE_YN,
+			ADVER_ID, MEDIA_ID, CNVRS_TP_CODE, IP, AU_ID, SESION_SELNG_YN, SESION_SELNG2_YN,
+			DIRECT_YN, LOG_PCODE, PNM, ORDER_NO, ORDER_AMT, ORDER_CNT, ORDER_QY,
+			INFLOW_ROUTE, LOG_DTTM, SEND_DTTM)
+		VALUES(
+			${yyyymmdd}, #{hh}, #{platformCode}, #{productCode}, #{adGubunCode},
+			#{ctgrSeq}, #{kpiNo}, #{siteCode}, #{mediaTpCode}, ${scriptNo}, #{trkTpCode}, #{interlock}, #{noExposureYN},
+			#{advertiserId}, #{scriptUserId}, #{cnvrsTpCode}, #{ip}, #{auId}, #{sesionSelngYn}, #{sesionSelng2Yn},
+			#{directYn}, #{ordPcode}, #{pnm}, #{ordCode}, ${price}, 1, ${ordQty},
+			#{inflowRoute}, toDateTime(#{logDttm}, 'Asia/Seoul'), toDateTime(#{sendDate}, 'Asia/Seoul')
+		);
+	</update>
+	<!-- Conversion - END -->
+
+</mapper>

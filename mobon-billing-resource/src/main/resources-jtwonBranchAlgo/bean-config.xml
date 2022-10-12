@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="ClickViewDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ClickViewDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ClickViewPcodeDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ClickViewPcodeDataWorkQueue" />
+		<constructor-arg index="1" value="5" />
+	</bean>
+	<bean id="ViewPcodeDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ViewPcodeDataWorkQueue" />
+		<constructor-arg index="1" value="10" />
+	</bean>
+	<bean id="PhoneDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="PhoneDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ClientEnvirmentDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ClientEnvirmentDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="AdverClientEnvirmentDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="AdverClientEnvirmentDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ClientAgeGenderDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ClientAgeGenderDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ClickViewPointDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ClickViewPointDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ClickViewPoint2DataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ClickViewPoint2DataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ExternalDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ExternalDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ShopInfoDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ShopInfoDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ShopMdPcodeDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ShopMdPcodeDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ShopStatsInfoDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ShopStatsInfoDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ConvDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ConvDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ConvAbusingDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ConvAbusingDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ConvPcodeDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ConvPcodeDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ConvAllDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ConvAllDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ActionDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ActionDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+
+	<bean id="RetryWorkQueue" class="com.mobon.billing.core.service.WorkQueue">
+		<constructor-arg index="0" value="RetryWorkQueue" />
+		<constructor-arg index="1" value="1" />
+	</bean>
+
+	<!-- ParGatr -->
+	<bean id="ParGatrDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ParGatrDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+
+
+	<!-- branch -->
+	<bean id="NearDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="NearDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<!-- <bean id="AppTargetDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="AppTargetDataWorkQueue" />
+		<constructor-arg index="1" value="1" />
+	</bean>  -->
+	<bean id="MediaChrgDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="MediaChrgDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="IntgCntrDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="IntgCntrDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="IntgCntrKgrDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="IntgCntrKgrDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="IntgCntrTtimeDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="IntgCntrTtimeDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="IntgCntrActionDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="IntgCntrActionDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="IntgCntrConvDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="IntgCntrConvDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="ActionPcodeDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="ActionPcodeDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	
+			<!-- clientEnv -->
+	<bean id="CampMediaRetrnAvalDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="CampMediaRetrnAvalDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+	<bean id="AdverProductHHDataWorkQueue" class="com.mobon.billing.core.service.WorkQueueTaskData">
+		<constructor-arg index="0" value="AdverProductHHDataWorkQueue" />
+		<constructor-arg index="1" value="0" />
+	</bean>
+</beans>
+ 

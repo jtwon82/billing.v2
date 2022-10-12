@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="chrgLogDataMapper">
+
+	<update id="inserChrgLog_billing" parameterType="chrgLogData">			
+		INSERT INTO dreamsearch.MOB_CHRG_LOG(
+			YYYYMMDD, SVC_TP_CODE, CHRG_TP_CODE, MEDIA_SCRIPT_NO, SITE_CODE, pcode
+			, ETC, USER_IDFY_VAL, `POINT`, REG_USER_ID,	REG_DTTM) 
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(#{I.yyyymmdd},	#{I.svcTpCode},	#{I.chrgTpCode}, #{I.scriptNo},	#{I.siteCode}, #{I.pCode}
+			, #{I.etc}, #{I.keyIp},	#{I.point},	'BATCH', #{I.sendDate})
+			</foreach>
+			;
+	</update>
+	
+</mapper>

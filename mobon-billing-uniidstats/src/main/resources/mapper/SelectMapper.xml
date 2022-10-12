@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="selectMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+	<select id="selectAdvrtsTpCode"  resultType="Map">
+		/* selectAdvrtsTpCode */
+		SELECT
+			CODE_ID, CODE_VAL
+		FROM dreamsearch.MOBON_COM_CODE
+				 LEFT OUTER JOIN
+			 (
+				 SELECT SUM(TOT_EPRS_CNT) TOT_EPRS_CNT , ADVRTS_TP_CODE
+				 FROM MOB_MEDIA_PAR_MTH_STATS
+				 WHERE STATS_MTH = CAST(DATE_FORMAT(NOW(),'%Y%m') AS INT)
+				 GROUP BY ADVRTS_TP_CODE
+			 ) Z ON CODE_ID = ADVRTS_TP_CODE
+		WHERE CODE_TP_ID = 'ADVRTS_TP_CODE'
+		ORDER BY IFNULL(Z.TOT_EPRS_CNT,0) DESC , CODE_ID DESC
+	</select>
+
+	<select id= "selectAdvrtsInfo" resultType="Map" parameterType="Map" useCache="true">
+		/* selectAdvrtsInfo */
+		SELECT
+			DISTINCT SITE_CODE siteCode, KPI_NO kpiNo, advrtsId, ctgrSeq
+		FROM (
+				 SELECT SITE_CODE, KPI_NO, userid advrtsId, CTGR_SEQ ctgrSeq
+				 FROM dreamsearch.iadsite a left join dreamsearch.MOB_CTGR_USER_INFO b on a.userid=b.USER_ID
+				 WHERE SITE_CODE= CONVERT(#{siteCode} USING EUCKR)
+				 UNION ALL
+				 SELECT SITE_CODE, KPI_NO, userid advrtsId, CTGR_SEQ ctgrSeq
+				 FROM dreamsearch.adsite a left join dreamsearch.MOB_CTGR_USER_INFO b on a.userid=b.USER_ID
+				 WHERE SITE_CODE= CONVERT(#{siteCode} USING EUCKR)
+			 )A;
+	</select>
+
+	<select id="selectMediaInfo" resultType="Map" parameterType="Map" useCache="true">
+		/* selectMediaInfo */
+		SELECT
+			a.no scriptNo, a.userid scriptUserId, a.w_type platform, a.s_type product,
+			a.ad_type type, ifnull(EPRS_REST_RATE, 100)EPRS_REST_RATE, ifnull(LPAD(b.scate,2,'0'),'99') mediaTpCode,
+			CASE
+				WHEN a.userid IN('kakao', 'mkakao') THEN '03'
+				WHEN a.userid IN('agooglemedia', 'googlemedia', 'mgooglemedia') THEN '04'
+				WHEN a.userid IN('padfit', 'madfit') THEN '05'
+				WHEN a.userid IN('taboola', 'mtaboola') THEN '06'
+				WHEN a.userid IN('exelbid', 'mexelbid') THEN '07'
+				WHEN a.userid IN('igaworks', 'igaworks02','igaworksm','igaworksp') THEN '08'
+				WHEN a.userid IN('rtbmobon', 'mrtbmobon') THEN '10'
+				ELSE '01'
+				END itlTpCode
+		FROM dreamsearch.media_script a LEFT JOIN dreamsearch.media_site b ON a.mediasite_no=b.no
+		WHERE a.NO=#{scriptNo}
+	</select>
+
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nativeDataMapper">
+
+	<!-- 네이티브 비광고 키워드 노출/클릭 통계 매체 지면코드별 상세정보 -->
+	<select id="selectMobKwrdDitbStatsInfo" resultType="java.util.HashMap">
+		SELECT
+			STATS_DTTM
+			, PLTFOM_TP_CODE
+			, ADVRTS_PRDT_CODE
+			, ADVRTS_TP_CODE
+			, MEDIA_SCRIPT_NO
+			, ITL_TP_CODE
+			, NON_EPRS_KWRD_CNT
+			, NON_CLICK_KWRD_CNT
+		FROM 
+			MOB_KWRD_DITB_STATS
+		WHERE
+			STATS_DTTM = ${yyyymmdd}
+			AND PLTFOM_TP_CODE = #{pltfomCode}
+			AND ADVRTS_PRDT_CODE = #{svcCode}
+			AND ADVRTS_TP_CODE = #{prdCode}
+			AND MEDIA_SCRIPT_NO = #{mediaScriptNo}
+		LIMIT 1
+	</select>
+	
+	<!-- 네이티브 비광고 키워드 노출/클릭 통계 키그룹 조회하기 -->
+	<select id="selectAdgubunKey" resultType="Map" useCache="false">
+		SELECT b.code_id, a.w
+		FROM (
+			SELECT '01'w UNION SELECT '02'w
+		)a, (
+			SELECT a.CODE_ID, a.CODE_VAL FROM dreamsearch.MOBON_COM_CODE a WHERE a.CODE_TP_ID='ADVRTS_TP_CODE'
+		)b
+	</select>
+	
+	<!-- 네이티브 비광고 키워드 노출/클릭 등록 -->
+	<update id="selectMobKwrdDitbStatsUpdate" parameterType="java.util.List">
+		INSERT INTO MOB_KWRD_DITB_STATS(
+			  STATS_DTTM
+			, PLTFOM_TP_CODE
+			, ADVRTS_PRDT_CODE
+			, ADVRTS_TP_CODE
+			, MEDIA_SCRIPT_NO
+			, ITL_TP_CODE
+			, NON_EPRS_KWRD_CNT
+			, NON_CLICK_KWRD_CNT
+			, AVAL_EPRS_CNT
+			, CNTNS_EPRS_CNT 
+			, REG_USER_ID
+			, REG_DTTM
+			, ALT_USER_ID
+			, ALT_DTTM
+		) VALUES 
+			<foreach item="I" collection="list" separator=" , ">
+				(
+					#{I.yyyymmdd}
+					, #{I.platform}
+					, #{I.product}
+					, #{I.adGubun}
+					, #{I.scriptNo}
+					, #{I.interlock}
+					, #{I.viewCnt}
+					, #{I.clickCnt}
+					, #{I.avalEprsCnt}
+					, #{I.nativeViewCnt}
+					, 'nativeSystem'
+					, NOW()
+					, 'nativeSystem'
+					, NOW()
+				)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			NON_EPRS_KWRD_CNT=NON_EPRS_KWRD_CNT+VALUES(NON_EPRS_KWRD_CNT)
+			, NON_CLICK_KWRD_CNT=NON_CLICK_KWRD_CNT+VALUES(NON_CLICK_KWRD_CNT)
+			, AVAL_EPRS_CNT=AVAL_EPRS_CNT+VALUES(AVAL_EPRS_CNT)
+			, CNTNS_EPRS_CNT=CNTNS_EPRS_CNT+VALUES(CNTNS_EPRS_CNT)
+			, ALT_USER_ID='nativeSystem', ALT_DTTM=NOW();
+	</update>	
+	
+	
+		<!-- 네이티브 비광고 키워드 노출/클릭 등록 -->
+	<update id="selectMobKwrdRptStatus" parameterType="java.util.List">
+		INSERT INTO MOB_KWRD_RPT_STATS(
+			  STATS_DTTM
+			, PLTFOM_TP_CODE
+			, ADVRTS_PRDT_CODE
+			, ADVRTS_TP_CODE
+			, MEDIA_SCRIPT_NO
+			, ITL_TP_CODE
+			, RPT_TP_CODE
+			, RPT_EPRS_CNT
+			, RPT_CLICK_CNT
+			, REG_USER_ID
+			, REG_DTTM
+			, ALT_USER_ID
+			, ALT_DTTM
+		) VALUES 
+			<foreach item="I" collection="list" separator=" , ">
+				(
+					  #{I.yyyymmdd}
+					, #{I.platform}
+					, #{I.product}
+					, #{I.adGubun}
+					, #{I.scriptNo}
+					, #{I.interlock}
+					, #{I.rptTpCd}
+					, IF(#{I.newsVewCnt} = 0, 1, #{I.newsVewCnt})
+					, #{I.newsClickCnt}
+					, 'nativeSystem'
+					, NOW()
+					, 'nativeSystem'
+					, NOW()
+				)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+			  RPT_EPRS_CNT=RPT_EPRS_CNT+VALUES(RPT_EPRS_CNT)
+			, RPT_CLICK_CNT=RPT_CLICK_CNT+VALUES(RPT_CLICK_CNT) 
+			, ALT_USER_ID='nativeSystem', ALT_DTTM=NOW();
+	</update>	
+		
+	<!-- 네이티브 광고 유효PV 횟수 업데이트 -->
+	<update id="selectMobKwrdDitbPvStatsUpdate" parameterType="java.util.List">
+		<foreach item="I" collection="list" separator=" , ">
+			update MOB_KWRD_DITB_STATS set
+				AVAL_EPRS_CNT = AVAL_EPRS_CNT+#{I.avalEprsCnt}
+			WHERE 
+				PLTFOM_TP_CODE = #{I.platform}
+				and ADVRTS_PRDT_CODE = #{I.product}
+				and MEDIA_SCRIPT_NO = #{I.scriptNo}
+				and STATS_DTTM = #{I.yyyymmdd}
+				ORDER BY RAND()
+				LIMIT 1;
+		</foreach>
+	</update>
+	
+	
+</mapper>

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+PID="$(ps ax | grep java | grep -i $1 | grep -v grep | awk '{print $1}')"
+if [[ "" !=  "$PID" ]]; then
+  echo "killing $PID"
+  kill -s TERM $PID
+fi
+

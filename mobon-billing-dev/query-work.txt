@@ -1,0 +1,21 @@
+
+-- DROP TABLE public.newtable2;
+
+CREATE TABLE public.newtable2 (
+	stats_dttm int8 NULL,
+	product_tp_code varchar(10) NULL,
+	adgubun_tp_code varchar(10) NULL,
+	site_code varchar(32) NULL,
+	media_script_no int8 NULL,
+	type varchar(1) NULL,
+	viewcnt int8 NULL,
+	clickcnt int8 NULL
+);
+CREATE UNIQUE INDEX newtable2_stats_dttm_idx ON public.newtable2 USING btree (stats_dttm, product_tp_code, adgubun_tp_code, site_code, media_script_no, type);
+
+-- truncate table public.newtable2;
+select stats_dttm, product_tp_code, sum(viewcnt), sum(clickcnt) from newtable2 n group by stats_dttm, product_tp_code;
+select stats_dttm, product_tp_code, site_code, sum(viewcnt), sum(clickcnt) from newtable2 n group by stats_dttm, product_tp_code, site_code;
+
+
+

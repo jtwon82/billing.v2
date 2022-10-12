@@ -1,0 +1,22 @@
+spring:
+  scheduler:
+    # cycle(실시간/주기성)
+    default:
+      live-check:
+        delay: 30000
+    
+    # cron-batch(시간1회/일1회/주1회/월1회/기타...)
+    cron:
+      # Frequency Batch
+      freq-file-read-db-write-batch:
+        use-yn: Y
+        cron-cycle: "0/10 * * * * ?"
+        read-file-path-root: @FREQ.LOG.DIR@
+        target-product: @FREQ.LOG.COLLECT.PRODUCT@
+        target-adgubun: @FREQ.LOG.COLLECT.ADGUBUN@
+        except-ms-no: @FREQ.LOG.DISCOLLECT.MS.NO@
+        target-file-conv: @FREQ.LOG.FILE.CONV@
+        target-file-clickview: @FREQ.LOG.FILE.CLICK.VIEW@
+        target-file-extension: @FREQ.LOG.FILE.EXTENSION@
+        target-file-date: @FREQ.LOG.FILE.DATE@
+        target-file-hour: @FREQ.LOG.FILE.HOUR@

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="aiDataMapper">
+
+	<update id="ai_camp_banner_click" parameterType= "java.util.List">
+		INSERT INTO MOB_AI_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, AI_TP_CODE, ITL_TP_CODE
+			, CLICK_CNT, ADVRTS_AMT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.advertiserId}, #{I.aiType}, #{I.interlock}
+				, #{I.clickCnt}, #{I.point}
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.clickCnt} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.point} ELSE 0 END
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+				, TRGT_CLICK_CNT = TRGT_CLICK_CNT + VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT) 
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+	<update id="ai_camp_banner_view" parameterType= "java.util.List">
+		INSERT INTO MOB_AI_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, AI_TP_CODE, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, ADVRTS_AMT, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.advertiserId}, #{I.aiType}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}, #{I.point}
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt3} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.point} ELSE 0 END
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT), TRGT_EPRS_CNT = TRGT_EPRS_CNT + VALUES(TRGT_EPRS_CNT)
+				, TRGT_PAR_EPRS_CNT = TRGT_PAR_EPRS_CNT + VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT) 
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+	<update id="ai_camp_sky_click" parameterType= "java.util.List">
+		INSERT INTO MOB_AI_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, AI_TP_CODE, ITL_TP_CODE
+			, CLICK_CNT, TRGT_CLICK_CNT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.advertiserId}, #{I.aiType}, #{I.interlock}
+				, #{I.clickCnt}
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.clickCnt} ELSE 0 END
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT)
+				, TRGT_CLICK_CNT = TRGT_CLICK_CNT + VALUES(TRGT_CLICK_CNT) 
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+	<update id="ai_camp_sky_view" parameterType= "java.util.List">
+		INSERT INTO MOB_AI_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, AI_TP_CODE, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, ADVRTS_AMT, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.advertiserId}, #{I.aiType}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt3}, #{I.point}
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt3} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.point} ELSE 0 END
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+				, ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT), TRGT_EPRS_CNT = TRGT_EPRS_CNT + VALUES(TRGT_EPRS_CNT)
+				, TRGT_PAR_EPRS_CNT = TRGT_PAR_EPRS_CNT + VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT) 
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+	<update id="ai_camp_ico_view" parameterType= "java.util.List">
+		INSERT INTO MOB_AI_HH_STATS
+		(STATS_DTTM, STATS_HH, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, SITE_CODE, ADVER_ID, AI_TP_CODE, ITL_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT, CLICK_CNT, ADVRTS_AMT, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_USER_ID, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.hh}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.siteCode}, #{I.advertiserId}, #{I.aiType}, #{I.interlock}
+				, #{I.viewCnt}, #{I.viewCnt}, #{I.viewCnt}, #{I.point}
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.viewCnt} ELSE 0 END
+				, CASE WHEN #{I.adGubun} IN ('04','10','16','17','34','37','40','41','42','47') THEN #{I.point} ELSE 0 END
+				, 'BATCH', NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT = TOT_EPRS_CNT + VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+				, CLICK_CNT = CLICK_CNT + VALUES(CLICK_CNT), ADVRTS_AMT = ADVRTS_AMT + VALUES(ADVRTS_AMT)
+				, TRGT_EPRS_CNT = TRGT_EPRS_CNT + VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT = TRGT_PAR_EPRS_CNT + VALUES(TRGT_PAR_EPRS_CNT)
+				, TRGT_CLICK_CNT = TRGT_CLICK_CNT + VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT = TRGT_ADVRTS_AMT + VALUES(TRGT_ADVRTS_AMT) 
+				, ALT_USER_ID='BATCH', ALT_DTTM=NOW();
+	</update>
+	
+</mapper>
+

@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="clientEnvirmentDataMapper">
+
+
+	
+	<insert id="client_env_click_au_insert"  parameterType="java.util.List">
+		/* client_env_click_au_insert */ INSERT INTO MOB_CLIENT_ENV_AU_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '28', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_au_insert"  parameterType="java.util.List">
+		/* client_env_view_au_insert */ INSERT INTO MOB_CLIENT_ENV_AU_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '28', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_au_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_au_insert */ INSERT INTO MOB_CLIENT_ENV_AU_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '28', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+	</insert>
+	
+	
+	<insert id="client_env_click_cm_insert"  parameterType="java.util.List">
+		/* client_env_click_cm_insert */ INSERT INTO MOB_CLIENT_ENV_CM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '26', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_cm_insert"  parameterType="java.util.List">
+		/* client_env_view_cm_insert */ INSERT INTO MOB_CLIENT_ENV_CM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '26', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_cm_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_cm_insert */ INSERT INTO MOB_CLIENT_ENV_CM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '26', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_um_insert"  parameterType="java.util.List">
+		/* client_env_click_um_insert */ INSERT INTO MOB_CLIENT_ENV_UM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '19', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_um_insert"  parameterType="java.util.List">
+		/* client_env_view_um_insert */ INSERT INTO MOB_CLIENT_ENV_UM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '19', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_um_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_um_insert */ INSERT INTO MOB_CLIENT_ENV_UM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '19', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_rm_insert"  parameterType="java.util.List">
+		/* client_env_click_rm_insert */ INSERT INTO MOB_CLIENT_ENV_RM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '11', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_rm_insert"  parameterType="java.util.List">
+		/* client_env_view_rm_insert */ INSERT INTO MOB_CLIENT_ENV_RM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '11', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_rm_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_rm_insert */ INSERT INTO MOB_CLIENT_ENV_RM_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '11', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_kl_insert"  parameterType="java.util.List">
+		/* client_env_click_kl_insert */ INSERT INTO MOB_CLIENT_ENV_KL_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '06', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_kl_insert"  parameterType="java.util.List">
+		/* client_env_view_kl_insert */ INSERT INTO MOB_CLIENT_ENV_KL_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '06', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_kl_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_kl_insert */ INSERT INTO MOB_CLIENT_ENV_KL_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '06', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_hu_insert"  parameterType="java.util.List">
+		/* client_env_click_hu_insert */ INSERT INTO MOB_CLIENT_ENV_HU_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '05', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_hu_insert"  parameterType="java.util.List">
+		/* client_env_view_hu_insert */ INSERT INTO MOB_CLIENT_ENV_HU_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '05', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_hu_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_hu_insert */ INSERT INTO MOB_CLIENT_ENV_HU_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '05', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_ad_insert"  parameterType="java.util.List">
+		/* client_env_click_ad_insert */ INSERT INTO MOB_CLIENT_ENV_AD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '01', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_ad_insert"  parameterType="java.util.List">
+		/* client_env_view_ad_insert */ INSERT INTO MOB_CLIENT_ENV_AD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '01', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_ad_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_ad_insert */ INSERT INTO MOB_CLIENT_ENV_AD_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '01', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_cw_insert"  parameterType="java.util.List">
+		/* client_env_click_cw_insert */ INSERT INTO MOB_CLIENT_ENV_CW_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '04', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, #{I.clickCnt}
+				, #{I.point}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_cw_insert"  parameterType="java.util.List">
+		/* client_env_view_cw_insert */ INSERT INTO MOB_CLIENT_ENV_CW_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, TRGT_CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '04', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, #{I.viewCnt}
+				, #{I.viewCnt3}
+				, #{I.point}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_cw_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_cw_insert */ INSERT INTO MOB_CLIENT_ENV_CW_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '04', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+
+	<insert id="client_env_click_rc_insert"  parameterType="java.util.List">
+		/* client_env_click_rc_insert */ INSERT INTO MOB_CLIENT_ENV_RC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '10', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, #{I.clickCnt}
+				, #{I.point}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_rc_insert"  parameterType="java.util.List">
+		/* client_env_view_rc_insert */ INSERT INTO MOB_CLIENT_ENV_RC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, TRGT_CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '10', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, #{I.viewCnt}
+				, #{I.viewCnt3}
+				, #{I.point}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_rc_insert"  parameterType="java.util.List">
+		/* client_env_view_rc_insert */ INSERT INTO MOB_CLIENT_ENV_RC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '10', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_sr_insert"  parameterType="java.util.List">
+		/* client_env_click_sr_insert */ INSERT INTO MOB_CLIENT_ENV_SR_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '17', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, #{I.clickCnt}
+				, #{I.point}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_sr_insert"  parameterType="java.util.List">
+		/* client_env_view_sr_insert */ INSERT INTO MOB_CLIENT_ENV_SR_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, TRGT_CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '17', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, #{I.viewCnt}
+				, #{I.viewCnt3}
+				, #{I.point}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_sr_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_sr_insert */ INSERT INTO MOB_CLIENT_ENV_SR_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, '17', #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_etc_pd_insert"  parameterType="java.util.List">
+		/* client_env_click_etc_pd_insert */ INSERT INTO MOB_CLIENT_ENV_ETC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_CLICK_CNT, TRGT_ADVRTS_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, #{I.clickCnt}
+				, #{I.point}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_etc_pd_insert"  parameterType="java.util.List">
+		/* client_env_view_etc_pd_insert */ INSERT INTO MOB_CLIENT_ENV_ETC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, TRGT_CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, #{I.viewCnt}
+				, #{I.viewCnt3}
+				, #{I.point}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_retrn_aval_etc_pd_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_etc_pd_insert */ INSERT INTO MOB_CLIENT_ENV_ETC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+
+	</insert>
+	
+	<insert id="client_env_click_etc_npd_insert"  parameterType="java.util.List">
+		/* client_env_click_etc_npd_insert */ INSERT INTO MOB_CLIENT_ENV_ETC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.clickCnt}
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+
+	<insert id="client_env_view_etc_npd_insert"  parameterType="java.util.List">
+		/* client_env_view_etc_npd_insert */ INSERT INTO MOB_CLIENT_ENV_ETC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+	</insert>
+	
+	<insert id="client_env_retrn_aval_etc_npd_insert"  parameterType="java.util.List">
+		/* client_env_retrn_aval_etc_npd_insert */ INSERT INTO MOB_CLIENT_ENV_ETC_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, OS_VERSION, BROWSER_TP_CODE, BROWSER_VERSION
+			, RETRN_CNT, AVAL_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, '', #{I.browserCode}, LEFT(#{I.browserCodeVersion},10)
+				, #{I.retrnCnt}, #{I.avalCnt}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT=RETRN_CNT+VALUES(RETRN_CNT), AVAL_CNT=AVAL_CNT+VALUES(AVAL_CNT)
+			, ALT_DTTM=NOW();
+	</insert>
+
+	<insert id="adver_client_env_view_insert"  parameterType="java.util.List">
+		/* adver_client_env_view_insert */ INSERT INTO MOB_ADVER_CLIENT_ENV_STATS
+		(STATS_DTTM, ADVER_ID, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, BROWSER_TP_CODE
+			, TOT_EPRS_CNT, PAR_EPRS_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, TRGT_EPRS_CNT, TRGT_PAR_EPRS_CNT, TRGT_ADVRTS_AMT
+			, CLICK_CNT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.advertiserId}, #{I.platform}, #{I.product}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, #{I.browserCode}
+				, #{I.viewCnt}, #{I.viewCnt3} 
+				, #{I.point}, #{I.mpoint}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.viewCnt3}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="I.targetYn">
+						,#{I.point}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, <choose><when test="I.product=='03'">#{I.viewCnt}</when><otherwise>0</otherwise></choose>
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			TOT_EPRS_CNT=TOT_EPRS_CNT+VALUES(TOT_EPRS_CNT), PAR_EPRS_CNT=PAR_EPRS_CNT+VALUES(PAR_EPRS_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, TRGT_EPRS_CNT=TRGT_EPRS_CNT+VALUES(TRGT_EPRS_CNT), TRGT_PAR_EPRS_CNT=TRGT_PAR_EPRS_CNT+VALUES(TRGT_PAR_EPRS_CNT), TRGT_ADVRTS_AMT=TRGT_ADVRTS_AMT+VALUES(TRGT_ADVRTS_AMT)
+			, CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, ALT_DTTM=NOW();
+	</insert>
+	
+	<insert id="adver_client_env_click_insert"  parameterType="java.util.List">
+		/* adver_client_env_click_insert */ INSERT INTO MOB_ADVER_CLIENT_ENV_STATS
+		(STATS_DTTM, ADVER_ID, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ITL_TP_CODE, DEVICE_TP_CODE, OS_TP_CODE, BROWSER_TP_CODE
+			, CLICK_CNT
+			, TRGT_CLICK_CNT
+			, ADVRTS_AMT, MEDIA_PYMNT_AMT
+			, REG_DTTM)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.advertiserId}, #{I.platform}, #{I.product}, #{I.interlock}, #{I.deviceCode}, #{I.osCode}, #{I.browserCode}
+				, #{I.clickCnt}
+				<choose>
+					<when test="I.targetYn">
+						,#{I.clickCnt}
+					</when>
+					<otherwise>
+						,0
+					</otherwise>
+				</choose>
+				, #{I.point}, #{I.mpoint}
+				, NOW())
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			CLICK_CNT=CLICK_CNT+VALUES(CLICK_CNT)
+			, TRGT_CLICK_CNT=TRGT_CLICK_CNT+VALUES(TRGT_CLICK_CNT)
+			, ADVRTS_AMT=ADVRTS_AMT+VALUES(ADVRTS_AMT), MEDIA_PYMNT_AMT=MEDIA_PYMNT_AMT+VALUES(MEDIA_PYMNT_AMT)
+			, ALT_DTTM=NOW();
+			
+	</insert>
+	
+	<insert id="client_age_gender_insert"  parameterType="java.util.List">
+	
+		INSERT INTO USER_CONDITION_STATS
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, MEDIA_SCRIPT_NO, AGE, GENDER, PAR_EPRS_CNT)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.scriptNo}, #{I.userAge}, #{I.gender} , #{I.viewCnt3})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			PAR_EPRS_CNT = PAR_EPRS_CNT + VALUES(PAR_EPRS_CNT)
+	
+	</insert>
+	
+	<insert id="camp_media_retrn_aval_insert"  parameterType="java.util.List">
+	
+		INSERT INTO MOB_ADVER_MEDIA_RETRN_STATS_TMP
+		(STATS_DTTM, PLTFOM_TP_CODE, ADVRTS_PRDT_CODE, ADVRTS_TP_CODE, ADVER_ID, SITE_CODE, MEDIA_SCRIPT_NO, MEDIA_ID, RETRN_CNT, AVAL_CNT)
+		VALUES
+			<foreach item="I" collection="list" separator=" , ">
+			(${I.yyyymmdd}, #{I.platform}, #{I.product}, #{I.adGubun}, #{I.advertiserId}, #{I.siteCode}, #{I.scriptNo}, #{I.scriptUserId}, #{I.retrnCnt} , #{I.avalCnt})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			RETRN_CNT = RETRN_CNT + VALUES(RETRN_CNT), AVAL_CNT = AVAL_CNT + VALUES(AVAL_CNT) 
+	
+	</insert>
+	
+	
+</mapper>
+
